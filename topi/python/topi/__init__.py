@@ -54,6 +54,7 @@ from . import vision
 from . import image
 from . import sparse
 from . import hls
+from . import contrib
 # error reporting
 from .util import InvalidShapeError
 # not import testing by default

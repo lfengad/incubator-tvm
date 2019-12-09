@@ -53,7 +53,8 @@ inline size_t GetDataAlignment(const DLTensor& arr) {
 void GraphRuntime::Run() {
   // setup the array and requirements.
   for (size_t i = 0; i < op_execs_.size(); ++i) {
-    if (op_execs_[i]) op_execs_[i]();
+    if (op_execs_[i] && !init_ops_[i]) {op_execs_[i]();
+    printf("execute inside is %d\n", i);}
   }
 }
 /*!
@@ -83,6 +84,10 @@ void GraphRuntime::Init(const std::string& graph_json,
     std::string& name = nodes_[nid].name;
     input_map_[name] = i;
   }
+  /*for (size_t i = 0; i < op_execs_.size(); ++i) {
+    if (op_execs_[i] && init_ops_[i]) op_execs_[i]();
+    printf("init exectuion is %d\n", i);
+  }*/
 }
 /*!
  * \brief Get the input index given the name of input.
@@ -106,7 +111,39 @@ void GraphRuntime::SetInput(int index, DLTensor* data_in) {
   CHECK_LT(static_cast<size_t>(index), input_nodes_.size());
   uint32_t eid = this->entry_id(input_nodes_[index], 0);
   data_entry_[eid].CopyFrom(data_in);
+  /*input_set_[eid] = true; 
+  
+  printf("here set input at %d\n", eid);in_
+  for (uint32_t nid = 0; nid < this->GetNumOfNodes(); ++nid) {
+    if (!init_ops_[nid])
+      continue;
+
+    printf("here init op is %d\n", nid);
+    const auto& inode = nodes_[nid];
+    bool all_set = true;
+    for (const auto& e : inode.inputs) {
+      uint32_t in_id = this->entry_id(e);
+      printf("here set input at %d\n", in_id);
+      if (input_map_.count(nodes_[in_id].name)>0)
+        {all_set &= input_set_[in_id];
+        printf("here set input with map at %d\n", in_id);
+        }
+    }
+    if (all_set) {
+      op_execs_[nid]();
+    }
+  }*/
 }
+
+void GraphRuntime::InitExecs()
+{
+  for (size_t i = 0; i < op_execs_.size(); ++i) {
+    if (op_execs_[i] && init_ops_[i]) {op_execs_[i]();
+    printf("execute init is %d\n", i);}
+  }
+}
+
+
 /*!
  * \brief set index-th input to the graph without copying the data.
  * \param index The input index.
@@ -319,6 +356,8 @@ void GraphRuntime::SetupStorage() {
 
 void GraphRuntime::SetupOpExecs() {
   op_execs_.resize(this->GetNumOfNodes());
+  init_ops_.resize(this->GetNumOfNodes(),false);
+  //input_set_.resize(this->GetNumOfNodes(),false);
   input_dltensors_.resize(num_node_entries());
   std::unordered_set<uint32_t> input_node_eids;
   for (size_t i = 0; i < input_nodes_.size(); i++) {
@@ -342,8 +381,18 @@ void GraphRuntime::SetupOpExecs() {
     CHECK(inode.op_type == "tvm_op") << "Can only take tvm_op as op";
 
     std::shared_ptr<OpArgs> op_args = nullptr;
+    printf("name is %s\n", inode.param.func_name.c_str());
+    if(inode.param.func_name =="fused_contrib_hash_table" || inode.param.func_name =="fused_contrib_lookup_table_import") {
+    init_ops_[nid] = true;
+    }
     std::tie(op_execs_[nid], op_args) =
-        CreateTVMOp(inode.param, args, inode.inputs.size());
+        CreateTVMOp(inode.param, args, inode.inputs.size()); //}
+    /*else {
+    std::function<void()> init_func;
+    std::tie(init_func, op_args) =
+        CreateTVMOp(inode.param, args, inode.inputs.size()); 
+    init_func();
+    }*/
 
     for (size_t i = 0; i < inode.inputs.size(); i++) {
       uint32_t eid = this->entry_id(inode.inputs[i]);
@@ -456,6 +505,10 @@ PackedFunc GraphRuntime::GetFunction(
   } else if (name == "run") {
     return PackedFunc([sptr_to_self, this](TVMArgs args, TVMRetValue* rv) {
         this->Run();
+      });
+  } else if (name == "init_execs") {
+    return PackedFunc([sptr_to_self, this](TVMArgs args, TVMRetValue* rv) {
+        this->InitExecs();
       });
   } else if (name == "load_params") {
     return PackedFunc([sptr_to_self, this](TVMArgs args, TVMRetValue* rv) {

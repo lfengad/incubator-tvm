@@ -1496,10 +1496,39 @@ def _add_n():
         return  _res
     return _impl
 
+<<<<<<< HEAD
+=======
+def _hashtable():
+    def _impl(inputs, attr, params):
+        new_attr = attr
+        new_attr['key_dtype'] = attr['key_dtype'].name
+        new_attr['value_dtype'] = attr['value_dtype'].name
+        return AttrCvt('hash_table', ignores=['container','shared_name','use_node_name_sharing'], extras={'dtype': 'custom[hashtable]64'})(inputs, new_attr)
+    return _impl
+
+def _lookup_table_find():
+    def _impl(inputs, attr, params):
+        new_attr = attr
+        new_attr['Tin'] = attr['Tin'].name
+        new_attr['Tout'] = attr['Tout'].name
+        return AttrCvt('lookup_table_find', transforms={'Tin': 'key_dtype', 'Tout':'value_dtype'}, extras={'dtype': new_attr['Tout']})(inputs, new_attr)
+    return _impl
+
+def _lookup_table_import():
+    def _impl(inputs, attr, params):
+        new_attr = attr
+        new_attr['Tin'] = attr['Tin'].name
+        new_attr['Tout'] = attr['Tout'].name
+        return AttrCvt('lookup_table_import', transforms={'Tin': 'key_dtype', 'Tout': 'value_dtype'})(inputs, new_attr)
+    return _impl 
+
+
+>>>>>>> 72187de... finish simple test
 
 # compatible operators that do NOT require any conversion.
 _identity_list = []
 
+_init_op_list = ['LookupTableImportV2']
 # _convert_map defines maps of name to converter functor(callable)
 # for 1 to 1 mapping, use Renamer if nothing but name is different
 # use AttrCvt if attributes need to be converted
@@ -2177,6 +2206,11 @@ class GraphProto(object):
         params : dict
             A dict of name: tvm.nd.array pairs, used as pretrained weights
         """
+<<<<<<< HEAD
+=======
+        tvm.datatype.register("hashtable", 129)
+        init_ops = []
+>>>>>>> 72187de... finish simple test
 
         try:
             from tensorflow.python.framework import tensor_util
@@ -2296,7 +2330,7 @@ class GraphProto(object):
                                                              control_flow_node_map)
                 else:
                     op = self._convert_operator(node.op, inputs, attr, graph)
-
+            
                 # Check if op is converted to param
                 if isinstance(op, np.ndarray):
                     self._params[node.name] = tvm.nd.array(op)
@@ -2312,6 +2346,9 @@ class GraphProto(object):
                     raise RuntimeError("unexpected type %s" % type(op))
 
                 self._nodes[node.name] = op
+                
+                if node.op in _init_op_list:
+                    init_ops.append(op[0])
 
                 # Infer shapes even without specifying "add_shapes=True"
                 if output_shapes == [None]:
@@ -2351,6 +2388,8 @@ class GraphProto(object):
             else:
                 out_rnn = _op.concatenate(self._out_rnn, axis=0)
                 out.append(out_rnn)
+
+        out += init_ops
 
         out = out[0] if len(out) == 1 else _expr.Tuple(out)
         func = _expr.Function(analysis.free_vars(out), out)

@@ -150,6 +150,10 @@ NDArray NDArray::CreateView(std::vector<int64_t> shape, DLDataType dtype) {
   get_mutable()->IncRef();
   ret.get_mutable()->manager_ctx = get_mutable();
   ret.get_mutable()->dl_tensor.data = get_mutable()->dl_tensor.data;
+  if(dtype.code == kCustomBegin) {
+    void **ptr = static_cast<void**>(ret.get_mutable()->dl_tensor.data);
+    ptr[0] = nullptr;   
+  }  
   return ret;
 }
 

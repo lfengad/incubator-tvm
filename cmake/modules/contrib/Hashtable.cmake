@@ -14,11 +14,9 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-# pylint: disable=wildcard-import
-"""Neural network related operators."""
-from __future__ import absolute_import as _abs
 
-from .contrib import *
-from .hashtable import *
-from . import _contrib
-from . import _hashtable
+if(USE_HASHTABLE)
+  message(STATUS "Build with contrib.hashtable")
+  file(GLOB HASHTABLE_CONTRIB_SRC src/runtime/contrib/hashtable/*.cc)
+  list(APPEND RUNTIME_SRCS ${HASHTABLE_CONTRIB_SRC})
+endif(USE_HASHTABLE)
