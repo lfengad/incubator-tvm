@@ -1,0 +1,231 @@
+node {
+  name: "input-0"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: 128
+        }
+      }
+    }
+  }
+}
+node {
+  name: "keys"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        tensor_content: "\001\000\000\000\002\000\000\000\003\000\000\000\004\000\000\000\005\000\000\000\006\000\000\000"
+      }
+    }
+  }
+}
+node {
+  name: "values"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        tensor_content: "\004\000\000\000\005\000\000\000\006\000\000\000\007\000\000\000\010\000\000\000\t\000\000\000"
+      }
+    }
+  }
+}
+node {
+  name: "hash_table"
+  op: "HashTableV2"
+  attr {
+    key: "container"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "key_dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "shared_name"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "use_node_name_sharing"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "value_dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "hash_table/Const"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: -2
+      }
+    }
+  }
+}
+node {
+  name: "key_value_init"
+  op: "LookupTableImportV2"
+  input: "hash_table"
+  input: "keys"
+  input: "values"
+  attr {
+    key: "Tin"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tout"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "hash_table_Lookup"
+  op: "LookupTableFindV2"
+  input: "hash_table"
+  input: "input-0"
+  input: "hash_table/Const"
+  attr {
+    key: "Tin"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tout"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "hash_table_Lookup_1"
+  op: "LookupTableFindV2"
+  input: "hash_table"
+  input: "input-0"
+  input: "hash_table/Const"
+  attr {
+    key: "Tin"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tout"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "hash_table_Lookup_2"
+  op: "LookupTableFindV2"
+  input: "hash_table"
+  input: "input-0"
+  input: "hash_table/Const"
+  attr {
+    key: "Tin"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Tout"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "sum_temp"
+  op: "Add"
+  input: "hash_table_Lookup"
+  input: "hash_table_Lookup_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "sum"
+  op: "Add"
+  input: "sum_temp"
+  input: "hash_table_Lookup_2"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "init_all_tables"
+  op: "NoOp"
+  input: "^key_value_init"
+}
+library {
+}
+
