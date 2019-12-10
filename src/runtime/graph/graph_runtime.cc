@@ -54,7 +54,8 @@ void GraphRuntime::Run() {
   // setup the array and requirements.
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && !init_ops_[i]) {op_execs_[i]();
-    printf("execute inside is %d\n", i);}
+    //printf("execute inside is %d\n", i);
+   }
   }
 }
 /*!
@@ -139,7 +140,8 @@ void GraphRuntime::InitExecs()
 {
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && init_ops_[i]) {op_execs_[i]();
-    printf("execute init is %d\n", i);}
+    //printf("execute init is %d\n", i);
+    }
   }
 }
 
@@ -381,7 +383,7 @@ void GraphRuntime::SetupOpExecs() {
     CHECK(inode.op_type == "tvm_op") << "Can only take tvm_op as op";
 
     std::shared_ptr<OpArgs> op_args = nullptr;
-    printf("name is %s\n", inode.param.func_name.c_str());
+    //printf("name is %s\n", inode.param.func_name.c_str());
     if(inode.param.func_name =="fused_contrib_hash_table" || inode.param.func_name =="fused_contrib_lookup_table_import") {
     init_ops_[nid] = true;
     }

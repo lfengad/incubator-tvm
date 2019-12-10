@@ -100,7 +100,7 @@ class HashTable : public BaseTable{
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-      printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
+     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
       table_ptr->insert(std::make_pair(keys_ptr[i], values_ptr[i]));
     }
     return true;
@@ -127,7 +127,7 @@ class HashTable : public BaseTable{
         values_ptr[i] = default_value_;
       else
         values_ptr[i] = it->second; 
-      printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
+     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
     }
     return true;
   }

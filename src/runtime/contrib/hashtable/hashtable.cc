@@ -128,7 +128,7 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.find")
   DLTensor *default_value = args[2];
   DLTensor *values = args[3];
    
-  printf("here execute find\n");
+  //printf("here execute find\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data);
 
   CHECK(table_ptr[0] != NULL) << "Hashtable pointer is NULL and  not prepared.";
@@ -157,7 +157,7 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.init")
   DLTensor *values = args[2];
   DLTensor *fakesymbol = args[3];
    
-  printf("here execute init\n");
+  //printf("here execute init\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data); 
 
   CHECK(table_ptr[0] != NULL) << "Hashtable pointer is NULL and  not prepared.";
