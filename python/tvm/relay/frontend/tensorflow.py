@@ -2207,6 +2207,7 @@ class GraphProto(object):
             A dict of name: tvm.nd.array pairs, used as pretrained weights
         """
         tvm.datatype.register("hashtable", 129)
+        tvm.datatype.register("string", 130)
         init_ops = []
 
         try:
@@ -2240,9 +2241,12 @@ class GraphProto(object):
 
                 self._output_shapes[node.name] = [self._input_shapes[node.name]]
                 attr = self._parse_attr(node.attr)
+                dtype_name = attr['dtype'].name
+                if dtype_name == "string":
+                    dtype_name = "custom[string]64"               
                 self._nodes[node.name] = [_expr.var(node.name,
                                                     shape=self._input_shapes[node.name],
-                                                    dtype=attr['dtype'].name)]
+                                                    dtype=dtype_name)]
 
                 # Ignore user's input shape for Non placeholder
             elif node.op == 'Const':
@@ -2424,8 +2428,11 @@ class GraphProto(object):
 
         if key == 'value':
             np_array = tensor_util.MakeNdarray(value.tensor)
-
+            print(value.tensor)
+            
+            print(np_array)
             if np_array.dtype == np.dtype(object):
+                """
                 # Object types are generally tensorflow DT_STRING (DecodeJpeg op).
                 # Just leave it as placeholder.
                 if shape and name in shape:
@@ -2434,7 +2441,7 @@ class GraphProto(object):
                     var_shape = tensor_util.TensorShapeProtoToList(value.tensor.tensor_shape)
                 self._nodes[name] = [_expr.var(name, shape=var_shape, dtype='uint8')]
                 return
-
+                """
             array_ndim = len(np_array.shape)
             if array_ndim == 0:
                 new_array = np.empty([1], dtype=np_array.dtype)

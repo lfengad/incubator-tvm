@@ -105,6 +105,18 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }
+  } else if (key_dtype_str == "custom[string]64") {
+    if (value_dtype_str == "int32") {
+      table_ptr[0] = (void*)new StrHashTable<int32_t>(value_dtype);
+    } else if (value_dtype_str == "int64") {
+      table_ptr[0] = (void*)new StrHashTable<int64_t>(value_dtype);
+    } else if (value_dtype_str == "float32") {
+      table_ptr[0] = (void*)new StrHashTable<float>(value_dtype);
+    } else if (value_dtype_str == "float64") {
+      table_ptr[0] = (void*)new StrHashTable<double>(value_dtype);
+    } else {
+      LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
+    }
   } else {
     LOG(FATAL) << "Unsupported key dtype: " << key_dtype_str;
   }

@@ -123,7 +123,7 @@ class NDArray(NDArrayBase):
 
         if not isinstance(source_array, np.ndarray):
             try:
-                source_array = np.array(source_array, dtype=self.dtype)
+                source_array = np.array(source_array, dtype="object" if self.dtype == "custom[string]64" else self.dtype)
             except:
                 raise TypeError('array must be an array_like data,' +
                                 'type %s is not supported' % str(type(source_array)))
@@ -138,7 +138,7 @@ class NDArray(NDArrayBase):
         if source_array.shape != shape:
             raise ValueError("array shape do not match the shape of NDArray {0} vs {1}".format(
                 source_array.shape, shape))
-        source_array = np.ascontiguousarray(source_array, dtype=dtype)
+        source_array = np.ascontiguousarray(source_array, dtype= "object" if dtype == "custom[string]64" else dtype)
         assert source_array.flags['C_CONTIGUOUS']
         data = source_array.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(source_array.size * source_array.dtype.itemsize)
@@ -166,8 +166,8 @@ class NDArray(NDArrayBase):
         if t.lanes > 1:
             shape = shape + (t.lanes,)
             t.lanes = 1
-            dtype = str(t)
-        np_arr = np.empty(shape, dtype=dtype)
+            dtype = str(t) 
+        np_arr = np.empty(shape, dtype= "object" if dtype == "custom[string]64" else dtype)
         assert np_arr.flags['C_CONTIGUOUS']
         data = np_arr.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(np_arr.size * np_arr.dtype.itemsize)
