@@ -1496,8 +1496,6 @@ def _add_n():
         return  _res
     return _impl
 
-<<<<<<< HEAD
-=======
 def _hashtable():
     def _impl(inputs, attr, params):
         new_attr = attr
@@ -1523,7 +1521,6 @@ def _lookup_table_import():
     return _impl 
 
 
->>>>>>> 72187de... finish simple test
 
 # compatible operators that do NOT require any conversion.
 _identity_list = []
@@ -1664,6 +1661,9 @@ _convert_map = {
     'Unpack'                            : _unpack(),
     'Where'                             : _where(),
     'ZerosLike'                         : AttrCvt('zeros_like'),
+    'HashTableV2'                       : _hashtable(),
+    'LookupTableImportV2'               : _lookup_table_import(),
+    'LookupTableFindV2'                 : _lookup_table_find(),
 
 }
 
@@ -2206,11 +2206,8 @@ class GraphProto(object):
         params : dict
             A dict of name: tvm.nd.array pairs, used as pretrained weights
         """
-<<<<<<< HEAD
-=======
         tvm.datatype.register("hashtable", 129)
         init_ops = []
->>>>>>> 72187de... finish simple test
 
         try:
             from tensorflow.python.framework import tensor_util
