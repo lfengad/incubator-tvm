@@ -66,6 +66,8 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
       table_ptr[0] = (void*)new HashTable<float, float>(key_dtype, value_dtype);
     } else if (value_dtype_str == "float64") {
       table_ptr[0] = (void*)new HashTable<float, double>(key_dtype, value_dtype);
+    } else if (value_dtype_str == "custom[string]64") {
+      table_ptr[0] = (void*)new StrVHashTable<float>(key_dtype);
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }
@@ -78,6 +80,8 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
       table_ptr[0] = (void*)new HashTable<double, float>(key_dtype, value_dtype);
     } else if (value_dtype_str == "float64") {
       table_ptr[0] = (void*)new HashTable<double, double>(key_dtype, value_dtype);
+    } else if (value_dtype_str == "custom[string]64") {
+      table_ptr[0] = (void*)new StrVHashTable<double>(key_dtype);
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }
@@ -90,6 +94,8 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
       table_ptr[0] = (void*)new HashTable<int32_t, float>(key_dtype, value_dtype);
     } else if (value_dtype_str == "float64") {
       table_ptr[0] = (void*)new HashTable<int32_t, double>(key_dtype, value_dtype);
+    } else if (value_dtype_str == "custom[string]64") {
+      table_ptr[0] = (void*)new StrVHashTable<int32_t>(key_dtype);
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }
@@ -102,18 +108,22 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
       table_ptr[0] = (void*)new HashTable<int64_t, float>(key_dtype, value_dtype);
     } else if (value_dtype_str == "float64") {
       table_ptr[0] = (void*)new HashTable<int64_t, double>(key_dtype, value_dtype);
+    } else if (value_dtype_str == "custom[string]64") {
+      table_ptr[0] = (void*)new StrVHashTable<int64_t>(key_dtype);
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }
   } else if (key_dtype_str == "custom[string]64") {
     if (value_dtype_str == "int32") {
-      table_ptr[0] = (void*)new StrHashTable<int32_t>(value_dtype);
+      table_ptr[0] = (void*)new StrKHashTable<int32_t>(value_dtype);
     } else if (value_dtype_str == "int64") {
-      table_ptr[0] = (void*)new StrHashTable<int64_t>(value_dtype);
+      table_ptr[0] = (void*)new StrKHashTable<int64_t>(value_dtype);
     } else if (value_dtype_str == "float32") {
-      table_ptr[0] = (void*)new StrHashTable<float>(value_dtype);
+      table_ptr[0] = (void*)new StrKHashTable<float>(value_dtype);
     } else if (value_dtype_str == "float64") {
-      table_ptr[0] = (void*)new StrHashTable<double>(value_dtype);
+      table_ptr[0] = (void*)new StrKHashTable<double>(value_dtype);
+    } else if (value_dtype_str == "custom[string]64") {
+      table_ptr[0] = (void*)new StrHashTable();
     } else {
       LOG(FATAL) << "Unsupported value dtype: " << value_dtype_str;
     }

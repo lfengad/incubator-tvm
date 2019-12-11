@@ -142,10 +142,10 @@ class HashTable : public BaseTable{
 
 
 template <typename VType>
-class StrHashTable : public BaseTable{
+class StrKHashTable : public BaseTable{
  public:
-  StrHashTable(){}
-  StrHashTable(DLDataType value_type ) {
+  StrKHashTable(){}
+  StrKHashTable(DLDataType value_type ) {
     is_prepared_ = false;
     DoPrepare();
     key_type_ = runtime::String2TVMType("custom[string]64");
@@ -231,6 +231,189 @@ class StrHashTable : public BaseTable{
 };
 
 
+
+template <typename KType>
+class StrVHashTable : public BaseTable{
+ public:
+  StrVHashTable(){}
+  StrVHashTable(DLDataType key_type ) {
+    is_prepared_ = false;
+    DoPrepare();
+    value_type_ = runtime::String2TVMType("custom[string]64");
+    key_type_ = key_type;
+  }
+  inline size_t Size() override {return table_.get()->size();}
+  inline DLDataType KeyDtype() override { return key_type_; }
+  inline DLDataType ValueDtype() override { return value_type_; }
+  inline bool is_initialized() override {
+    if(!is_prepared_)
+      DoPrepare();
+    return Size()>0; 
+  }
+
+  protected:
+  bool DoPrepare() override{
+    if (is_prepared_) {
+      LOG(FATAL) << "HashTable already prepared.";
+    }
+    if (!table_) {
+      table_ = std::unique_ptr<std::unordered_map<KType, std::string>>(
+          new std::unordered_map<KType, std::string>());
+    }
+    is_prepared_ = true;
+    return true;
+  };
+
+  public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+    if (!table_) {
+      LOG(FATAL) << "HashTable is not prepared.";
+    }
+
+    std::string** values_ptr = static_cast<std::string**>(values->data);
+    KType* keys_ptr = static_cast<KType *>(keys->data);
+    int keys_size = 1;
+    int values_size = 1;
+    CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
+    for (int i = 0; i<keys->ndim; ++i) {
+      keys_size *= keys->shape[i];
+      values_size *= values->shape[i];    
+      }
+    CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
+    std::unordered_map<KType, std::string>* table_ptr = table_.get();
+    for (int i = 0; i < keys_size; ++i) {
+     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
+      table_ptr->insert(std::make_pair(keys_ptr[i], *values_ptr[i]));
+    }
+    return true;
+  }
+
+  bool DoFind(DLTensor* keys, DLTensor* values,
+                DLTensor* default_value) override {
+    std::string** values_ptr = static_cast<std::string**>(values->data);
+    KType* keys_ptr = static_cast<KType *>(keys->data);
+    std::string* default_value_ = *(static_cast<std::string**>(default_value->data));
+    int keys_size = 1;
+    int values_size = 1;
+    CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
+    for (int i=0; i<keys->ndim; ++i) {
+      keys_size *= keys->shape[i];
+      values_size *= values->shape[i];    
+      }
+    CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
+    std::unordered_map<KType, std::string>* table_ptr = table_.get();
+    for (int i = 0; i < keys_size; ++i) {
+      typename std::unordered_map<KType, std::string>::const_iterator it;
+      it  = table_ptr->find(keys_ptr[i]);
+      if (it == table_ptr->end())
+        values_ptr[i] = default_value_;
+      else {
+        std::string* find_res = new std::string(it->second);  
+        values_ptr[i] = find_res;
+        } 
+     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
+    }
+    return true;
+  }
+
+ private:
+  std::unique_ptr<std::unordered_map<KType, std::string>> table_;
+  bool is_prepared_;
+  DLDataType key_type_;
+  DLDataType value_type_;
+};
+
+
+
+
+class StrHashTable : public BaseTable{
+ public:
+  StrHashTable() {
+    is_prepared_ = false;
+    DoPrepare();
+    key_type_ = runtime::String2TVMType("custom[string]64");
+    value_type_ = key_type_;
+  }
+  inline size_t Size() override {return table_.get()->size();}
+  inline DLDataType KeyDtype() override { return key_type_; }
+  inline DLDataType ValueDtype() override { return value_type_; }
+  inline bool is_initialized() override {
+    if(!is_prepared_)
+      DoPrepare();
+    return Size()>0; 
+  }
+
+  protected:
+  bool DoPrepare() override{
+    if (is_prepared_) {
+      LOG(FATAL) << "HashTable already prepared.";
+    }
+    if (!table_) {
+      table_ = std::unique_ptr<std::unordered_map<std::string, std::string>>(
+          new std::unordered_map<std::string, std::string>());
+    }
+    is_prepared_ = true;
+    return true;
+  };
+
+  public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+    if (!table_) {
+      LOG(FATAL) << "HashTable is not prepared.";
+    }
+
+    std::string** keys_ptr = static_cast<std::string**>(keys->data);
+    std::string** values_ptr = static_cast<std::string**>(values->data);
+    int keys_size = 1;
+    int values_size = 1;
+    CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
+    for (int i = 0; i<keys->ndim; ++i) {
+      keys_size *= keys->shape[i];
+      values_size *= values->shape[i];    
+      }
+    CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
+    std::unordered_map<std::string, std::string>* table_ptr = table_.get();
+    for (int i = 0; i < keys_size; ++i) {
+     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
+      table_ptr->insert(std::make_pair(*keys_ptr[i], *values_ptr[i]));
+    }
+    return true;
+  }
+
+  bool DoFind(DLTensor* keys, DLTensor* values,
+                DLTensor* default_value) override {
+    std::string** keys_ptr = static_cast<std::string**>(keys->data);
+    std::string** values_ptr = static_cast<std::string**>(values->data);
+    std::string* default_value_ = *(static_cast<std::string**>(default_value->data));
+    int keys_size = 1;
+    int values_size = 1;
+    CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
+    for (int i=0; i<keys->ndim; ++i) {
+      keys_size *= keys->shape[i];
+      values_size *= values->shape[i];    
+      }
+    CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
+    std::unordered_map<std::string, std::string>* table_ptr = table_.get();
+    for (int i = 0; i < keys_size; ++i) {
+      typename std::unordered_map<std::string, std::string>::const_iterator it;
+      it  = table_ptr->find(*keys_ptr[i]);
+      if (it == table_ptr->end())
+        values_ptr[i] = default_value_;
+      else {
+        std::string* find_res = new std::string(it->second);  
+        values_ptr[i] = find_res;
+        } 
+     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
+    }
+    return true;
+  }
+
+ private:
+  std::unique_ptr<std::unordered_map<std::string, std::string>> table_;
+  bool is_prepared_;
+  DLDataType key_type_;
+  DLDataType value_type_;
+};
 
 
 
