@@ -416,6 +416,12 @@ TVM_DLL int TVMArrayCopyFromBytes(TVMArrayHandle handle,
                                   void* data,
                                   size_t nbytes);
 
+
+
+TVM_DLL int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
+                                  void* data,
+                                  size_t nbytes,
+                                  size_t nlenth);
 /*!
  * \brief Copy array data to CPU byte array.
  * \param handle The array handle.
@@ -427,6 +433,15 @@ TVM_DLL int TVMArrayCopyToBytes(TVMArrayHandle handle,
                                 void* data,
                                 size_t nbytes);
 
+
+TVM_DLL int TVMArrayCopyToStrBytes(TVMArrayHandle handle,
+                                  void* data,
+                                  size_t nbytes,
+                                  size_t nlenth);
+
+
+TVM_DLL int TVMArrayStrArgsCalc(TVMArrayHandle handle,
+                                  void* data);
 /*!
  * \brief Copy the array, both from and to must be valid during the copy.
  * \param from The array to be copied from.

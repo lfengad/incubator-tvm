@@ -2395,6 +2395,7 @@ class GraphProto(object):
         out = out[0] if len(out) == 1 else _expr.Tuple(out)
         func = _expr.Function(analysis.free_vars(out), out)
         self._mod["main"] = func
+
         return self._mod, self._params
 
     def _parse_import_prerequisites(self, graph):
@@ -2428,9 +2429,7 @@ class GraphProto(object):
 
         if key == 'value':
             np_array = tensor_util.MakeNdarray(value.tensor)
-            print(value.tensor)
             
-            print(np_array)
             if np_array.dtype == np.dtype(object):
                 """
                 # Object types are generally tensorflow DT_STRING (DecodeJpeg op).

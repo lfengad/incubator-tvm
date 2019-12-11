@@ -117,13 +117,14 @@ class NDArray(NDArrayBase):
         arr : NDArray
             Reference to self.
         """
+
         if isinstance(source_array, NDArrayBase):
             source_array.copyto(self)
             return self
 
         if not isinstance(source_array, np.ndarray):
             try:
-                source_array = np.array(source_array, dtype="object" if self.dtype == "custom[string]64" else self.dtype)
+                source_array = np.array(source_array, dtype=self.dtype)
             except:
                 raise TypeError('array must be an array_like data,' +
                                 'type %s is not supported' % str(type(source_array)))
@@ -138,10 +139,16 @@ class NDArray(NDArrayBase):
         if source_array.shape != shape:
             raise ValueError("array shape do not match the shape of NDArray {0} vs {1}".format(
                 source_array.shape, shape))
-        source_array = np.ascontiguousarray(source_array, dtype= "object" if dtype == "custom[string]64" else dtype)
+        source_array = np.ascontiguousarray(source_array, dtype=str if dtype == "custom[string]64" else dtype)
         assert source_array.flags['C_CONTIGUOUS']
         data = source_array.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(source_array.size * source_array.dtype.itemsize)
+
+        if self.dtype == "custom[string]64":
+            nlenth = ctypes.c_size_t(source_array.dtype.itemsize)
+            check_call(_LIB.TVMArrayCopyFromStrBytes(self.handle, data, nbytes, nlenth))
+            return self
+
         check_call(_LIB.TVMArrayCopyFromBytes(self.handle, data, nbytes))
         return self
 
@@ -167,7 +174,22 @@ class NDArray(NDArrayBase):
             shape = shape + (t.lanes,)
             t.lanes = 1
             dtype = str(t) 
-        np_arr = np.empty(shape, dtype= "object" if dtype == "custom[string]64" else dtype)
+       
+        if self.dtype == "custom[string]64":
+            np_args = np.empty((2,), dtype = "int32")
+            assert np_args.flags['C_CONTIGUOUS']
+            args_buffer = np_args.ctypes.data_as(ctypes.c_void_p)
+            check_call(_LIB.TVMArrayStrArgsCalc(self.handle, args_buffer))    
+            strtype = "<U{}".format(np_args[1])
+            np_arr = np.empty(shape, dtype = strtype)
+            assert np_arr.flags['C_CONTIGUOUS']
+            data = np_arr.ctypes.data_as(ctypes.c_void_p)
+            nbytes = ctypes.c_size_t(np_args[0])
+            nlenth = ctypes.c_size_t(np_args[1]*4)
+            check_call(_LIB.TVMArrayCopyToStrBytes(self.handle, data, nbytes, nlenth))
+            return np_arr
+
+        np_arr = np.empty(shape, dtype = dtype)
         assert np_arr.flags['C_CONTIGUOUS']
         data = np_arr.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(np_arr.size * np_arr.dtype.itemsize)
