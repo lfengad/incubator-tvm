@@ -1,0 +1,133 @@
+{
+  "nodes": [
+    {
+      "op": "null", 
+      "name": "input-0", 
+      "inputs": []
+    }, 
+    {
+      "op": "tvm_op", 
+      "name": "fused_contrib_hash_table", 
+      "attrs": {
+        "num_outputs": "1", 
+        "num_inputs": "0", 
+        "flatten_data": "0", 
+        "func_name": "fused_contrib_hash_table"
+      }, 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "p0", 
+      "inputs": []
+    }, 
+    {
+      "op": "tvm_op", 
+      "name": "fused_contrib_lookup_table_find", 
+      "attrs": {
+        "num_outputs": "1", 
+        "num_inputs": "3", 
+        "flatten_data": "0", 
+        "func_name": "fused_contrib_lookup_table_find"
+      }, 
+      "inputs": [
+        [
+          1, 
+          0, 
+          0
+        ], 
+        [
+          0, 
+          0, 
+          0
+        ], 
+        [
+          2, 
+          0, 
+          0
+        ]
+      ]
+    }, 
+    {
+      "op": "null", 
+      "name": "p1", 
+      "inputs": []
+    }, 
+    {
+      "op": "null", 
+      "name": "p2", 
+      "inputs": []
+    }, 
+    {
+      "op": "tvm_op", 
+      "name": "fused_contrib_lookup_table_import", 
+      "attrs": {
+        "num_outputs": "1", 
+        "num_inputs": "3", 
+        "flatten_data": "0", 
+        "func_name": "fused_contrib_lookup_table_import"
+      }, 
+      "inputs": [
+        [
+          1, 
+          0, 
+          0
+        ], 
+        [
+          4, 
+          0, 
+          0
+        ], 
+        [
+          5, 
+          0, 
+          0
+        ]
+      ]
+    }
+  ], 
+  "arg_nodes": [0, 2, 4, 5], 
+  "heads": [
+    [
+      3, 
+      0, 
+      0
+    ], 
+    [
+      6, 
+      0, 
+      0
+    ]
+  ], 
+  "attrs": {
+    "dltype": [
+      "list_str", 
+      [
+        "custom[string]64", 
+        "custom[hashtable]64", 
+        "int32", 
+        "int32", 
+        "custom[string]64", 
+        "int32", 
+        "int32"
+      ]
+    ], 
+    "storage_id": [
+      "list_int", 
+      [0, 1, 2, 3, 4, 5, 6]
+    ], 
+    "shape": [
+      "list_shape", 
+      [
+        [5], 
+        [1], 
+        [1], 
+        [5], 
+        [6], 
+        [6], 
+        [1]
+      ]
+    ]
+  }, 
+  "node_row_ptr": [0, 1, 2, 3, 4, 5, 6, 7]
+}

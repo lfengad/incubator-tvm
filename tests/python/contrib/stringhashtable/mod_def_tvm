@@ -1,0 +1,2657 @@
+v0.0.4
+type tensor_uint8_t {
+  tensor_nil_uint8,
+  tensor0_uint8(uint8),
+  tensor1_uint8(Tensor[(?), uint8]),
+  tensor2_uint8(Tensor[(?, ?), uint8]),
+  tensor3_uint8(Tensor[(?, ?, ?), uint8]),
+  tensor4_uint8(Tensor[(?, ?, ?, ?), uint8]),
+  tensor5_uint8(Tensor[(?, ?, ?, ?, ?), uint8]),
+  tensor6_uint8(Tensor[(?, ?, ?, ?, ?, ?), uint8]),
+}
+
+type Tree[A] {
+  Rose(A, List[Tree[A]]),
+}
+
+type List[A] {
+  Cons(A, List[A]),
+  Nil,
+}
+
+type tensor_float64_t {
+  tensor_nil_float64,
+  tensor0_float64(float64),
+  tensor1_float64(Tensor[(?), float64]),
+  tensor2_float64(Tensor[(?, ?), float64]),
+  tensor3_float64(Tensor[(?, ?, ?), float64]),
+  tensor4_float64(Tensor[(?, ?, ?, ?), float64]),
+  tensor5_float64(Tensor[(?, ?, ?, ?, ?), float64]),
+  tensor6_float64(Tensor[(?, ?, ?, ?, ?, ?), float64]),
+}
+
+type Option[A] {
+  Some(A),
+  None,
+}
+
+type tensor_float32_t {
+  tensor_nil_float32,
+  tensor0_float32(float32),
+  tensor1_float32(Tensor[(?), float32]),
+  tensor2_float32(Tensor[(?, ?), float32]),
+  tensor3_float32(Tensor[(?, ?, ?), float32]),
+  tensor4_float32(Tensor[(?, ?, ?, ?), float32]),
+  tensor5_float32(Tensor[(?, ?, ?, ?, ?), float32]),
+  tensor6_float32(Tensor[(?, ?, ?, ?, ?, ?), float32]),
+}
+
+type tensor_int32_t {
+  tensor_nil_int32,
+  tensor0_int32(int32),
+  tensor1_int32(Tensor[(?), int32]),
+  tensor2_int32(Tensor[(?, ?), int32]),
+  tensor3_int32(Tensor[(?, ?, ?), int32]),
+  tensor4_int32(Tensor[(?, ?, ?, ?), int32]),
+  tensor5_int32(Tensor[(?, ?, ?, ?, ?), int32]),
+  tensor6_int32(Tensor[(?, ?, ?, ?, ?, ?), int32]),
+}
+
+type tensor_float16_t {
+  tensor_nil_float16,
+  tensor0_float16(float16),
+  tensor1_float16(Tensor[(?), float16]),
+  tensor2_float16(Tensor[(?, ?), float16]),
+  tensor3_float16(Tensor[(?, ?, ?), float16]),
+  tensor4_float16(Tensor[(?, ?, ?, ?), float16]),
+  tensor5_float16(Tensor[(?, ?, ?, ?, ?), float16]),
+  tensor6_float16(Tensor[(?, ?, ?, ?, ?, ?), float16]),
+}
+
+type tensor_int8_t {
+  tensor_nil_int8,
+  tensor0_int8(int8),
+  tensor1_int8(Tensor[(?), int8]),
+  tensor2_int8(Tensor[(?, ?), int8]),
+  tensor3_int8(Tensor[(?, ?, ?), int8]),
+  tensor4_int8(Tensor[(?, ?, ?, ?), int8]),
+  tensor5_int8(Tensor[(?, ?, ?, ?, ?), int8]),
+  tensor6_int8(Tensor[(?, ?, ?, ?, ?, ?), int8]),
+}
+
+type tensor_int64_t {
+  tensor_nil_int64,
+  tensor0_int64(int64),
+  tensor1_int64(Tensor[(?), int64]),
+  tensor2_int64(Tensor[(?, ?), int64]),
+  tensor3_int64(Tensor[(?, ?, ?), int64]),
+  tensor4_int64(Tensor[(?, ?, ?, ?), int64]),
+  tensor5_int64(Tensor[(?, ?, ?, ?, ?), int64]),
+  tensor6_int64(Tensor[(?, ?, ?, ?, ?, ?), int64]),
+}
+
+type tensor_int16_t {
+  tensor_nil_int16,
+  tensor0_int16(int16),
+  tensor1_int16(Tensor[(?), int16]),
+  tensor2_int16(Tensor[(?, ?), int16]),
+  tensor3_int16(Tensor[(?, ?, ?), int16]),
+  tensor4_int16(Tensor[(?, ?, ?, ?), int16]),
+  tensor5_int16(Tensor[(?, ?, ?, ?, ?), int16]),
+  tensor6_int16(Tensor[(?, ?, ?, ?, ?, ?), int16]),
+}
+
+type tensor_uint16_t {
+  tensor_nil_uint16,
+  tensor0_uint16(uint16),
+  tensor1_uint16(Tensor[(?), uint16]),
+  tensor2_uint16(Tensor[(?, ?), uint16]),
+  tensor3_uint16(Tensor[(?, ?, ?), uint16]),
+  tensor4_uint16(Tensor[(?, ?, ?, ?), uint16]),
+  tensor5_uint16(Tensor[(?, ?, ?, ?, ?), uint16]),
+  tensor6_uint16(Tensor[(?, ?, ?, ?, ?, ?), uint16]),
+}
+
+def @main(%input-0: Tensor[(5), custom[string]64], %keys: Tensor[(6), custom[string]64], %values: Tensor[(6), int32]) -> (Tensor[(5), int32], Tensor[(1), int32]) {
+  %0 = contrib.hash_table(key_dtype="custom[string]64", value_dtype="int32", dtype="custom[hashtable]64") /* ty=Tensor[(1), custom[hashtable]64] */;
+  %1 = contrib.lookup_table_find(%0, %input-0, meta[relay.Constant][0] /* ty=Tensor[(1), int32] */ /* ty=Tensor[(1), int32] */, key_dtype="custom[string]64", value_dtype="int32", dtype="int32") /* ty=Tensor[(5), int32] */;
+  %2 = contrib.lookup_table_import(%0, %keys, %values, key_dtype="custom[string]64", value_dtype="int32") /* ty=Tensor[(1), int32] */;
+  (%1, %2)
+}
+
+def @tensor_array_stack_int64(%tensor_array: List[tensor_int64_t[]]) -> tensor_int64_t[] {
+  %3 = @map(@tensor_expand_dims_int64, %tensor_array) /* ty=List[tensor_int64_t[]] */;
+  %4 = @hd(%3) /* ty=tensor_int64_t[] */;
+  %5 = @tl(%3) /* ty=List[tensor_int64_t[]] */;
+  @foldl(@tensor_concatenate_int64, %4, %5) /* ty=tensor_int64_t[] */
+}
+
+def @tensor_array_split_int64(%tensor_array1: List[tensor_int64_t[]], %value: tensor_int64_t[], %lengths: Tensor[(?), int32]) -> List[tensor_int64_t[]] {
+  %6 = shape_of(%lengths, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %7 = take(%6, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_int64(%tensor_array1, %value, 0 /* ty=int32 */, 0 /* ty=int32 */, %7, %lengths) /* ty=List[tensor_int64_t[]] */
+}
+
+def @ta_split_helper_int64(%tensor_array2: List[tensor_int64_t[]], %value1: tensor_int64_t[], %offset1: int32, %current1: int32, %limit1: int32, %lengths1: Tensor[(?), int32]) -> List[tensor_int64_t[]] {
+  %8 = equal(%current1, %limit1) /* ty=bool */;
+  if (%8) {
+    %tensor_array2
+  } else {
+    %9 = take(%lengths1, %current1) /* ty=int32 */;
+    %10 = add(%offset1, %9) /* ty=int32 */;
+    %11 = add(%current1, 1 /* ty=int32 */) /* ty=int32 */;
+    %12 = @ta_split_helper_int64(%tensor_array2, %value1, %10, %11, %limit1, %lengths1) /* ty=List[tensor_int64_t[]] */;
+    %13 = take(%lengths1, %current1) /* ty=int32 */;
+    %14 = add(%13, %offset1) /* ty=int32 */;
+    %15 = @tensor_take_int64(%value1, %offset1, %14) /* ty=tensor_int64_t[] */;
+    @tensor_array_write_int64(%12, %current1, %15) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_scatter_int64(%tensor_array3: List[tensor_int64_t[]], %indices: Tensor[(?), int32], %values1: List[tensor_int64_t[]]) -> List[tensor_int64_t[]] {
+  %16 = shape_of(%indices, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %17 = take(%16, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_int64(%tensor_array3, 0 /* ty=int32 */, %17, %indices, %values1) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_scatter_helper_int64(%ta: List[tensor_int64_t[]], %current: int32, %limit: int32, %indices_: Tensor[(?), int32], %values_: List[tensor_int64_t[]]) -> List[tensor_int64_t[]] {
+  %18 = equal(%current, %limit) /* ty=bool */;
+  if (%18) {
+    %ta
+  } else {
+    %19 = take(%indices_, %current) /* ty=int32 */;
+    %20 = @tensor_array_read_int64(%values_, %current) /* ty=tensor_int64_t[] */;
+    %21 = @tensor_array_write_int64(%ta, %19, %20) /* ty=List[tensor_int64_t[]] */;
+    %22 = add(%current, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_int64(%21, %22, %limit, %indices_, %values_) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_int64(%tensor: Tensor[(?, ?, ?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %23 = shape_of(%tensor, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %24 = take(%23, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_int64(0 /* ty=int32 */, %24, %tensor) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_helper_int64(%i: int32, %up: int32, %t: Tensor[(?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %25 = equal(%i, %up) /* ty=bool */;
+  if (%25) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %26 = take(%t, %i, axis=0) /* ty=Tensor[(?, ?, ?), int64] */;
+    %27 = tensor3_int64(%26) /* ty=tensor_int64_t[] */;
+    %28 = add(%i, 1 /* ty=int32 */) /* ty=int32 */;
+    %29 = @tensor_array_unstack_tensor4_helper_int64(%28, %up, %t) /* ty=List[tensor_int64_t[]] */;
+    Cons(%27, %29) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_int64(%tensor1: Tensor[(?, ?), int64]) -> List[tensor_int64_t[]] {
+  %30 = shape_of(%tensor1, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %31 = take(%30, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_int64(0 /* ty=int32 */, %31, %tensor1) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_int64(%tensor2: Tensor[(?), int64]) -> List[tensor_int64_t[]] {
+  %32 = shape_of(%tensor2, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %33 = take(%32, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_int64(0 /* ty=int32 */, %33, %tensor2) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_helper_int64(%i1: int32, %up1: int32, %t1: Tensor[(?, ?, ?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %34 = equal(%i1, %up1) /* ty=bool */;
+  if (%34) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %35 = take(%t1, %i1, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int64] */;
+    %36 = tensor5_int64(%35) /* ty=tensor_int64_t[] */;
+    %37 = add(%i1, 1 /* ty=int32 */) /* ty=int32 */;
+    %38 = @tensor_array_unstack_tensor6_helper_int64(%37, %up1, %t1) /* ty=List[tensor_int64_t[]] */;
+    Cons(%36, %38) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor1_helper_int64(%i2: int32, %up2: int32, %t2: Tensor[(?), int64]) -> List[tensor_int64_t[]] {
+  %39 = equal(%i2, %up2) /* ty=bool */;
+  if (%39) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %40 = take(%t2, %i2) /* ty=int64 */;
+    %41 = tensor0_int64(%40) /* ty=tensor_int64_t[] */;
+    %42 = add(%i2, 1 /* ty=int32 */) /* ty=int32 */;
+    %43 = @tensor_array_unstack_tensor1_helper_int64(%42, %up2, %t2) /* ty=List[tensor_int64_t[]] */;
+    Cons(%41, %43) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_read_int64(%tensor_array4: List[tensor_int64_t[]], %x: int32) -> tensor_int64_t[] {
+  @nth(%tensor_array4, %x) /* ty=tensor_int64_t[] */
+}
+
+def @tensor_array_int64(%x1: int32) -> List[tensor_int64_t[]] {
+  %44 = equal(%x1, 0 /* ty=int32 */) /* ty=bool */;
+  if (%44) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %45 = tensor_nil_int64 /* ty=tensor_int64_t[] */;
+    %46 = subtract(%x1, 1 /* ty=int32 */) /* ty=int32 */;
+    %47 = @tensor_array_int64(%46) /* ty=List[tensor_int64_t[]] */;
+    Cons(%45, %47) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_expand_dims_int64(%x2: tensor_int64_t[]) -> tensor_int64_t[] {
+  match? (%x2) {
+    tensor0_int64(%t0: int64) => %48 = expand_dims(%t0, axis=0) /* ty=Tensor[(?), int64] */;
+    tensor1_int64(%48) /* ty=tensor_int64_t[] */,
+    tensor1_int64(%t11: Tensor[(?), int64]) => %49 = expand_dims(%t11, axis=0) /* ty=Tensor[(?, ?), int64] */;
+    tensor2_int64(%49) /* ty=tensor_int64_t[] */,
+    tensor2_int64(%t21: Tensor[(?, ?), int64]) => %50 = expand_dims(%t21, axis=0) /* ty=Tensor[(?, ?, ?), int64] */;
+    tensor3_int64(%50) /* ty=tensor_int64_t[] */,
+    tensor3_int64(%t3: Tensor[(?, ?, ?), int64]) => %51 = expand_dims(%t3, axis=0) /* ty=Tensor[(?, ?, ?, ?), int64] */;
+    tensor4_int64(%51) /* ty=tensor_int64_t[] */,
+    tensor4_int64(%t4: Tensor[(?, ?, ?, ?), int64]) => %52 = expand_dims(%t4, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int64] */;
+    tensor5_int64(%52) /* ty=tensor_int64_t[] */,
+    tensor5_int64(%t5: Tensor[(?, ?, ?, ?, ?), int64]) => %53 = expand_dims(%t5, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int64] */;
+    tensor6_int64(%53) /* ty=tensor_int64_t[] */,
+  }
+}
+
+def @tensor_array_stack_uint16(%tensor_array5: List[tensor_uint16_t[]]) -> tensor_uint16_t[] {
+  %54 = @map(@tensor_expand_dims_uint16, %tensor_array5) /* ty=List[tensor_uint16_t[]] */;
+  %55 = @hd(%54) /* ty=tensor_uint16_t[] */;
+  %56 = @tl(%54) /* ty=List[tensor_uint16_t[]] */;
+  @foldl(@tensor_concatenate_uint16, %55, %56) /* ty=tensor_uint16_t[] */
+}
+
+def @tensor_array_split_uint16(%tensor_array6: List[tensor_uint16_t[]], %value2: tensor_uint16_t[], %lengths2: Tensor[(?), int32]) -> List[tensor_uint16_t[]] {
+  %57 = shape_of(%lengths2, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %58 = take(%57, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_uint16(%tensor_array6, %value2, 0 /* ty=int32 */, 0 /* ty=int32 */, %58, %lengths2) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_scatter_uint16(%tensor_array7: List[tensor_uint16_t[]], %indices1: Tensor[(?), int32], %values2: List[tensor_uint16_t[]]) -> List[tensor_uint16_t[]] {
+  %59 = shape_of(%indices1, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %60 = take(%59, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_uint16(%tensor_array7, 0 /* ty=int32 */, %60, %indices1, %values2) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_uint16(%tensor3: Tensor[(?, ?, ?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %61 = shape_of(%tensor3, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %62 = take(%61, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_uint16(0 /* ty=int32 */, %62, %tensor3) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_uint16(%tensor4: Tensor[(?, ?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %63 = shape_of(%tensor4, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %64 = take(%63, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_uint16(0 /* ty=int32 */, %64, %tensor4) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_uint16(%tensor5: Tensor[(?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %65 = shape_of(%tensor5, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %66 = take(%65, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_uint16(0 /* ty=int32 */, %66, %tensor5) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_helper_uint16(%i3: int32, %up3: int32, %t6: Tensor[(?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %67 = equal(%i3, %up3) /* ty=bool */;
+  if (%67) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %68 = take(%t6, %i3, axis=0) /* ty=Tensor[(?, ?, ?), uint16] */;
+    %69 = tensor3_uint16(%68) /* ty=tensor_uint16_t[] */;
+    %70 = add(%i3, 1 /* ty=int32 */) /* ty=int32 */;
+    %71 = @tensor_array_unstack_tensor4_helper_uint16(%70, %up3, %t6) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%69, %71) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_uint16(%tensor6: Tensor[(?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %72 = shape_of(%tensor6, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %73 = take(%72, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_uint16(0 /* ty=int32 */, %73, %tensor6) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_helper_uint16(%i4: int32, %up4: int32, %t7: Tensor[(?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %74 = equal(%i4, %up4) /* ty=bool */;
+  if (%74) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %75 = take(%t7, %i4, axis=0) /* ty=Tensor[(?, ?), uint16] */;
+    %76 = tensor2_uint16(%75) /* ty=tensor_uint16_t[] */;
+    %77 = add(%i4, 1 /* ty=int32 */) /* ty=int32 */;
+    %78 = @tensor_array_unstack_tensor3_helper_uint16(%77, %up4, %t7) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%76, %78) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_uint16(%tensor7: Tensor[(?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %79 = shape_of(%tensor7, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %80 = take(%79, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_uint16(0 /* ty=int32 */, %80, %tensor7) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_helper_uint16(%i5: int32, %up5: int32, %t8: Tensor[(?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %81 = equal(%i5, %up5) /* ty=bool */;
+  if (%81) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %82 = take(%t8, %i5, axis=0) /* ty=Tensor[(?), uint16] */;
+    %83 = tensor1_uint16(%82) /* ty=tensor_uint16_t[] */;
+    %84 = add(%i5, 1 /* ty=int32 */) /* ty=int32 */;
+    %85 = @tensor_array_unstack_tensor2_helper_uint16(%84, %up5, %t8) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%83, %85) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor1_uint16(%tensor8: Tensor[(?), uint16]) -> List[tensor_uint16_t[]] {
+  %86 = shape_of(%tensor8, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %87 = take(%86, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_uint16(0 /* ty=int32 */, %87, %tensor8) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_split_float16(%tensor_array8: List[tensor_float16_t[]], %value3: tensor_float16_t[], %lengths3: Tensor[(?), int32]) -> List[tensor_float16_t[]] {
+  %88 = shape_of(%lengths3, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %89 = take(%88, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_float16(%tensor_array8, %value3, 0 /* ty=int32 */, 0 /* ty=int32 */, %89, %lengths3) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_helper_int16(%i6: int32, %up6: int32, %t9: Tensor[(?), int16]) -> List[tensor_int16_t[]] {
+  %90 = equal(%i6, %up6) /* ty=bool */;
+  if (%90) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %91 = take(%t9, %i6) /* ty=int16 */;
+    %92 = tensor0_int16(%91) /* ty=tensor_int16_t[] */;
+    %93 = add(%i6, 1 /* ty=int32 */) /* ty=int32 */;
+    %94 = @tensor_array_unstack_tensor1_helper_int16(%93, %up6, %t9) /* ty=List[tensor_int16_t[]] */;
+    Cons(%92, %94) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_helper_float64(%i7: int32, %up7: int32, %t10: Tensor[(?, ?, ?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %95 = equal(%i7, %up7) /* ty=bool */;
+  if (%95) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %96 = take(%t10, %i7, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float64] */;
+    %97 = tensor5_float64(%96) /* ty=tensor_float64_t[] */;
+    %98 = add(%i7, 1 /* ty=int32 */) /* ty=int32 */;
+    %99 = @tensor_array_unstack_tensor6_helper_float64(%98, %up7, %t10) /* ty=List[tensor_float64_t[]] */;
+    Cons(%97, %99) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_scatter_helper_float64(%ta1: List[tensor_float64_t[]], %current2: int32, %limit2: int32, %indices_1: Tensor[(?), int32], %values_1: List[tensor_float64_t[]]) -> List[tensor_float64_t[]] {
+  %100 = equal(%current2, %limit2) /* ty=bool */;
+  if (%100) {
+    %ta1
+  } else {
+    %101 = take(%indices_1, %current2) /* ty=int32 */;
+    %102 = @tensor_array_read_float64(%values_1, %current2) /* ty=tensor_float64_t[] */;
+    %103 = @tensor_array_write_float64(%ta1, %101, %102) /* ty=List[tensor_float64_t[]] */;
+    %104 = add(%current2, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_float64(%103, %104, %limit2, %indices_1, %values_1) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_float32(%i8: int32, %up8: int32, %t12: Tensor[(?, ?), float32]) -> List[tensor_float32_t[]] {
+  %105 = equal(%i8, %up8) /* ty=bool */;
+  if (%105) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %106 = take(%t12, %i8, axis=0) /* ty=Tensor[(?), float32] */;
+    %107 = tensor1_float32(%106) /* ty=tensor_float32_t[] */;
+    %108 = add(%i8, 1 /* ty=int32 */) /* ty=int32 */;
+    %109 = @tensor_array_unstack_tensor2_helper_float32(%108, %up8, %t12) /* ty=List[tensor_float32_t[]] */;
+    Cons(%107, %109) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_helper_int8(%i9: int32, %up9: int32, %t13: Tensor[(?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %110 = equal(%i9, %up9) /* ty=bool */;
+  if (%110) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %111 = take(%t13, %i9, axis=0) /* ty=Tensor[(?, ?), int8] */;
+    %112 = tensor2_int8(%111) /* ty=tensor_int8_t[] */;
+    %113 = add(%i9, 1 /* ty=int32 */) /* ty=int32 */;
+    %114 = @tensor_array_unstack_tensor3_helper_int8(%113, %up9, %t13) /* ty=List[tensor_int8_t[]] */;
+    Cons(%112, %114) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_helper_float16(%i10: int32, %up10: int32, %t14: Tensor[(?, ?, ?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %115 = equal(%i10, %up10) /* ty=bool */;
+  if (%115) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %116 = take(%t14, %i10, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float16] */;
+    %117 = tensor5_float16(%116) /* ty=tensor_float16_t[] */;
+    %118 = add(%i10, 1 /* ty=int32 */) /* ty=int32 */;
+    %119 = @tensor_array_unstack_tensor6_helper_float16(%118, %up10, %t14) /* ty=List[tensor_float16_t[]] */;
+    Cons(%117, %119) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_concatenate_int32(%x3: tensor_int32_t[], %y: tensor_int32_t[]) -> tensor_int32_t[] {
+  match? (%x3) {
+    tensor1_int32(%t111: Tensor[(?), int32]) => match? (%y) {
+      tensor1_int32(%t121: Tensor[(?), int32]) => %120 = (%t111, %t121);
+      %121 = concatenate(%120) /* ty=Tensor[(?), int32] */;
+      tensor1_int32(%121) /* ty=tensor_int32_t[] */,
+    },
+    tensor2_int32(%t211: Tensor[(?, ?), int32]) => match? (%y) {
+      tensor2_int32(%t22: Tensor[(?, ?), int32]) => %122 = (%t211, %t22);
+      %123 = concatenate(%122) /* ty=Tensor[(?, ?), int32] */;
+      tensor2_int32(%123) /* ty=tensor_int32_t[] */,
+    },
+    tensor3_int32(%t31: Tensor[(?, ?, ?), int32]) => match? (%y) {
+      tensor3_int32(%t32: Tensor[(?, ?, ?), int32]) => %124 = (%t31, %t32);
+      %125 = concatenate(%124) /* ty=Tensor[(?, ?, ?), int32] */;
+      tensor3_int32(%125) /* ty=tensor_int32_t[] */,
+    },
+    tensor4_int32(%t41: Tensor[(?, ?, ?, ?), int32]) => match? (%y) {
+      tensor4_int32(%t42: Tensor[(?, ?, ?, ?), int32]) => %126 = (%t41, %t42);
+      %127 = concatenate(%126) /* ty=Tensor[(?, ?, ?, ?), int32] */;
+      tensor4_int32(%127) /* ty=tensor_int32_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_float64(%i11: int32, %up11: int32, %t15: Tensor[(?, ?), float64]) -> List[tensor_float64_t[]] {
+  %128 = equal(%i11, %up11) /* ty=bool */;
+  if (%128) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %129 = take(%t15, %i11, axis=0) /* ty=Tensor[(?), float64] */;
+    %130 = tensor1_float64(%129) /* ty=tensor_float64_t[] */;
+    %131 = add(%i11, 1 /* ty=int32 */) /* ty=int32 */;
+    %132 = @tensor_array_unstack_tensor2_helper_float64(%131, %up11, %t15) /* ty=List[tensor_float64_t[]] */;
+    Cons(%130, %132) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_int64(%tensor9: Tensor[(?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %133 = shape_of(%tensor9, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %134 = take(%133, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_int64(0 /* ty=int32 */, %134, %tensor9) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_read_float64(%tensor_array9: List[tensor_float64_t[]], %x4: int32) -> tensor_float64_t[] {
+  @nth(%tensor_array9, %x4) /* ty=tensor_float64_t[] */
+}
+
+def @tensor_array_unstack_tensor6_float16(%tensor10: Tensor[(?, ?, ?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %135 = shape_of(%tensor10, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %136 = take(%135, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_float16(0 /* ty=int32 */, %136, %tensor10) /* ty=List[tensor_float16_t[]] */
+}
+
+def @update[A](%xs: List[A], %n: int32, %v: A) -> List[A] {
+  %137 = equal(%n, 0 /* ty=int32 */) /* ty=bool */;
+  if (%137) {
+    %138 = @tl(%xs) /* ty=List[A] */;
+    Cons(%v, %138) /* ty=List[A] */
+  } else {
+    %139 = @hd(%xs) /* ty=A */;
+    %140 = @tl(%xs) /* ty=List[A] */;
+    %141 = subtract(%n, 1 /* ty=int32 */) /* ty=int32 */;
+    %142 = @update(%140, %141, %v) /* ty=List[A] */;
+    Cons(%139, %142) /* ty=List[A] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_float64(%i12: int32, %up12: int32, %t16: Tensor[(?, ?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %143 = equal(%i12, %up12) /* ty=bool */;
+  if (%143) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %144 = take(%t16, %i12, axis=0) /* ty=Tensor[(?, ?, ?, ?), float64] */;
+    %145 = tensor4_float64(%144) /* ty=tensor_float64_t[] */;
+    %146 = add(%i12, 1 /* ty=int32 */) /* ty=int32 */;
+    %147 = @tensor_array_unstack_tensor5_helper_float64(%146, %up12, %t16) /* ty=List[tensor_float64_t[]] */;
+    Cons(%145, %147) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_int64(%tensor11: Tensor[(?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %148 = shape_of(%tensor11, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %149 = take(%148, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_int64(0 /* ty=int32 */, %149, %tensor11) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_uint8(%tensor12: Tensor[(?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %150 = shape_of(%tensor12, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %151 = take(%150, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_uint8(0 /* ty=int32 */, %151, %tensor12) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @ta_split_helper_float16(%tensor_array10: List[tensor_float16_t[]], %value11: tensor_float16_t[], %offset11: int32, %current11: int32, %limit11: int32, %lengths4: Tensor[(?), int32]) -> List[tensor_float16_t[]] {
+  %152 = equal(%current11, %limit11) /* ty=bool */;
+  if (%152) {
+    %tensor_array10
+  } else {
+    %153 = take(%lengths4, %current11) /* ty=int32 */;
+    %154 = add(%offset11, %153) /* ty=int32 */;
+    %155 = add(%current11, 1 /* ty=int32 */) /* ty=int32 */;
+    %156 = @ta_split_helper_float16(%tensor_array10, %value11, %154, %155, %limit11, %lengths4) /* ty=List[tensor_float16_t[]] */;
+    %157 = take(%lengths4, %current11) /* ty=int32 */;
+    %158 = add(%157, %offset11) /* ty=int32 */;
+    %159 = @tensor_take_float16(%value11, %offset11, %158) /* ty=tensor_float16_t[] */;
+    @tensor_array_write_float16(%156, %current11, %159) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_array_stack_int16(%tensor_array11: List[tensor_int16_t[]]) -> tensor_int16_t[] {
+  %160 = @map(@tensor_expand_dims_int16, %tensor_array11) /* ty=List[tensor_int16_t[]] */;
+  %161 = @hd(%160) /* ty=tensor_int16_t[] */;
+  %162 = @tl(%160) /* ty=List[tensor_int16_t[]] */;
+  @foldl(@tensor_concatenate_int16, %161, %162) /* ty=tensor_int16_t[] */
+}
+
+def @tensor_array_scatter_float16(%tensor_array12: List[tensor_float16_t[]], %indices2: Tensor[(?), int32], %values3: List[tensor_float16_t[]]) -> List[tensor_float16_t[]] {
+  %163 = shape_of(%indices2, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %164 = take(%163, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_float16(%tensor_array12, 0 /* ty=int32 */, %164, %indices2, %values3) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_float64(%tensor13: Tensor[(?, ?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %165 = shape_of(%tensor13, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %166 = take(%165, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_float64(0 /* ty=int32 */, %166, %tensor13) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_stack_float16(%tensor_array13: List[tensor_float16_t[]]) -> tensor_float16_t[] {
+  %167 = @map(@tensor_expand_dims_float16, %tensor_array13) /* ty=List[tensor_float16_t[]] */;
+  %168 = @hd(%167) /* ty=tensor_float16_t[] */;
+  %169 = @tl(%167) /* ty=List[tensor_float16_t[]] */;
+  @foldl(@tensor_concatenate_float16, %168, %169) /* ty=tensor_float16_t[] */
+}
+
+def @foldl[A, B](%f: fn (A, B) -> A, %acc: A, %xs1: List[B]) -> A {
+  match (%xs1) {
+    Cons(%x5: B, %rest: List[B]) => %170 = %f(%acc, %x5) /* ty=A */;
+    @foldl(%f, %170, %rest) /* ty=A */,
+    Nil => %acc,
+  }
+}
+
+def @tensor_array_scatter_helper_float16(%ta2: List[tensor_float16_t[]], %current3: int32, %limit3: int32, %indices_2: Tensor[(?), int32], %values_2: List[tensor_float16_t[]]) -> List[tensor_float16_t[]] {
+  %171 = equal(%current3, %limit3) /* ty=bool */;
+  if (%171) {
+    %ta2
+  } else {
+    %172 = take(%indices_2, %current3) /* ty=int32 */;
+    %173 = @tensor_array_read_float16(%values_2, %current3) /* ty=tensor_float16_t[] */;
+    %174 = @tensor_array_write_float16(%ta2, %172, %173) /* ty=List[tensor_float16_t[]] */;
+    %175 = add(%current3, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_float16(%174, %175, %limit3, %indices_2, %values_2) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_float16(%i13: int32, %up13: int32, %t17: Tensor[(?, ?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %176 = equal(%i13, %up13) /* ty=bool */;
+  if (%176) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %177 = take(%t17, %i13, axis=0) /* ty=Tensor[(?, ?, ?, ?), float16] */;
+    %178 = tensor4_float16(%177) /* ty=tensor_float16_t[] */;
+    %179 = add(%i13, 1 /* ty=int32 */) /* ty=int32 */;
+    %180 = @tensor_array_unstack_tensor5_helper_float16(%179, %up13, %t17) /* ty=List[tensor_float16_t[]] */;
+    Cons(%178, %180) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_array_int32(%x6: int32) -> List[tensor_int32_t[]] {
+  %181 = equal(%x6, 0 /* ty=int32 */) /* ty=bool */;
+  if (%181) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %182 = tensor_nil_int32 /* ty=tensor_int32_t[] */;
+    %183 = subtract(%x6, 1 /* ty=int32 */) /* ty=int32 */;
+    %184 = @tensor_array_int32(%183) /* ty=List[tensor_int32_t[]] */;
+    Cons(%182, %184) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_take_uint8(%tensor14: tensor_uint8_t[], %lower: int32, %upper: int32) -> tensor_uint8_t[] {
+  match? (%tensor14) {
+    tensor1_uint8(%t18: Tensor[(?), uint8]) => %185 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][1], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %186 = take(%t18, %185) /* ty=Tensor[(?), uint8] */;
+    tensor1_uint8(%186) /* ty=tensor_uint8_t[] */,
+    tensor2_uint8(%t23: Tensor[(?, ?), uint8]) => %187 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][2], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %188 = take(%t23, %187, axis=0) /* ty=Tensor[(?, ?), uint8] */;
+    tensor2_uint8(%188) /* ty=tensor_uint8_t[] */,
+    tensor3_uint8(%t33: Tensor[(?, ?, ?), uint8]) => %189 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][3], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %190 = take(%t33, %189, axis=0) /* ty=Tensor[(?, ?, ?), uint8] */;
+    tensor3_uint8(%190) /* ty=tensor_uint8_t[] */,
+    tensor4_uint8(%t43: Tensor[(?, ?, ?, ?), uint8]) => %191 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][4], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %192 = take(%t43, %191, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint8] */;
+    tensor4_uint8(%192) /* ty=tensor_uint8_t[] */,
+    tensor5_uint8(%t51: Tensor[(?, ?, ?, ?, ?), uint8]) => %193 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][5], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %194 = take(%t51, %193, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint8] */;
+    tensor5_uint8(%194) /* ty=tensor_uint8_t[] */,
+    tensor6_uint8(%t61: Tensor[(?, ?, ?, ?, ?, ?), uint8]) => %195 = arange(%lower, %upper, 1 /* ty=int32 */, start=meta[relay.Var][0], stop=meta[relay.Var][1], step=meta[relay.Constant][6], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %196 = take(%t61, %195, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), uint8] */;
+    tensor6_uint8(%196) /* ty=tensor_uint8_t[] */,
+  }
+}
+
+def @tensor_array_unstack_tensor5_uint8(%tensor15: Tensor[(?, ?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %197 = shape_of(%tensor15, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %198 = take(%197, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_uint8(0 /* ty=int32 */, %198, %tensor15) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_helper_float16(%i14: int32, %up14: int32, %t19: Tensor[(?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %199 = equal(%i14, %up14) /* ty=bool */;
+  if (%199) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %200 = take(%t19, %i14, axis=0) /* ty=Tensor[(?, ?, ?), float16] */;
+    %201 = tensor3_float16(%200) /* ty=tensor_float16_t[] */;
+    %202 = add(%i14, 1 /* ty=int32 */) /* ty=int32 */;
+    %203 = @tensor_array_unstack_tensor4_helper_float16(%202, %up14, %t19) /* ty=List[tensor_float16_t[]] */;
+    Cons(%201, %203) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_concatenate_int8(%x7: tensor_int8_t[], %y1: tensor_int8_t[]) -> tensor_int8_t[] {
+  match? (%x7) {
+    tensor1_int8(%t112: Tensor[(?), int8]) => match? (%y1) {
+      tensor1_int8(%t122: Tensor[(?), int8]) => %204 = (%t112, %t122);
+      %205 = concatenate(%204) /* ty=Tensor[(?), int8] */;
+      tensor1_int8(%205) /* ty=tensor_int8_t[] */,
+    },
+    tensor2_int8(%t212: Tensor[(?, ?), int8]) => match? (%y1) {
+      tensor2_int8(%t221: Tensor[(?, ?), int8]) => %206 = (%t212, %t221);
+      %207 = concatenate(%206) /* ty=Tensor[(?, ?), int8] */;
+      tensor2_int8(%207) /* ty=tensor_int8_t[] */,
+    },
+    tensor3_int8(%t311: Tensor[(?, ?, ?), int8]) => match? (%y1) {
+      tensor3_int8(%t321: Tensor[(?, ?, ?), int8]) => %208 = (%t311, %t321);
+      %209 = concatenate(%208) /* ty=Tensor[(?, ?, ?), int8] */;
+      tensor3_int8(%209) /* ty=tensor_int8_t[] */,
+    },
+    tensor4_int8(%t411: Tensor[(?, ?, ?, ?), int8]) => match? (%y1) {
+      tensor4_int8(%t421: Tensor[(?, ?, ?, ?), int8]) => %210 = (%t411, %t421);
+      %211 = concatenate(%210) /* ty=Tensor[(?, ?, ?, ?), int8] */;
+      tensor4_int8(%211) /* ty=tensor_int8_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor3_float16(%tensor16: Tensor[(?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %212 = shape_of(%tensor16, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %213 = take(%212, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_float16(0 /* ty=int32 */, %213, %tensor16) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_stack_float64(%tensor_array14: List[tensor_float64_t[]]) -> tensor_float64_t[] {
+  %214 = @map(@tensor_expand_dims_float64, %tensor_array14) /* ty=List[tensor_float64_t[]] */;
+  %215 = @hd(%214) /* ty=tensor_float64_t[] */;
+  %216 = @tl(%214) /* ty=List[tensor_float64_t[]] */;
+  @foldl(@tensor_concatenate_float64, %215, %216) /* ty=tensor_float64_t[] */
+}
+
+def @tensor_array_read_uint16(%tensor_array15: List[tensor_uint16_t[]], %x8: int32) -> tensor_uint16_t[] {
+  @nth(%tensor_array15, %x8) /* ty=tensor_uint16_t[] */
+}
+
+def @tensor_array_unstack_tensor2_float16(%tensor17: Tensor[(?, ?), float16]) -> List[tensor_float16_t[]] {
+  %217 = shape_of(%tensor17, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %218 = take(%217, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_float16(0 /* ty=int32 */, %218, %tensor17) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_int16(%tensor18: Tensor[(?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %219 = shape_of(%tensor18, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %220 = take(%219, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_int16(0 /* ty=int32 */, %220, %tensor18) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_helper_int16(%i15: int32, %up15: int32, %t20: Tensor[(?, ?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %221 = equal(%i15, %up15) /* ty=bool */;
+  if (%221) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %222 = take(%t20, %i15, axis=0) /* ty=Tensor[(?, ?, ?, ?), int16] */;
+    %223 = tensor4_int16(%222) /* ty=tensor_int16_t[] */;
+    %224 = add(%i15, 1 /* ty=int32 */) /* ty=int32 */;
+    %225 = @tensor_array_unstack_tensor5_helper_int16(%224, %up15, %t20) /* ty=List[tensor_int16_t[]] */;
+    Cons(%223, %225) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @ta_split_helper_float64(%tensor_array16: List[tensor_float64_t[]], %value12: tensor_float64_t[], %offset12: int32, %current12: int32, %limit12: int32, %lengths5: Tensor[(?), int32]) -> List[tensor_float64_t[]] {
+  %226 = equal(%current12, %limit12) /* ty=bool */;
+  if (%226) {
+    %tensor_array16
+  } else {
+    %227 = take(%lengths5, %current12) /* ty=int32 */;
+    %228 = add(%offset12, %227) /* ty=int32 */;
+    %229 = add(%current12, 1 /* ty=int32 */) /* ty=int32 */;
+    %230 = @ta_split_helper_float64(%tensor_array16, %value12, %228, %229, %limit12, %lengths5) /* ty=List[tensor_float64_t[]] */;
+    %231 = take(%lengths5, %current12) /* ty=int32 */;
+    %232 = add(%231, %offset12) /* ty=int32 */;
+    %233 = @tensor_take_float64(%value12, %offset12, %232) /* ty=tensor_float64_t[] */;
+    @tensor_array_write_float64(%230, %current12, %233) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_int32(%i16: int32, %up16: int32, %t24: Tensor[(?, ?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %234 = equal(%i16, %up16) /* ty=bool */;
+  if (%234) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %235 = take(%t24, %i16, axis=0) /* ty=Tensor[(?, ?, ?, ?), int32] */;
+    %236 = tensor4_int32(%235) /* ty=tensor_int32_t[] */;
+    %237 = add(%i16, 1 /* ty=int32 */) /* ty=int32 */;
+    %238 = @tensor_array_unstack_tensor5_helper_int32(%237, %up16, %t24) /* ty=List[tensor_int32_t[]] */;
+    Cons(%236, %238) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor1_helper_float16(%i17: int32, %up17: int32, %t25: Tensor[(?), float16]) -> List[tensor_float16_t[]] {
+  %239 = equal(%i17, %up17) /* ty=bool */;
+  if (%239) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %240 = take(%t25, %i17) /* ty=float16 */;
+    %241 = tensor0_float16(%240) /* ty=tensor_float16_t[] */;
+    %242 = add(%i17, 1 /* ty=int32 */) /* ty=int32 */;
+    %243 = @tensor_array_unstack_tensor1_helper_float16(%242, %up17, %t25) /* ty=List[tensor_float16_t[]] */;
+    Cons(%241, %243) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_array_int8(%x9: int32) -> List[tensor_int8_t[]] {
+  %244 = equal(%x9, 0 /* ty=int32 */) /* ty=bool */;
+  if (%244) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %245 = tensor_nil_int8 /* ty=tensor_int8_t[] */;
+    %246 = subtract(%x9, 1 /* ty=int32 */) /* ty=int32 */;
+    %247 = @tensor_array_int8(%246) /* ty=List[tensor_int8_t[]] */;
+    Cons(%245, %247) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_take_float64(%tensor19: tensor_float64_t[], %lower1: int32, %upper1: int32) -> tensor_float64_t[] {
+  match? (%tensor19) {
+    tensor1_float64(%t110: Tensor[(?), float64]) => %248 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][7], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %249 = take(%t110, %248) /* ty=Tensor[(?), float64] */;
+    tensor1_float64(%249) /* ty=tensor_float64_t[] */,
+    tensor2_float64(%t26: Tensor[(?, ?), float64]) => %250 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][8], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %251 = take(%t26, %250, axis=0) /* ty=Tensor[(?, ?), float64] */;
+    tensor2_float64(%251) /* ty=tensor_float64_t[] */,
+    tensor3_float64(%t34: Tensor[(?, ?, ?), float64]) => %252 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][9], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %253 = take(%t34, %252, axis=0) /* ty=Tensor[(?, ?, ?), float64] */;
+    tensor3_float64(%253) /* ty=tensor_float64_t[] */,
+    tensor4_float64(%t44: Tensor[(?, ?, ?, ?), float64]) => %254 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][10], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %255 = take(%t44, %254, axis=0) /* ty=Tensor[(?, ?, ?, ?), float64] */;
+    tensor4_float64(%255) /* ty=tensor_float64_t[] */,
+    tensor5_float64(%t52: Tensor[(?, ?, ?, ?, ?), float64]) => %256 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][11], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %257 = take(%t52, %256, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float64] */;
+    tensor5_float64(%257) /* ty=tensor_float64_t[] */,
+    tensor6_float64(%t62: Tensor[(?, ?, ?, ?, ?, ?), float64]) => %258 = arange(%lower1, %upper1, 1 /* ty=int32 */, start=meta[relay.Var][2], stop=meta[relay.Var][3], step=meta[relay.Constant][12], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %259 = take(%t62, %258, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float64] */;
+    tensor6_float64(%259) /* ty=tensor_float64_t[] */,
+  }
+}
+
+def @tensor_array_write_float16(%tensor_array17: List[tensor_float16_t[]], %x10: int32, %v1: tensor_float16_t[]) -> List[tensor_float16_t[]] {
+  @update(%tensor_array17, %x10, %v1) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_concat_uint16(%tensor_array18: List[tensor_uint16_t[]]) -> tensor_uint16_t[] {
+  match? (%tensor_array18) {
+    Nil => tensor_nil_uint16 /* ty=tensor_uint16_t[] */,
+    Cons(%hd: tensor_uint16_t[], %tl: List[tensor_uint16_t[]]) => match? (%tl) {
+      Nil => %hd,
+      _ => %260 = @tensor_array_concat_uint16(%tl) /* ty=tensor_uint16_t[] */;
+      @tensor_concatenate_uint16(%hd, %260) /* ty=tensor_uint16_t[] */,
+    },
+  }
+}
+
+def @tensor_array_concat_float64(%tensor_array19: List[tensor_float64_t[]]) -> tensor_float64_t[] {
+  match? (%tensor_array19) {
+    Nil => tensor_nil_float64 /* ty=tensor_float64_t[] */,
+    Cons(%hd1: tensor_float64_t[], %tl1: List[tensor_float64_t[]]) => match? (%tl1) {
+      Nil => %hd1,
+      _ => %261 = @tensor_array_concat_float64(%tl1) /* ty=tensor_float64_t[] */;
+      @tensor_concatenate_float64(%hd1, %261) /* ty=tensor_float64_t[] */,
+    },
+  }
+}
+
+def @tensor_array_read_float16(%tensor_array20: List[tensor_float16_t[]], %x11: int32) -> tensor_float16_t[] {
+  @nth(%tensor_array20, %x11) /* ty=tensor_float16_t[] */
+}
+
+def @tensor_array_unstack_tensor5_int16(%tensor20: Tensor[(?, ?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %262 = shape_of(%tensor20, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %263 = take(%262, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_int16(0 /* ty=int32 */, %263, %tensor20) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_concatenate_float16(%x12: tensor_float16_t[], %y2: tensor_float16_t[]) -> tensor_float16_t[] {
+  match? (%x12) {
+    tensor1_float16(%t113: Tensor[(?), float16]) => match? (%y2) {
+      tensor1_float16(%t123: Tensor[(?), float16]) => %264 = (%t113, %t123);
+      %265 = concatenate(%264) /* ty=Tensor[(?), float16] */;
+      tensor1_float16(%265) /* ty=tensor_float16_t[] */,
+    },
+    tensor2_float16(%t213: Tensor[(?, ?), float16]) => match? (%y2) {
+      tensor2_float16(%t222: Tensor[(?, ?), float16]) => %266 = (%t213, %t222);
+      %267 = concatenate(%266) /* ty=Tensor[(?, ?), float16] */;
+      tensor2_float16(%267) /* ty=tensor_float16_t[] */,
+    },
+    tensor3_float16(%t312: Tensor[(?, ?, ?), float16]) => match? (%y2) {
+      tensor3_float16(%t322: Tensor[(?, ?, ?), float16]) => %268 = (%t312, %t322);
+      %269 = concatenate(%268) /* ty=Tensor[(?, ?, ?), float16] */;
+      tensor3_float16(%269) /* ty=tensor_float16_t[] */,
+    },
+    tensor4_float16(%t412: Tensor[(?, ?, ?, ?), float16]) => match? (%y2) {
+      tensor4_float16(%t422: Tensor[(?, ?, ?, ?), float16]) => %270 = (%t412, %t422);
+      %271 = concatenate(%270) /* ty=Tensor[(?, ?, ?, ?), float16] */;
+      tensor4_float16(%271) /* ty=tensor_float16_t[] */,
+    },
+  }
+}
+
+def @tensor_take_float16(%tensor21: tensor_float16_t[], %lower2: int32, %upper2: int32) -> tensor_float16_t[] {
+  match? (%tensor21) {
+    tensor1_float16(%t114: Tensor[(?), float16]) => %272 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][13], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %273 = take(%t114, %272) /* ty=Tensor[(?), float16] */;
+    tensor1_float16(%273) /* ty=tensor_float16_t[] */,
+    tensor2_float16(%t27: Tensor[(?, ?), float16]) => %274 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][14], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %275 = take(%t27, %274, axis=0) /* ty=Tensor[(?, ?), float16] */;
+    tensor2_float16(%275) /* ty=tensor_float16_t[] */,
+    tensor3_float16(%t35: Tensor[(?, ?, ?), float16]) => %276 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][15], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %277 = take(%t35, %276, axis=0) /* ty=Tensor[(?, ?, ?), float16] */;
+    tensor3_float16(%277) /* ty=tensor_float16_t[] */,
+    tensor4_float16(%t45: Tensor[(?, ?, ?, ?), float16]) => %278 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][16], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %279 = take(%t45, %278, axis=0) /* ty=Tensor[(?, ?, ?, ?), float16] */;
+    tensor4_float16(%279) /* ty=tensor_float16_t[] */,
+    tensor5_float16(%t53: Tensor[(?, ?, ?, ?, ?), float16]) => %280 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][17], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %281 = take(%t53, %280, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float16] */;
+    tensor5_float16(%281) /* ty=tensor_float16_t[] */,
+    tensor6_float16(%t63: Tensor[(?, ?, ?, ?, ?, ?), float16]) => %282 = arange(%lower2, %upper2, 1 /* ty=int32 */, start=meta[relay.Var][4], stop=meta[relay.Var][5], step=meta[relay.Constant][18], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %283 = take(%t63, %282, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float16] */;
+    tensor6_float16(%283) /* ty=tensor_float16_t[] */,
+  }
+}
+
+def @tensor_array_unstack_tensor1_float32(%tensor22: Tensor[(?), float32]) -> List[tensor_float32_t[]] {
+  %284 = shape_of(%tensor22, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %285 = take(%284, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_float32(0 /* ty=int32 */, %285, %tensor22) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_int32(%tensor23: Tensor[(?, ?), int32]) -> List[tensor_int32_t[]] {
+  %286 = shape_of(%tensor23, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %287 = take(%286, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_int32(0 /* ty=int32 */, %287, %tensor23) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_array_stack_float32(%tensor_array21: List[tensor_float32_t[]]) -> tensor_float32_t[] {
+  %288 = @map(@tensor_expand_dims_float32, %tensor_array21) /* ty=List[tensor_float32_t[]] */;
+  %289 = @hd(%288) /* ty=tensor_float32_t[] */;
+  %290 = @tl(%288) /* ty=List[tensor_float32_t[]] */;
+  @foldl(@tensor_concatenate_float32, %289, %290) /* ty=tensor_float32_t[] */
+}
+
+def @tensor_concatenate_int64(%x13: tensor_int64_t[], %y3: tensor_int64_t[]) -> tensor_int64_t[] {
+  match? (%x13) {
+    tensor1_int64(%t115: Tensor[(?), int64]) => match? (%y3) {
+      tensor1_int64(%t124: Tensor[(?), int64]) => %291 = (%t115, %t124);
+      %292 = concatenate(%291) /* ty=Tensor[(?), int64] */;
+      tensor1_int64(%292) /* ty=tensor_int64_t[] */,
+    },
+    tensor2_int64(%t214: Tensor[(?, ?), int64]) => match? (%y3) {
+      tensor2_int64(%t223: Tensor[(?, ?), int64]) => %293 = (%t214, %t223);
+      %294 = concatenate(%293) /* ty=Tensor[(?, ?), int64] */;
+      tensor2_int64(%294) /* ty=tensor_int64_t[] */,
+    },
+    tensor3_int64(%t313: Tensor[(?, ?, ?), int64]) => match? (%y3) {
+      tensor3_int64(%t323: Tensor[(?, ?, ?), int64]) => %295 = (%t313, %t323);
+      %296 = concatenate(%295) /* ty=Tensor[(?, ?, ?), int64] */;
+      tensor3_int64(%296) /* ty=tensor_int64_t[] */,
+    },
+    tensor4_int64(%t413: Tensor[(?, ?, ?, ?), int64]) => match? (%y3) {
+      tensor4_int64(%t423: Tensor[(?, ?, ?, ?), int64]) => %297 = (%t413, %t423);
+      %298 = concatenate(%297) /* ty=Tensor[(?, ?, ?, ?), int64] */;
+      tensor4_int64(%298) /* ty=tensor_int64_t[] */,
+    },
+  }
+}
+
+def @tensor_array_write_float64(%tensor_array22: List[tensor_float64_t[]], %x14: int32, %v2: tensor_float64_t[]) -> List[tensor_float64_t[]] {
+  @update(%tensor_array22, %x14, %v2) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_helper_int64(%i18: int32, %up18: int32, %t28: Tensor[(?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %299 = equal(%i18, %up18) /* ty=bool */;
+  if (%299) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %300 = take(%t28, %i18, axis=0) /* ty=Tensor[(?, ?), int64] */;
+    %301 = tensor2_int64(%300) /* ty=tensor_int64_t[] */;
+    %302 = add(%i18, 1 /* ty=int32 */) /* ty=int32 */;
+    %303 = @tensor_array_unstack_tensor3_helper_int64(%302, %up18, %t28) /* ty=List[tensor_int64_t[]] */;
+    Cons(%301, %303) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_float32(%tensor24: Tensor[(?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %304 = shape_of(%tensor24, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %305 = take(%304, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_float32(0 /* ty=int32 */, %305, %tensor24) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_scatter_float64(%tensor_array23: List[tensor_float64_t[]], %indices3: Tensor[(?), int32], %values4: List[tensor_float64_t[]]) -> List[tensor_float64_t[]] {
+  %306 = shape_of(%indices3, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %307 = take(%306, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_float64(%tensor_array23, 0 /* ty=int32 */, %307, %indices3, %values4) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_helper_int16(%i19: int32, %up19: int32, %t29: Tensor[(?, ?), int16]) -> List[tensor_int16_t[]] {
+  %308 = equal(%i19, %up19) /* ty=bool */;
+  if (%308) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %309 = take(%t29, %i19, axis=0) /* ty=Tensor[(?), int16] */;
+    %310 = tensor1_int16(%309) /* ty=tensor_int16_t[] */;
+    %311 = add(%i19, 1 /* ty=int32 */) /* ty=int32 */;
+    %312 = @tensor_array_unstack_tensor2_helper_int16(%311, %up19, %t29) /* ty=List[tensor_int16_t[]] */;
+    Cons(%310, %312) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_int64(%i20: int32, %up20: int32, %t30: Tensor[(?, ?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %313 = equal(%i20, %up20) /* ty=bool */;
+  if (%313) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %314 = take(%t30, %i20, axis=0) /* ty=Tensor[(?, ?, ?, ?), int64] */;
+    %315 = tensor4_int64(%314) /* ty=tensor_int64_t[] */;
+    %316 = add(%i20, 1 /* ty=int32 */) /* ty=int32 */;
+    %317 = @tensor_array_unstack_tensor5_helper_int64(%316, %up20, %t30) /* ty=List[tensor_int64_t[]] */;
+    Cons(%315, %317) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_int64(%i21: int32, %up21: int32, %t36: Tensor[(?, ?), int64]) -> List[tensor_int64_t[]] {
+  %318 = equal(%i21, %up21) /* ty=bool */;
+  if (%318) {
+    Nil /* ty=List[tensor_int64_t[]] */
+  } else {
+    %319 = take(%t36, %i21, axis=0) /* ty=Tensor[(?), int64] */;
+    %320 = tensor1_int64(%319) /* ty=tensor_int64_t[] */;
+    %321 = add(%i21, 1 /* ty=int32 */) /* ty=int32 */;
+    %322 = @tensor_array_unstack_tensor2_helper_int64(%321, %up21, %t36) /* ty=List[tensor_int64_t[]] */;
+    Cons(%320, %322) /* ty=List[tensor_int64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor1_helper_float64(%i22: int32, %up22: int32, %t37: Tensor[(?), float64]) -> List[tensor_float64_t[]] {
+  %323 = equal(%i22, %up22) /* ty=bool */;
+  if (%323) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %324 = take(%t37, %i22) /* ty=float64 */;
+    %325 = tensor0_float64(%324) /* ty=tensor_float64_t[] */;
+    %326 = add(%i22, 1 /* ty=int32 */) /* ty=int32 */;
+    %327 = @tensor_array_unstack_tensor1_helper_float64(%326, %up22, %t37) /* ty=List[tensor_float64_t[]] */;
+    Cons(%325, %327) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_float64(%tensor25: Tensor[(?, ?, ?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %328 = shape_of(%tensor25, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %329 = take(%328, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_float64(0 /* ty=int32 */, %329, %tensor25) /* ty=List[tensor_float64_t[]] */
+}
+
+def @length[A](%xs2: List[A]) -> int32 {
+  match (%xs2) {
+    Cons(_, %rest1: List[A]) => %330 = @length(%rest1) /* ty=int32 */;
+    add(1 /* ty=int32 */, %330) /* ty=int32 */,
+    Nil => 0 /* ty=int32 */,
+  }
+}
+
+def @ta_split_helper_int32(%tensor_array24: List[tensor_int32_t[]], %value13: tensor_int32_t[], %offset13: int32, %current13: int32, %limit13: int32, %lengths6: Tensor[(?), int32]) -> List[tensor_int32_t[]] {
+  %331 = equal(%current13, %limit13) /* ty=bool */;
+  if (%331) {
+    %tensor_array24
+  } else {
+    %332 = take(%lengths6, %current13) /* ty=int32 */;
+    %333 = add(%offset13, %332) /* ty=int32 */;
+    %334 = add(%current13, 1 /* ty=int32 */) /* ty=int32 */;
+    %335 = @ta_split_helper_int32(%tensor_array24, %value13, %333, %334, %limit13, %lengths6) /* ty=List[tensor_int32_t[]] */;
+    %336 = take(%lengths6, %current13) /* ty=int32 */;
+    %337 = add(%336, %offset13) /* ty=int32 */;
+    %338 = @tensor_take_int32(%value13, %offset13, %337) /* ty=tensor_int32_t[] */;
+    @tensor_array_write_int32(%335, %current13, %338) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_read_uint8(%tensor_array25: List[tensor_uint8_t[]], %x15: int32) -> tensor_uint8_t[] {
+  @nth(%tensor_array25, %x15) /* ty=tensor_uint8_t[] */
+}
+
+def @nth[A](%xs3: List[A], %n1: int32) -> A {
+  %339 = equal(%n1, 0 /* ty=int32 */) /* ty=bool */;
+  if (%339) {
+    @hd(%xs3) /* ty=A */
+  } else {
+    %340 = @tl(%xs3) /* ty=List[A] */;
+    %341 = subtract(%n1, 1 /* ty=int32 */) /* ty=int32 */;
+    @nth(%340, %341) /* ty=A */
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_float16(%i23: int32, %up23: int32, %t38: Tensor[(?, ?), float16]) -> List[tensor_float16_t[]] {
+  %342 = equal(%i23, %up23) /* ty=bool */;
+  if (%342) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %343 = take(%t38, %i23, axis=0) /* ty=Tensor[(?), float16] */;
+    %344 = tensor1_float16(%343) /* ty=tensor_float16_t[] */;
+    %345 = add(%i23, 1 /* ty=int32 */) /* ty=int32 */;
+    %346 = @tensor_array_unstack_tensor2_helper_float16(%345, %up23, %t38) /* ty=List[tensor_float16_t[]] */;
+    Cons(%344, %346) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @iterate[A](%f1: fn (A) -> A, %n2: int32) -> fn (A) -> A {
+  %347 = equal(%n2, 0 /* ty=int32 */) /* ty=bool */;
+  if (%347) {
+    @id
+  } else {
+    %348 = subtract(%n2, 1 /* ty=int32 */) /* ty=int32 */;
+    %349 = @iterate(%f1, %348) /* ty=fn (A) -> A */;
+    @compose(%f1, %349) /* ty=fn (A) -> A */
+  }
+}
+
+def @foldr[A, B](%f2: fn (A, B) -> B, %acc1: B, %xs4: List[A]) -> B {
+  match (%xs4) {
+    Cons(%x16: A, %rest2: List[A]) => %350 = @foldr(%f2, %acc1, %rest2) /* ty=B */;
+    %f2(%x16, %350) /* ty=B */,
+    Nil => %acc1,
+  }
+}
+
+def @tensor_array_unstack_tensor3_helper_float64(%i24: int32, %up24: int32, %t39: Tensor[(?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %351 = equal(%i24, %up24) /* ty=bool */;
+  if (%351) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %352 = take(%t39, %i24, axis=0) /* ty=Tensor[(?, ?), float64] */;
+    %353 = tensor2_float64(%352) /* ty=tensor_float64_t[] */;
+    %354 = add(%i24, 1 /* ty=int32 */) /* ty=int32 */;
+    %355 = @tensor_array_unstack_tensor3_helper_float64(%354, %up24, %t39) /* ty=List[tensor_float64_t[]] */;
+    Cons(%353, %355) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_split_int16(%tensor_array26: List[tensor_int16_t[]], %value4: tensor_int16_t[], %lengths7: Tensor[(?), int32]) -> List[tensor_int16_t[]] {
+  %356 = shape_of(%lengths7, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %357 = take(%356, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_int16(%tensor_array26, %value4, 0 /* ty=int32 */, 0 /* ty=int32 */, %357, %lengths7) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tl[A](%xs5: List[A]) -> List[A] {
+  match? (%xs5) {
+    Cons(_, %rest3: List[A]) => %rest3,
+  }
+}
+
+def @tensor_array_float16(%x17: int32) -> List[tensor_float16_t[]] {
+  %358 = equal(%x17, 0 /* ty=int32 */) /* ty=bool */;
+  if (%358) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %359 = tensor_nil_float16 /* ty=tensor_float16_t[] */;
+    %360 = subtract(%x17, 1 /* ty=int32 */) /* ty=int32 */;
+    %361 = @tensor_array_float16(%360) /* ty=List[tensor_float16_t[]] */;
+    Cons(%359, %361) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @map_accumr[A, B, C](%f3: fn (A, B) -> (A, C), %init: A, %xs6: List[B]) -> (A, List[C]) {
+  let %updater: fn (B, (A, List[C])) -> (A, List[C]) = fn (%x18: B, %acc2: (A, List[C])) -> (A, List[C]) {
+    %362 = %acc2.0;
+    let %f_out: (A, C) = %f3(%362, %x18) /* ty=(A, C) */;
+    %363 = %f_out.0;
+    %364 = %f_out.1;
+    %365 = %acc2.1;
+    %366 = Cons(%364, %365) /* ty=List[C] */;
+    (%363, %366)
+  };
+  %367 = Nil /* ty=List[C] */;
+  %368 = (%init, %367);
+  @foldr(%updater, %368, %xs6) /* ty=(A, List[C]) */
+}
+
+def @tensor_array_stack_int32(%tensor_array27: List[tensor_int32_t[]]) -> tensor_int32_t[] {
+  %369 = @map(@tensor_expand_dims_int32, %tensor_array27) /* ty=List[tensor_int32_t[]] */;
+  %370 = @hd(%369) /* ty=tensor_int32_t[] */;
+  %371 = @tl(%369) /* ty=List[tensor_int32_t[]] */;
+  @foldl(@tensor_concatenate_int32, %370, %371) /* ty=tensor_int32_t[] */
+}
+
+def @map[A, B](%f4: fn (A) -> B, %xs7: List[A]) -> List[B] {
+  match (%xs7) {
+    Cons(%x19: A, %rest4: List[A]) => %372 = %f4(%x19) /* ty=B */;
+    %373 = @map(%f4, %rest4) /* ty=List[B] */;
+    Cons(%372, %373) /* ty=List[B] */,
+    Nil => Nil /* ty=List[B] */,
+  }
+}
+
+def @zip[A, B](%xs8: List[A], %ys: List[B]) -> List[(A, B)] {
+  %374 = (%xs8, %ys);
+  match (%374) {
+    (Cons(%x20: A, %x_rest: List[A]), Cons(%y4: B, %y_rest: List[B])) => %375 = (%x20, %y4);
+    %376 = @zip(%x_rest, %y_rest) /* ty=List[(A, B)] */;
+    Cons(%375, %376) /* ty=List[(A, B)] */,
+    _ => Nil /* ty=List[(A, B)] */,
+  }
+}
+
+def @tensor_array_unstack_tensor3_int32(%tensor26: Tensor[(?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %377 = shape_of(%tensor26, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %378 = take(%377, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_int32(0 /* ty=int32 */, %378, %tensor26) /* ty=List[tensor_int32_t[]] */
+}
+
+def @id[A](%x21: A) -> A {
+  %x21
+}
+
+def @tensor_concatenate_int16(%x22: tensor_int16_t[], %y5: tensor_int16_t[]) -> tensor_int16_t[] {
+  match? (%x22) {
+    tensor1_int16(%t116: Tensor[(?), int16]) => match? (%y5) {
+      tensor1_int16(%t125: Tensor[(?), int16]) => %379 = (%t116, %t125);
+      %380 = concatenate(%379) /* ty=Tensor[(?), int16] */;
+      tensor1_int16(%380) /* ty=tensor_int16_t[] */,
+    },
+    tensor2_int16(%t215: Tensor[(?, ?), int16]) => match? (%y5) {
+      tensor2_int16(%t224: Tensor[(?, ?), int16]) => %381 = (%t215, %t224);
+      %382 = concatenate(%381) /* ty=Tensor[(?, ?), int16] */;
+      tensor2_int16(%382) /* ty=tensor_int16_t[] */,
+    },
+    tensor3_int16(%t314: Tensor[(?, ?, ?), int16]) => match? (%y5) {
+      tensor3_int16(%t324: Tensor[(?, ?, ?), int16]) => %383 = (%t314, %t324);
+      %384 = concatenate(%383) /* ty=Tensor[(?, ?, ?), int16] */;
+      tensor3_int16(%384) /* ty=tensor_int16_t[] */,
+    },
+    tensor4_int16(%t414: Tensor[(?, ?, ?, ?), int16]) => match? (%y5) {
+      tensor4_int16(%t424: Tensor[(?, ?, ?, ?), int16]) => %385 = (%t414, %t424);
+      %386 = concatenate(%385) /* ty=Tensor[(?, ?, ?, ?), int16] */;
+      tensor4_int16(%386) /* ty=tensor_int16_t[] */,
+    },
+  }
+}
+
+def @tensor_array_scatter_int32(%tensor_array28: List[tensor_int32_t[]], %indices4: Tensor[(?), int32], %values5: List[tensor_int32_t[]]) -> List[tensor_int32_t[]] {
+  %387 = shape_of(%indices4, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %388 = take(%387, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_int32(%tensor_array28, 0 /* ty=int32 */, %388, %indices4, %values5) /* ty=List[tensor_int32_t[]] */
+}
+
+def @concat[A](%xs9: List[A], %ys1: List[A]) -> List[A] {
+  @foldr(Cons, %ys1, %xs9) /* ty=List[A] */
+}
+
+def @filter[A](%f5: fn (A) -> bool, %xs10: List[A]) -> List[A] {
+  match (%xs10) {
+    Cons(%x23: A, %rest5: List[A]) => %389 = %f5(%x23) /* ty=bool */;
+    if (%389) {
+      %390 = @filter(%f5, %rest5) /* ty=List[A] */;
+      Cons(%x23, %390) /* ty=List[A] */
+    } else {
+      @filter(%f5, %rest5) /* ty=List[A] */
+    },
+    Nil => Nil /* ty=List[A] */,
+  }
+}
+
+def @map_accuml[A, B, C](%f6: fn (A, B) -> (A, C), %init1: A, %xs11: List[B]) -> (A, List[C]) {
+  let %updater1: fn ((A, List[C]), B) -> (A, List[C]) = fn (%acc3: (A, List[C]), %x24: B) -> (A, List[C]) {
+    %391 = %acc3.0;
+    let %f_out1: (A, C) = %f6(%391, %x24) /* ty=(A, C) */;
+    %392 = %f_out1.0;
+    %393 = %f_out1.1;
+    %394 = %acc3.1;
+    %395 = Cons(%393, %394) /* ty=List[C] */;
+    (%392, %395)
+  };
+  %396 = Nil /* ty=List[C] */;
+  %397 = (%init1, %396);
+  @foldl(%updater1, %397, %xs11) /* ty=(A, List[C]) */
+}
+
+def @tensor_array_unstack_tensor1_float64(%tensor27: Tensor[(?), float64]) -> List[tensor_float64_t[]] {
+  %398 = shape_of(%tensor27, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %399 = take(%398, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_float64(0 /* ty=int32 */, %399, %tensor27) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_float16(%tensor28: Tensor[(?, ?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %400 = shape_of(%tensor28, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %401 = take(%400, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_float16(0 /* ty=int32 */, %401, %tensor28) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_stack_uint8(%tensor_array29: List[tensor_uint8_t[]]) -> tensor_uint8_t[] {
+  %402 = @map(@tensor_expand_dims_uint8, %tensor_array29) /* ty=List[tensor_uint8_t[]] */;
+  %403 = @hd(%402) /* ty=tensor_uint8_t[] */;
+  %404 = @tl(%402) /* ty=List[tensor_uint8_t[]] */;
+  @foldl(@tensor_concatenate_uint8, %403, %404) /* ty=tensor_uint8_t[] */
+}
+
+def @rev[A](%xs12: List[A]) -> List[A] {
+  %405 = @flip(Cons) /* ty=fn (List[A], A) -> List[A] */;
+  %406 = Nil /* ty=List[A] */;
+  @foldl(%405, %406, %xs12) /* ty=List[A] */
+}
+
+def @tensor_array_unstack_tensor3_uint8(%tensor29: Tensor[(?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %407 = shape_of(%tensor29, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %408 = take(%407, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_uint8(0 /* ty=int32 */, %408, %tensor29) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_take_int32(%tensor30: tensor_int32_t[], %lower3: int32, %upper3: int32) -> tensor_int32_t[] {
+  match? (%tensor30) {
+    tensor1_int32(%t117: Tensor[(?), int32]) => %409 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][19], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %410 = take(%t117, %409) /* ty=Tensor[(?), int32] */;
+    tensor1_int32(%410) /* ty=tensor_int32_t[] */,
+    tensor2_int32(%t210: Tensor[(?, ?), int32]) => %411 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][20], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %412 = take(%t210, %411, axis=0) /* ty=Tensor[(?, ?), int32] */;
+    tensor2_int32(%412) /* ty=tensor_int32_t[] */,
+    tensor3_int32(%t310: Tensor[(?, ?, ?), int32]) => %413 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][21], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %414 = take(%t310, %413, axis=0) /* ty=Tensor[(?, ?, ?), int32] */;
+    tensor3_int32(%414) /* ty=tensor_int32_t[] */,
+    tensor4_int32(%t46: Tensor[(?, ?, ?, ?), int32]) => %415 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][22], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %416 = take(%t46, %415, axis=0) /* ty=Tensor[(?, ?, ?, ?), int32] */;
+    tensor4_int32(%416) /* ty=tensor_int32_t[] */,
+    tensor5_int32(%t54: Tensor[(?, ?, ?, ?, ?), int32]) => %417 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][23], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %418 = take(%t54, %417, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int32] */;
+    tensor5_int32(%418) /* ty=tensor_int32_t[] */,
+    tensor6_int32(%t64: Tensor[(?, ?, ?, ?, ?, ?), int32]) => %419 = arange(%lower3, %upper3, 1 /* ty=int32 */, start=meta[relay.Var][6], stop=meta[relay.Var][7], step=meta[relay.Constant][24], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %420 = take(%t64, %419, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int32] */;
+    tensor6_int32(%420) /* ty=tensor_int32_t[] */,
+  }
+}
+
+def @tensor_array_write_float32(%tensor_array30: List[tensor_float32_t[]], %x25: int32, %v3: tensor_float32_t[]) -> List[tensor_float32_t[]] {
+  @update(%tensor_array30, %x25, %v3) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_int8(%tensor31: Tensor[(?), int8]) -> List[tensor_int8_t[]] {
+  %421 = shape_of(%tensor31, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %422 = take(%421, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_int8(0 /* ty=int32 */, %422, %tensor31) /* ty=List[tensor_int8_t[]] */
+}
+
+def @size[A](%t40: Tree[A]) -> int32 {
+  match (%t40) {
+    Rose(_, %sub_trees: List[Tree[A]]) => %423 = @map(@size, %sub_trees) /* ty=List[int32] */;
+    %424 = @sum(%423) /* ty=int32 */;
+    add(1 /* ty=int32 */, %424) /* ty=int32 */,
+  }
+}
+
+def @tensor_array_unstack_tensor4_helper_int32(%i25: int32, %up25: int32, %t47: Tensor[(?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %425 = equal(%i25, %up25) /* ty=bool */;
+  if (%425) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %426 = take(%t47, %i25, axis=0) /* ty=Tensor[(?, ?, ?), int32] */;
+    %427 = tensor3_int32(%426) /* ty=tensor_int32_t[] */;
+    %428 = add(%i25, 1 /* ty=int32 */) /* ty=int32 */;
+    %429 = @tensor_array_unstack_tensor4_helper_int32(%428, %up25, %t47) /* ty=List[tensor_int32_t[]] */;
+    Cons(%427, %429) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @unfoldr[A, B](%f7: fn (A) -> Option[(A, B)], %seed: A) -> List[B] {
+  %430 = %f7(%seed) /* ty=Option[(A, B)] */;
+  match (%430) {
+    Some(%val: (A, B)) => %431 = %val.1;
+    %432 = %val.0;
+    %433 = @unfoldr(%f7, %432) /* ty=List[B] */;
+    Cons(%431, %433) /* ty=List[B] */,
+    None => Nil /* ty=List[B] */,
+  }
+}
+
+def @tensor_array_float64(%x26: int32) -> List[tensor_float64_t[]] {
+  %434 = equal(%x26, 0 /* ty=int32 */) /* ty=bool */;
+  if (%434) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %435 = tensor_nil_float64 /* ty=tensor_float64_t[] */;
+    %436 = subtract(%x26, 1 /* ty=int32 */) /* ty=int32 */;
+    %437 = @tensor_array_float64(%436) /* ty=List[tensor_float64_t[]] */;
+    Cons(%435, %437) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_take_float32(%tensor32: tensor_float32_t[], %lower4: int32, %upper4: int32) -> tensor_float32_t[] {
+  match? (%tensor32) {
+    tensor1_float32(%t118: Tensor[(?), float32]) => %438 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][25], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %439 = take(%t118, %438) /* ty=Tensor[(?), float32] */;
+    tensor1_float32(%439) /* ty=tensor_float32_t[] */,
+    tensor2_float32(%t216: Tensor[(?, ?), float32]) => %440 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][26], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %441 = take(%t216, %440, axis=0) /* ty=Tensor[(?, ?), float32] */;
+    tensor2_float32(%441) /* ty=tensor_float32_t[] */,
+    tensor3_float32(%t315: Tensor[(?, ?, ?), float32]) => %442 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][27], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %443 = take(%t315, %442, axis=0) /* ty=Tensor[(?, ?, ?), float32] */;
+    tensor3_float32(%443) /* ty=tensor_float32_t[] */,
+    tensor4_float32(%t48: Tensor[(?, ?, ?, ?), float32]) => %444 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][28], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %445 = take(%t48, %444, axis=0) /* ty=Tensor[(?, ?, ?, ?), float32] */;
+    tensor4_float32(%445) /* ty=tensor_float32_t[] */,
+    tensor5_float32(%t55: Tensor[(?, ?, ?, ?, ?), float32]) => %446 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][29], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %447 = take(%t55, %446, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float32] */;
+    tensor5_float32(%447) /* ty=tensor_float32_t[] */,
+    tensor6_float32(%t65: Tensor[(?, ?, ?, ?, ?, ?), float32]) => %448 = arange(%lower4, %upper4, 1 /* ty=int32 */, start=meta[relay.Var][8], stop=meta[relay.Var][9], step=meta[relay.Constant][30], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %449 = take(%t65, %448, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float32] */;
+    tensor6_float32(%449) /* ty=tensor_float32_t[] */,
+  }
+}
+
+def @tensor_take_int64(%tensor33: tensor_int64_t[], %lower5: int32, %upper5: int32) -> tensor_int64_t[] {
+  match? (%tensor33) {
+    tensor1_int64(%t119: Tensor[(?), int64]) => %450 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][31], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %451 = take(%t119, %450) /* ty=Tensor[(?), int64] */;
+    tensor1_int64(%451) /* ty=tensor_int64_t[] */,
+    tensor2_int64(%t217: Tensor[(?, ?), int64]) => %452 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][32], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %453 = take(%t217, %452, axis=0) /* ty=Tensor[(?, ?), int64] */;
+    tensor2_int64(%453) /* ty=tensor_int64_t[] */,
+    tensor3_int64(%t316: Tensor[(?, ?, ?), int64]) => %454 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][33], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %455 = take(%t316, %454, axis=0) /* ty=Tensor[(?, ?, ?), int64] */;
+    tensor3_int64(%455) /* ty=tensor_int64_t[] */,
+    tensor4_int64(%t49: Tensor[(?, ?, ?, ?), int64]) => %456 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][34], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %457 = take(%t49, %456, axis=0) /* ty=Tensor[(?, ?, ?, ?), int64] */;
+    tensor4_int64(%457) /* ty=tensor_int64_t[] */,
+    tensor5_int64(%t56: Tensor[(?, ?, ?, ?, ?), int64]) => %458 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][35], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %459 = take(%t56, %458, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int64] */;
+    tensor5_int64(%459) /* ty=tensor_int64_t[] */,
+    tensor6_int64(%t66: Tensor[(?, ?, ?, ?, ?, ?), int64]) => %460 = arange(%lower5, %upper5, 1 /* ty=int32 */, start=meta[relay.Var][10], stop=meta[relay.Var][11], step=meta[relay.Constant][36], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %461 = take(%t66, %460, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int64] */;
+    tensor6_int64(%461) /* ty=tensor_int64_t[] */,
+  }
+}
+
+def @tensor_array_read_int8(%tensor_array31: List[tensor_int8_t[]], %x27: int32) -> tensor_int8_t[] {
+  @nth(%tensor_array31, %x27) /* ty=tensor_int8_t[] */
+}
+
+def @tensor_array_unstack_tensor1_helper_float32(%i26: int32, %up26: int32, %t50: Tensor[(?), float32]) -> List[tensor_float32_t[]] {
+  %462 = equal(%i26, %up26) /* ty=bool */;
+  if (%462) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %463 = take(%t50, %i26) /* ty=float32 */;
+    %464 = tensor0_float32(%463) /* ty=tensor_float32_t[] */;
+    %465 = add(%i26, 1 /* ty=int32 */) /* ty=int32 */;
+    %466 = @tensor_array_unstack_tensor1_helper_float32(%465, %up26, %t50) /* ty=List[tensor_float32_t[]] */;
+    Cons(%464, %466) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_expand_dims_float16(%x28: tensor_float16_t[]) -> tensor_float16_t[] {
+  match? (%x28) {
+    tensor0_float16(%t01: float16) => %467 = expand_dims(%t01, axis=0) /* ty=Tensor[(?), float16] */;
+    tensor1_float16(%467) /* ty=tensor_float16_t[] */,
+    tensor1_float16(%t120: Tensor[(?), float16]) => %468 = expand_dims(%t120, axis=0) /* ty=Tensor[(?, ?), float16] */;
+    tensor2_float16(%468) /* ty=tensor_float16_t[] */,
+    tensor2_float16(%t218: Tensor[(?, ?), float16]) => %469 = expand_dims(%t218, axis=0) /* ty=Tensor[(?, ?, ?), float16] */;
+    tensor3_float16(%469) /* ty=tensor_float16_t[] */,
+    tensor3_float16(%t317: Tensor[(?, ?, ?), float16]) => %470 = expand_dims(%t317, axis=0) /* ty=Tensor[(?, ?, ?, ?), float16] */;
+    tensor4_float16(%470) /* ty=tensor_float16_t[] */,
+    tensor4_float16(%t410: Tensor[(?, ?, ?, ?), float16]) => %471 = expand_dims(%t410, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float16] */;
+    tensor5_float16(%471) /* ty=tensor_float16_t[] */,
+    tensor5_float16(%t57: Tensor[(?, ?, ?, ?, ?), float16]) => %472 = expand_dims(%t57, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float16] */;
+    tensor6_float16(%472) /* ty=tensor_float16_t[] */,
+  }
+}
+
+def @tensor_expand_dims_float32(%x29: tensor_float32_t[]) -> tensor_float32_t[] {
+  match? (%x29) {
+    tensor0_float32(%t02: float32) => %473 = expand_dims(%t02, axis=0) /* ty=Tensor[(?), float32] */;
+    tensor1_float32(%473) /* ty=tensor_float32_t[] */,
+    tensor1_float32(%t126: Tensor[(?), float32]) => %474 = expand_dims(%t126, axis=0) /* ty=Tensor[(?, ?), float32] */;
+    tensor2_float32(%474) /* ty=tensor_float32_t[] */,
+    tensor2_float32(%t219: Tensor[(?, ?), float32]) => %475 = expand_dims(%t219, axis=0) /* ty=Tensor[(?, ?, ?), float32] */;
+    tensor3_float32(%475) /* ty=tensor_float32_t[] */,
+    tensor3_float32(%t318: Tensor[(?, ?, ?), float32]) => %476 = expand_dims(%t318, axis=0) /* ty=Tensor[(?, ?, ?, ?), float32] */;
+    tensor4_float32(%476) /* ty=tensor_float32_t[] */,
+    tensor4_float32(%t415: Tensor[(?, ?, ?, ?), float32]) => %477 = expand_dims(%t415, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float32] */;
+    tensor5_float32(%477) /* ty=tensor_float32_t[] */,
+    tensor5_float32(%t58: Tensor[(?, ?, ?, ?, ?), float32]) => %478 = expand_dims(%t58, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float32] */;
+    tensor6_float32(%478) /* ty=tensor_float32_t[] */,
+  }
+}
+
+def @tensor_array_unstack_tensor1_float16(%tensor34: Tensor[(?), float16]) -> List[tensor_float16_t[]] {
+  %479 = shape_of(%tensor34, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %480 = take(%479, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_float16(0 /* ty=int32 */, %480, %tensor34) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_helper_uint16(%i27: int32, %up27: int32, %t59: Tensor[(?, ?, ?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %481 = equal(%i27, %up27) /* ty=bool */;
+  if (%481) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %482 = take(%t59, %i27, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint16] */;
+    %483 = tensor5_uint16(%482) /* ty=tensor_uint16_t[] */;
+    %484 = add(%i27, 1 /* ty=int32 */) /* ty=int32 */;
+    %485 = @tensor_array_unstack_tensor6_helper_uint16(%484, %up27, %t59) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%483, %485) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_int16(%x30: int32) -> List[tensor_int16_t[]] {
+  %486 = equal(%x30, 0 /* ty=int32 */) /* ty=bool */;
+  if (%486) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %487 = tensor_nil_int16 /* ty=tensor_int16_t[] */;
+    %488 = subtract(%x30, 1 /* ty=int32 */) /* ty=int32 */;
+    %489 = @tensor_array_int16(%488) /* ty=List[tensor_int16_t[]] */;
+    Cons(%487, %489) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_scatter_helper_float32(%ta3: List[tensor_float32_t[]], %current4: int32, %limit4: int32, %indices_3: Tensor[(?), int32], %values_3: List[tensor_float32_t[]]) -> List[tensor_float32_t[]] {
+  %490 = equal(%current4, %limit4) /* ty=bool */;
+  if (%490) {
+    %ta3
+  } else {
+    %491 = take(%indices_3, %current4) /* ty=int32 */;
+    %492 = @tensor_array_read_float32(%values_3, %current4) /* ty=tensor_float32_t[] */;
+    %493 = @tensor_array_write_float32(%ta3, %491, %492) /* ty=List[tensor_float32_t[]] */;
+    %494 = add(%current4, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_float32(%493, %494, %limit4, %indices_3, %values_3) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_int64(%tensor35: Tensor[(?, ?, ?, ?, ?), int64]) -> List[tensor_int64_t[]] {
+  %495 = shape_of(%tensor35, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %496 = take(%495, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_int64(0 /* ty=int32 */, %496, %tensor35) /* ty=List[tensor_int64_t[]] */
+}
+
+def @tensor_array_read_float32(%tensor_array32: List[tensor_float32_t[]], %x31: int32) -> tensor_float32_t[] {
+  @nth(%tensor_array32, %x31) /* ty=tensor_float32_t[] */
+}
+
+def @tensor_array_unstack_tensor6_float32(%tensor36: Tensor[(?, ?, ?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %497 = shape_of(%tensor36, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %498 = take(%497, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_float32(0 /* ty=int32 */, %498, %tensor36) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_split_float64(%tensor_array33: List[tensor_float64_t[]], %value5: tensor_float64_t[], %lengths8: Tensor[(?), int32]) -> List[tensor_float64_t[]] {
+  %499 = shape_of(%lengths8, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %500 = take(%499, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_float64(%tensor_array33, %value5, 0 /* ty=int32 */, 0 /* ty=int32 */, %500, %lengths8) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_concatenate_float32(%x32: tensor_float32_t[], %y6: tensor_float32_t[]) -> tensor_float32_t[] {
+  match? (%x32) {
+    tensor1_float32(%t1110: Tensor[(?), float32]) => match? (%y6) {
+      tensor1_float32(%t127: Tensor[(?), float32]) => %501 = (%t1110, %t127);
+      %502 = concatenate(%501) /* ty=Tensor[(?), float32] */;
+      tensor1_float32(%502) /* ty=tensor_float32_t[] */,
+    },
+    tensor2_float32(%t2110: Tensor[(?, ?), float32]) => match? (%y6) {
+      tensor2_float32(%t225: Tensor[(?, ?), float32]) => %503 = (%t2110, %t225);
+      %504 = concatenate(%503) /* ty=Tensor[(?, ?), float32] */;
+      tensor2_float32(%504) /* ty=tensor_float32_t[] */,
+    },
+    tensor3_float32(%t319: Tensor[(?, ?, ?), float32]) => match? (%y6) {
+      tensor3_float32(%t325: Tensor[(?, ?, ?), float32]) => %505 = (%t319, %t325);
+      %506 = concatenate(%505) /* ty=Tensor[(?, ?, ?), float32] */;
+      tensor3_float32(%506) /* ty=tensor_float32_t[] */,
+    },
+    tensor4_float32(%t416: Tensor[(?, ?, ?, ?), float32]) => match? (%y6) {
+      tensor4_float32(%t425: Tensor[(?, ?, ?, ?), float32]) => %507 = (%t416, %t425);
+      %508 = concatenate(%507) /* ty=Tensor[(?, ?, ?, ?), float32] */;
+      tensor4_float32(%508) /* ty=tensor_float32_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor2_float32(%tensor37: Tensor[(?, ?), float32]) -> List[tensor_float32_t[]] {
+  %509 = shape_of(%tensor37, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %510 = take(%509, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_float32(0 /* ty=int32 */, %510, %tensor37) /* ty=List[tensor_float32_t[]] */
+}
+
+def @ta_split_helper_uint8(%tensor_array34: List[tensor_uint8_t[]], %value14: tensor_uint8_t[], %offset14: int32, %current14: int32, %limit14: int32, %lengths9: Tensor[(?), int32]) -> List[tensor_uint8_t[]] {
+  %511 = equal(%current14, %limit14) /* ty=bool */;
+  if (%511) {
+    %tensor_array34
+  } else {
+    %512 = take(%lengths9, %current14) /* ty=int32 */;
+    %513 = add(%offset14, %512) /* ty=int32 */;
+    %514 = add(%current14, 1 /* ty=int32 */) /* ty=int32 */;
+    %515 = @ta_split_helper_uint8(%tensor_array34, %value14, %513, %514, %limit14, %lengths9) /* ty=List[tensor_uint8_t[]] */;
+    %516 = take(%lengths9, %current14) /* ty=int32 */;
+    %517 = add(%516, %offset14) /* ty=int32 */;
+    %518 = @tensor_take_uint8(%value14, %offset14, %517) /* ty=tensor_uint8_t[] */;
+    @tensor_array_write_uint8(%515, %current14, %518) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_int8(%tensor38: Tensor[(?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %519 = shape_of(%tensor38, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %520 = take(%519, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_int8(0 /* ty=int32 */, %520, %tensor38) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_int32(%tensor39: Tensor[(?), int32]) -> List[tensor_int32_t[]] {
+  %521 = shape_of(%tensor39, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %522 = take(%521, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_int32(0 /* ty=int32 */, %522, %tensor39) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_float32(%tensor40: Tensor[(?, ?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %523 = shape_of(%tensor40, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %524 = take(%523, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_float32(0 /* ty=int32 */, %524, %tensor40) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_write_int32(%tensor_array35: List[tensor_int32_t[]], %x33: int32, %v4: tensor_int32_t[]) -> List[tensor_int32_t[]] {
+  @update(%tensor_array35, %x33, %v4) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tmap[A, B](%f8: fn (A) -> B, %t60: Tree[A]) -> Tree[B] {
+  match (%t60) {
+    Rose(%v5: A, %sub_trees1: List[Tree[A]]) => {
+      let %list_f: fn (Tree[A]) -> Tree[B] = fn (%tt: Tree[A]) -> Tree[B] {
+        @tmap(%f8, %tt) /* ty=Tree[B] */
+      };
+      %525 = %f8(%v5) /* ty=B */;
+      %526 = @map(%list_f, %sub_trees1) /* ty=List[Tree[B]] */;
+      Rose(%525, %526) /* ty=Tree[B] */
+    },
+  }
+}
+
+def @hd[A](%xs13: List[A]) -> A {
+  match? (%xs13) {
+    Cons(%x34: A, _) => %x34,
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_int32(%i28: int32, %up28: int32, %t67: Tensor[(?, ?), int32]) -> List[tensor_int32_t[]] {
+  %527 = equal(%i28, %up28) /* ty=bool */;
+  if (%527) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %528 = take(%t67, %i28, axis=0) /* ty=Tensor[(?), int32] */;
+    %529 = tensor1_int32(%528) /* ty=tensor_int32_t[] */;
+    %530 = add(%i28, 1 /* ty=int32 */) /* ty=int32 */;
+    %531 = @tensor_array_unstack_tensor2_helper_int32(%530, %up28, %t67) /* ty=List[tensor_int32_t[]] */;
+    Cons(%529, %531) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_int16(%tensor41: Tensor[(?, ?, ?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %532 = shape_of(%tensor41, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %533 = take(%532, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_int16(0 /* ty=int32 */, %533, %tensor41) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_helper_float32(%i29: int32, %up29: int32, %t68: Tensor[(?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %534 = equal(%i29, %up29) /* ty=bool */;
+  if (%534) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %535 = take(%t68, %i29, axis=0) /* ty=Tensor[(?, ?), float32] */;
+    %536 = tensor2_float32(%535) /* ty=tensor_float32_t[] */;
+    %537 = add(%i29, 1 /* ty=int32 */) /* ty=int32 */;
+    %538 = @tensor_array_unstack_tensor3_helper_float32(%537, %up29, %t68) /* ty=List[tensor_float32_t[]] */;
+    Cons(%536, %538) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_float64(%tensor42: Tensor[(?, ?), float64]) -> List[tensor_float64_t[]] {
+  %539 = shape_of(%tensor42, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %540 = take(%539, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_float64(0 /* ty=int32 */, %540, %tensor42) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_helper_float32(%i30: int32, %up30: int32, %t69: Tensor[(?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %541 = equal(%i30, %up30) /* ty=bool */;
+  if (%541) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %542 = take(%t69, %i30, axis=0) /* ty=Tensor[(?, ?, ?), float32] */;
+    %543 = tensor3_float32(%542) /* ty=tensor_float32_t[] */;
+    %544 = add(%i30, 1 /* ty=int32 */) /* ty=int32 */;
+    %545 = @tensor_array_unstack_tensor4_helper_float32(%544, %up30, %t69) /* ty=List[tensor_float32_t[]] */;
+    Cons(%543, %545) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_float32(%i31: int32, %up31: int32, %t70: Tensor[(?, ?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %546 = equal(%i31, %up31) /* ty=bool */;
+  if (%546) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %547 = take(%t70, %i31, axis=0) /* ty=Tensor[(?, ?, ?, ?), float32] */;
+    %548 = tensor4_float32(%547) /* ty=tensor_float32_t[] */;
+    %549 = add(%i31, 1 /* ty=int32 */) /* ty=int32 */;
+    %550 = @tensor_array_unstack_tensor5_helper_float32(%549, %up31, %t70) /* ty=List[tensor_float32_t[]] */;
+    Cons(%548, %550) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_concat_int64(%tensor_array36: List[tensor_int64_t[]]) -> tensor_int64_t[] {
+  match? (%tensor_array36) {
+    Nil => tensor_nil_int64 /* ty=tensor_int64_t[] */,
+    Cons(%hd2: tensor_int64_t[], %tl2: List[tensor_int64_t[]]) => match? (%tl2) {
+      Nil => %hd2,
+      _ => %551 = @tensor_array_concat_int64(%tl2) /* ty=tensor_int64_t[] */;
+      @tensor_concatenate_int64(%hd2, %551) /* ty=tensor_int64_t[] */,
+    },
+  }
+}
+
+def @tensor_array_float32(%x35: int32) -> List[tensor_float32_t[]] {
+  %552 = equal(%x35, 0 /* ty=int32 */) /* ty=bool */;
+  if (%552) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %553 = tensor_nil_float32 /* ty=tensor_float32_t[] */;
+    %554 = subtract(%x35, 1 /* ty=int32 */) /* ty=int32 */;
+    %555 = @tensor_array_float32(%554) /* ty=List[tensor_float32_t[]] */;
+    Cons(%553, %555) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_scatter_float32(%tensor_array37: List[tensor_float32_t[]], %indices5: Tensor[(?), int32], %values6: List[tensor_float32_t[]]) -> List[tensor_float32_t[]] {
+  %556 = shape_of(%indices5, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %557 = take(%556, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_float32(%tensor_array37, 0 /* ty=int32 */, %557, %indices5, %values6) /* ty=List[tensor_float32_t[]] */
+}
+
+def @flip[A, B, C](%f9: fn (A, B) -> C) -> fn (B, A) -> C {
+  fn (%b: B, %a: A) -> C {
+    %f9(%a, %b) /* ty=C */
+  }
+}
+
+def @tensor_array_split_float32(%tensor_array38: List[tensor_float32_t[]], %value6: tensor_float32_t[], %lengths10: Tensor[(?), int32]) -> List[tensor_float32_t[]] {
+  %558 = shape_of(%lengths10, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %559 = take(%558, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_float32(%tensor_array38, %value6, 0 /* ty=int32 */, 0 /* ty=int32 */, %559, %lengths10) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_concat_float32(%tensor_array39: List[tensor_float32_t[]]) -> tensor_float32_t[] {
+  match? (%tensor_array39) {
+    Nil => tensor_nil_float32 /* ty=tensor_float32_t[] */,
+    Cons(%hd3: tensor_float32_t[], %tl3: List[tensor_float32_t[]]) => match? (%tl3) {
+      Nil => %hd3,
+      _ => %560 = @tensor_array_concat_float32(%tl3) /* ty=tensor_float32_t[] */;
+      @tensor_concatenate_float32(%hd3, %560) /* ty=tensor_float32_t[] */,
+    },
+  }
+}
+
+def @tensor_array_write_uint8(%tensor_array40: List[tensor_uint8_t[]], %x36: int32, %v6: tensor_uint8_t[]) -> List[tensor_uint8_t[]] {
+  @update(%tensor_array40, %x36, %v6) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_expand_dims_int32(%x37: tensor_int32_t[]) -> tensor_int32_t[] {
+  match? (%x37) {
+    tensor0_int32(%t03: int32) => %561 = expand_dims(%t03, axis=0) /* ty=Tensor[(?), int32] */;
+    tensor1_int32(%561) /* ty=tensor_int32_t[] */,
+    tensor1_int32(%t128: Tensor[(?), int32]) => %562 = expand_dims(%t128, axis=0) /* ty=Tensor[(?, ?), int32] */;
+    tensor2_int32(%562) /* ty=tensor_int32_t[] */,
+    tensor2_int32(%t220: Tensor[(?, ?), int32]) => %563 = expand_dims(%t220, axis=0) /* ty=Tensor[(?, ?, ?), int32] */;
+    tensor3_int32(%563) /* ty=tensor_int32_t[] */,
+    tensor3_int32(%t320: Tensor[(?, ?, ?), int32]) => %564 = expand_dims(%t320, axis=0) /* ty=Tensor[(?, ?, ?, ?), int32] */;
+    tensor4_int32(%564) /* ty=tensor_int32_t[] */,
+    tensor4_int32(%t417: Tensor[(?, ?, ?, ?), int32]) => %565 = expand_dims(%t417, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int32] */;
+    tensor5_int32(%565) /* ty=tensor_int32_t[] */,
+    tensor5_int32(%t510: Tensor[(?, ?, ?, ?, ?), int32]) => %566 = expand_dims(%t510, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int32] */;
+    tensor6_int32(%566) /* ty=tensor_int32_t[] */,
+  }
+}
+
+def @tensor_array_uint16(%x38: int32) -> List[tensor_uint16_t[]] {
+  %567 = equal(%x38, 0 /* ty=int32 */) /* ty=bool */;
+  if (%567) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %568 = tensor_nil_uint16 /* ty=tensor_uint16_t[] */;
+    %569 = subtract(%x38, 1 /* ty=int32 */) /* ty=int32 */;
+    %570 = @tensor_array_uint16(%569) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%568, %570) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_helper_int8(%i32: int32, %up32: int32, %t71: Tensor[(?, ?, ?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %571 = equal(%i32, %up32) /* ty=bool */;
+  if (%571) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %572 = take(%t71, %i32, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int8] */;
+    %573 = tensor5_int8(%572) /* ty=tensor_int8_t[] */;
+    %574 = add(%i32, 1 /* ty=int32 */) /* ty=int32 */;
+    %575 = @tensor_array_unstack_tensor6_helper_int8(%574, %up32, %t71) /* ty=List[tensor_int8_t[]] */;
+    Cons(%573, %575) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_helper_float64(%i33: int32, %up33: int32, %t72: Tensor[(?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %576 = equal(%i33, %up33) /* ty=bool */;
+  if (%576) {
+    Nil /* ty=List[tensor_float64_t[]] */
+  } else {
+    %577 = take(%t72, %i33, axis=0) /* ty=Tensor[(?, ?, ?), float64] */;
+    %578 = tensor3_float64(%577) /* ty=tensor_float64_t[] */;
+    %579 = add(%i33, 1 /* ty=int32 */) /* ty=int32 */;
+    %580 = @tensor_array_unstack_tensor4_helper_float64(%579, %up33, %t72) /* ty=List[tensor_float64_t[]] */;
+    Cons(%578, %580) /* ty=List[tensor_float64_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_helper_int32(%i34: int32, %up34: int32, %t73: Tensor[(?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %581 = equal(%i34, %up34) /* ty=bool */;
+  if (%581) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %582 = take(%t73, %i34, axis=0) /* ty=Tensor[(?, ?), int32] */;
+    %583 = tensor2_int32(%582) /* ty=tensor_int32_t[] */;
+    %584 = add(%i34, 1 /* ty=int32 */) /* ty=int32 */;
+    %585 = @tensor_array_unstack_tensor3_helper_int32(%584, %up34, %t73) /* ty=List[tensor_int32_t[]] */;
+    Cons(%583, %585) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @ta_split_helper_float32(%tensor_array41: List[tensor_float32_t[]], %value15: tensor_float32_t[], %offset15: int32, %current15: int32, %limit15: int32, %lengths11: Tensor[(?), int32]) -> List[tensor_float32_t[]] {
+  %586 = equal(%current15, %limit15) /* ty=bool */;
+  if (%586) {
+    %tensor_array41
+  } else {
+    %587 = take(%lengths11, %current15) /* ty=int32 */;
+    %588 = add(%offset15, %587) /* ty=int32 */;
+    %589 = add(%current15, 1 /* ty=int32 */) /* ty=int32 */;
+    %590 = @ta_split_helper_float32(%tensor_array41, %value15, %588, %589, %limit15, %lengths11) /* ty=List[tensor_float32_t[]] */;
+    %591 = take(%lengths11, %current15) /* ty=int32 */;
+    %592 = add(%591, %offset15) /* ty=int32 */;
+    %593 = @tensor_take_float32(%value15, %offset15, %592) /* ty=tensor_float32_t[] */;
+    @tensor_array_write_float32(%590, %current15, %593) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_int32(%tensor43: Tensor[(?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %594 = shape_of(%tensor43, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %595 = take(%594, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_int32(0 /* ty=int32 */, %595, %tensor43) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_int32(%tensor44: Tensor[(?, ?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %596 = shape_of(%tensor44, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %597 = take(%596, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_int32(0 /* ty=int32 */, %597, %tensor44) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_float32(%tensor45: Tensor[(?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %598 = shape_of(%tensor45, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %599 = take(%598, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_float32(0 /* ty=int32 */, %599, %tensor45) /* ty=List[tensor_float32_t[]] */
+}
+
+def @tensor_array_concat_int32(%tensor_array42: List[tensor_int32_t[]]) -> tensor_int32_t[] {
+  match? (%tensor_array42) {
+    Nil => tensor_nil_int32 /* ty=tensor_int32_t[] */,
+    Cons(%hd4: tensor_int32_t[], %tl4: List[tensor_int32_t[]]) => match? (%tl4) {
+      Nil => %hd4,
+      _ => %600 = @tensor_array_concat_int32(%tl4) /* ty=tensor_int32_t[] */;
+      @tensor_concatenate_int32(%hd4, %600) /* ty=tensor_int32_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor6_helper_int32(%i35: int32, %up35: int32, %t74: Tensor[(?, ?, ?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %601 = equal(%i35, %up35) /* ty=bool */;
+  if (%601) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %602 = take(%t74, %i35, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int32] */;
+    %603 = tensor5_int32(%602) /* ty=tensor_int32_t[] */;
+    %604 = add(%i35, 1 /* ty=int32 */) /* ty=int32 */;
+    %605 = @tensor_array_unstack_tensor6_helper_int32(%604, %up35, %t74) /* ty=List[tensor_int32_t[]] */;
+    Cons(%603, %605) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_int32(%tensor46: Tensor[(?, ?, ?, ?, ?, ?), int32]) -> List[tensor_int32_t[]] {
+  %606 = shape_of(%tensor46, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %607 = take(%606, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_int32(0 /* ty=int32 */, %607, %tensor46) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_expand_dims_uint8(%x39: tensor_uint8_t[]) -> tensor_uint8_t[] {
+  match? (%x39) {
+    tensor0_uint8(%t04: uint8) => %608 = expand_dims(%t04, axis=0) /* ty=Tensor[(?), uint8] */;
+    tensor1_uint8(%608) /* ty=tensor_uint8_t[] */,
+    tensor1_uint8(%t129: Tensor[(?), uint8]) => %609 = expand_dims(%t129, axis=0) /* ty=Tensor[(?, ?), uint8] */;
+    tensor2_uint8(%609) /* ty=tensor_uint8_t[] */,
+    tensor2_uint8(%t226: Tensor[(?, ?), uint8]) => %610 = expand_dims(%t226, axis=0) /* ty=Tensor[(?, ?, ?), uint8] */;
+    tensor3_uint8(%610) /* ty=tensor_uint8_t[] */,
+    tensor3_uint8(%t326: Tensor[(?, ?, ?), uint8]) => %611 = expand_dims(%t326, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint8] */;
+    tensor4_uint8(%611) /* ty=tensor_uint8_t[] */,
+    tensor4_uint8(%t418: Tensor[(?, ?, ?, ?), uint8]) => %612 = expand_dims(%t418, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint8] */;
+    tensor5_uint8(%612) /* ty=tensor_uint8_t[] */,
+    tensor5_uint8(%t511: Tensor[(?, ?, ?, ?, ?), uint8]) => %613 = expand_dims(%t511, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), uint8] */;
+    tensor6_uint8(%613) /* ty=tensor_uint8_t[] */,
+  }
+}
+
+def @tensor_array_uint8(%x40: int32) -> List[tensor_uint8_t[]] {
+  %614 = equal(%x40, 0 /* ty=int32 */) /* ty=bool */;
+  if (%614) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %615 = tensor_nil_uint8 /* ty=tensor_uint8_t[] */;
+    %616 = subtract(%x40, 1 /* ty=int32 */) /* ty=int32 */;
+    %617 = @tensor_array_uint8(%616) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%615, %617) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor6_uint8(%tensor47: Tensor[(?, ?, ?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %618 = shape_of(%tensor47, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %619 = take(%618, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_uint8(0 /* ty=int32 */, %619, %tensor47) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_uint8(%tensor48: Tensor[(?), uint8]) -> List[tensor_uint8_t[]] {
+  %620 = shape_of(%tensor48, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %621 = take(%620, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_uint8(0 /* ty=int32 */, %621, %tensor48) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_helper_uint8(%i36: int32, %up36: int32, %t75: Tensor[(?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %622 = equal(%i36, %up36) /* ty=bool */;
+  if (%622) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %623 = take(%t75, %i36, axis=0) /* ty=Tensor[(?), uint8] */;
+    %624 = tensor1_uint8(%623) /* ty=tensor_uint8_t[] */;
+    %625 = add(%i36, 1 /* ty=int32 */) /* ty=int32 */;
+    %626 = @tensor_array_unstack_tensor2_helper_uint8(%625, %up36, %t75) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%624, %626) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_helper_uint8(%i37: int32, %up37: int32, %t76: Tensor[(?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %627 = equal(%i37, %up37) /* ty=bool */;
+  if (%627) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %628 = take(%t76, %i37, axis=0) /* ty=Tensor[(?, ?), uint8] */;
+    %629 = tensor2_uint8(%628) /* ty=tensor_uint8_t[] */;
+    %630 = add(%i37, 1 /* ty=int32 */) /* ty=int32 */;
+    %631 = @tensor_array_unstack_tensor3_helper_uint8(%630, %up37, %t76) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%629, %631) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_expand_dims_float64(%x41: tensor_float64_t[]) -> tensor_float64_t[] {
+  match? (%x41) {
+    tensor0_float64(%t05: float64) => %632 = expand_dims(%t05, axis=0) /* ty=Tensor[(?), float64] */;
+    tensor1_float64(%632) /* ty=tensor_float64_t[] */,
+    tensor1_float64(%t130: Tensor[(?), float64]) => %633 = expand_dims(%t130, axis=0) /* ty=Tensor[(?, ?), float64] */;
+    tensor2_float64(%633) /* ty=tensor_float64_t[] */,
+    tensor2_float64(%t227: Tensor[(?, ?), float64]) => %634 = expand_dims(%t227, axis=0) /* ty=Tensor[(?, ?, ?), float64] */;
+    tensor3_float64(%634) /* ty=tensor_float64_t[] */,
+    tensor3_float64(%t327: Tensor[(?, ?, ?), float64]) => %635 = expand_dims(%t327, axis=0) /* ty=Tensor[(?, ?, ?, ?), float64] */;
+    tensor4_float64(%635) /* ty=tensor_float64_t[] */,
+    tensor4_float64(%t419: Tensor[(?, ?, ?, ?), float64]) => %636 = expand_dims(%t419, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float64] */;
+    tensor5_float64(%636) /* ty=tensor_float64_t[] */,
+    tensor5_float64(%t512: Tensor[(?, ?, ?, ?, ?), float64]) => %637 = expand_dims(%t512, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), float64] */;
+    tensor6_float64(%637) /* ty=tensor_float64_t[] */,
+  }
+}
+
+def @tensor_array_unstack_tensor4_helper_uint8(%i38: int32, %up38: int32, %t77: Tensor[(?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %638 = equal(%i38, %up38) /* ty=bool */;
+  if (%638) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %639 = take(%t77, %i38, axis=0) /* ty=Tensor[(?, ?, ?), uint8] */;
+    %640 = tensor3_uint8(%639) /* ty=tensor_uint8_t[] */;
+    %641 = add(%i38, 1 /* ty=int32 */) /* ty=int32 */;
+    %642 = @tensor_array_unstack_tensor4_helper_uint8(%641, %up38, %t77) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%640, %642) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_concat_float16(%tensor_array43: List[tensor_float16_t[]]) -> tensor_float16_t[] {
+  match? (%tensor_array43) {
+    Nil => tensor_nil_float16 /* ty=tensor_float16_t[] */,
+    Cons(%hd5: tensor_float16_t[], %tl5: List[tensor_float16_t[]]) => match? (%tl5) {
+      Nil => %hd5,
+      _ => %643 = @tensor_array_concat_float16(%tl5) /* ty=tensor_float16_t[] */;
+      @tensor_concatenate_float16(%hd5, %643) /* ty=tensor_float16_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor4_uint8(%tensor49: Tensor[(?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %644 = shape_of(%tensor49, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %645 = take(%644, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_uint8(0 /* ty=int32 */, %645, %tensor49) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_unstack_tensor5_helper_int8(%i39: int32, %up39: int32, %t78: Tensor[(?, ?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %646 = equal(%i39, %up39) /* ty=bool */;
+  if (%646) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %647 = take(%t78, %i39, axis=0) /* ty=Tensor[(?, ?, ?, ?), int8] */;
+    %648 = tensor4_int8(%647) /* ty=tensor_int8_t[] */;
+    %649 = add(%i39, 1 /* ty=int32 */) /* ty=int32 */;
+    %650 = @tensor_array_unstack_tensor5_helper_int8(%649, %up39, %t78) /* ty=List[tensor_int8_t[]] */;
+    Cons(%648, %650) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_uint8(%i40: int32, %up40: int32, %t79: Tensor[(?, ?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %651 = equal(%i40, %up40) /* ty=bool */;
+  if (%651) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %652 = take(%t79, %i40, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint8] */;
+    %653 = tensor4_uint8(%652) /* ty=tensor_uint8_t[] */;
+    %654 = add(%i40, 1 /* ty=int32 */) /* ty=int32 */;
+    %655 = @tensor_array_unstack_tensor5_helper_uint8(%654, %up40, %t79) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%653, %655) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_write_int64(%tensor_array44: List[tensor_int64_t[]], %x42: int32, %v7: tensor_int64_t[]) -> List[tensor_int64_t[]] {
+  @update(%tensor_array44, %x42, %v7) /* ty=List[tensor_int64_t[]] */
+}
+
+def @compose[A, B, C](%f10: fn (B) -> C, %g: fn (A) -> B) -> fn (A) -> C {
+  fn (%x43: A) -> C {
+    %656 = %g(%x43) /* ty=B */;
+    %f10(%656) /* ty=C */
+  }
+}
+
+def @unfoldl[A, B](%f11: fn (A) -> Option[(A, B)], %seed1: A) -> List[B] {
+  %657 = @unfoldr(%f11, %seed1) /* ty=List[B] */;
+  @rev(%657) /* ty=List[B] */
+}
+
+def @tensor_array_read_int32(%tensor_array45: List[tensor_int32_t[]], %x44: int32) -> tensor_int32_t[] {
+  @nth(%tensor_array45, %x44) /* ty=tensor_int32_t[] */
+}
+
+def @tensor_array_unstack_tensor6_helper_uint8(%i41: int32, %up41: int32, %t80: Tensor[(?, ?, ?, ?, ?, ?), uint8]) -> List[tensor_uint8_t[]] {
+  %658 = equal(%i41, %up41) /* ty=bool */;
+  if (%658) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %659 = take(%t80, %i41, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint8] */;
+    %660 = tensor5_uint8(%659) /* ty=tensor_uint8_t[] */;
+    %661 = add(%i41, 1 /* ty=int32 */) /* ty=int32 */;
+    %662 = @tensor_array_unstack_tensor6_helper_uint8(%661, %up41, %t80) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%660, %662) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_scatter_helper_uint8(%ta4: List[tensor_uint8_t[]], %current5: int32, %limit5: int32, %indices_4: Tensor[(?), int32], %values_4: List[tensor_uint8_t[]]) -> List[tensor_uint8_t[]] {
+  %663 = equal(%current5, %limit5) /* ty=bool */;
+  if (%663) {
+    %ta4
+  } else {
+    %664 = take(%indices_4, %current5) /* ty=int32 */;
+    %665 = @tensor_array_read_uint8(%values_4, %current5) /* ty=tensor_uint8_t[] */;
+    %666 = @tensor_array_write_uint8(%ta4, %664, %665) /* ty=List[tensor_uint8_t[]] */;
+    %667 = add(%current5, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_uint8(%666, %667, %limit5, %indices_4, %values_4) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor5_helper_uint16(%i42: int32, %up42: int32, %t81: Tensor[(?, ?, ?, ?, ?), uint16]) -> List[tensor_uint16_t[]] {
+  %668 = equal(%i42, %up42) /* ty=bool */;
+  if (%668) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %669 = take(%t81, %i42, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint16] */;
+    %670 = tensor4_uint16(%669) /* ty=tensor_uint16_t[] */;
+    %671 = add(%i42, 1 /* ty=int32 */) /* ty=int32 */;
+    %672 = @tensor_array_unstack_tensor5_helper_uint16(%671, %up42, %t81) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%670, %672) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_scatter_uint8(%tensor_array46: List[tensor_uint8_t[]], %indices6: Tensor[(?), int32], %values7: List[tensor_uint8_t[]]) -> List[tensor_uint8_t[]] {
+  %673 = shape_of(%indices6, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %674 = take(%673, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_uint8(%tensor_array46, 0 /* ty=int32 */, %674, %indices6, %values7) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_split_uint8(%tensor_array47: List[tensor_uint8_t[]], %value7: tensor_uint8_t[], %lengths12: Tensor[(?), int32]) -> List[tensor_uint8_t[]] {
+  %675 = shape_of(%lengths12, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %676 = take(%675, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_uint8(%tensor_array47, %value7, 0 /* ty=int32 */, 0 /* ty=int32 */, %676, %lengths12) /* ty=List[tensor_uint8_t[]] */
+}
+
+def @tensor_array_concat_uint8(%tensor_array48: List[tensor_uint8_t[]]) -> tensor_uint8_t[] {
+  match? (%tensor_array48) {
+    Nil => tensor_nil_uint8 /* ty=tensor_uint8_t[] */,
+    Cons(%hd6: tensor_uint8_t[], %tl6: List[tensor_uint8_t[]]) => match? (%tl6) {
+      Nil => %hd6,
+      _ => %677 = @tensor_array_concat_uint8(%tl6) /* ty=tensor_uint8_t[] */;
+      @tensor_concatenate_uint8(%hd6, %677) /* ty=tensor_uint8_t[] */,
+    },
+  }
+}
+
+def @tensor_expand_dims_int8(%x45: tensor_int8_t[]) -> tensor_int8_t[] {
+  match? (%x45) {
+    tensor0_int8(%t06: int8) => %678 = expand_dims(%t06, axis=0) /* ty=Tensor[(?), int8] */;
+    tensor1_int8(%678) /* ty=tensor_int8_t[] */,
+    tensor1_int8(%t131: Tensor[(?), int8]) => %679 = expand_dims(%t131, axis=0) /* ty=Tensor[(?, ?), int8] */;
+    tensor2_int8(%679) /* ty=tensor_int8_t[] */,
+    tensor2_int8(%t228: Tensor[(?, ?), int8]) => %680 = expand_dims(%t228, axis=0) /* ty=Tensor[(?, ?, ?), int8] */;
+    tensor3_int8(%680) /* ty=tensor_int8_t[] */,
+    tensor3_int8(%t328: Tensor[(?, ?, ?), int8]) => %681 = expand_dims(%t328, axis=0) /* ty=Tensor[(?, ?, ?, ?), int8] */;
+    tensor4_int8(%681) /* ty=tensor_int8_t[] */,
+    tensor4_int8(%t420: Tensor[(?, ?, ?, ?), int8]) => %682 = expand_dims(%t420, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int8] */;
+    tensor5_int8(%682) /* ty=tensor_int8_t[] */,
+    tensor5_int8(%t513: Tensor[(?, ?, ?, ?, ?), int8]) => %683 = expand_dims(%t513, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int8] */;
+    tensor6_int8(%683) /* ty=tensor_int8_t[] */,
+  }
+}
+
+def @tensor_array_scatter_helper_uint16(%ta5: List[tensor_uint16_t[]], %current6: int32, %limit6: int32, %indices_5: Tensor[(?), int32], %values_5: List[tensor_uint16_t[]]) -> List[tensor_uint16_t[]] {
+  %684 = equal(%current6, %limit6) /* ty=bool */;
+  if (%684) {
+    %ta5
+  } else {
+    %685 = take(%indices_5, %current6) /* ty=int32 */;
+    %686 = @tensor_array_read_uint16(%values_5, %current6) /* ty=tensor_uint16_t[] */;
+    %687 = @tensor_array_write_uint16(%ta5, %685, %686) /* ty=List[tensor_uint16_t[]] */;
+    %688 = add(%current6, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_uint16(%687, %688, %limit6, %indices_5, %values_5) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_concatenate_float64(%x46: tensor_float64_t[], %y7: tensor_float64_t[]) -> tensor_float64_t[] {
+  match? (%x46) {
+    tensor1_float64(%t1111: Tensor[(?), float64]) => match? (%y7) {
+      tensor1_float64(%t1210: Tensor[(?), float64]) => %689 = (%t1111, %t1210);
+      %690 = concatenate(%689) /* ty=Tensor[(?), float64] */;
+      tensor1_float64(%690) /* ty=tensor_float64_t[] */,
+    },
+    tensor2_float64(%t2111: Tensor[(?, ?), float64]) => match? (%y7) {
+      tensor2_float64(%t229: Tensor[(?, ?), float64]) => %691 = (%t2111, %t229);
+      %692 = concatenate(%691) /* ty=Tensor[(?, ?), float64] */;
+      tensor2_float64(%692) /* ty=tensor_float64_t[] */,
+    },
+    tensor3_float64(%t3110: Tensor[(?, ?, ?), float64]) => match? (%y7) {
+      tensor3_float64(%t329: Tensor[(?, ?, ?), float64]) => %693 = (%t3110, %t329);
+      %694 = concatenate(%693) /* ty=Tensor[(?, ?, ?), float64] */;
+      tensor3_float64(%694) /* ty=tensor_float64_t[] */,
+    },
+    tensor4_float64(%t4110: Tensor[(?, ?, ?, ?), float64]) => match? (%y7) {
+      tensor4_float64(%t426: Tensor[(?, ?, ?, ?), float64]) => %695 = (%t4110, %t426);
+      %696 = concatenate(%695) /* ty=Tensor[(?, ?, ?, ?), float64] */;
+      tensor4_float64(%696) /* ty=tensor_float64_t[] */,
+    },
+  }
+}
+
+def @tensor_array_write_int8(%tensor_array49: List[tensor_int8_t[]], %x47: int32, %v8: tensor_int8_t[]) -> List[tensor_int8_t[]] {
+  @update(%tensor_array49, %x47, %v8) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_float16(%tensor50: Tensor[(?, ?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %697 = shape_of(%tensor50, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %698 = take(%697, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_float16(0 /* ty=int32 */, %698, %tensor50) /* ty=List[tensor_float16_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_helper_int8(%i43: int32, %up43: int32, %t82: Tensor[(?), int8]) -> List[tensor_int8_t[]] {
+  %699 = equal(%i43, %up43) /* ty=bool */;
+  if (%699) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %700 = take(%t82, %i43) /* ty=int8 */;
+    %701 = tensor0_int8(%700) /* ty=tensor_int8_t[] */;
+    %702 = add(%i43, 1 /* ty=int32 */) /* ty=int32 */;
+    %703 = @tensor_array_unstack_tensor1_helper_int8(%702, %up43, %t82) /* ty=List[tensor_int8_t[]] */;
+    Cons(%701, %703) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_helper_int8(%i44: int32, %up44: int32, %t83: Tensor[(?, ?), int8]) -> List[tensor_int8_t[]] {
+  %704 = equal(%i44, %up44) /* ty=bool */;
+  if (%704) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %705 = take(%t83, %i44, axis=0) /* ty=Tensor[(?), int8] */;
+    %706 = tensor1_int8(%705) /* ty=tensor_int8_t[] */;
+    %707 = add(%i44, 1 /* ty=int32 */) /* ty=int32 */;
+    %708 = @tensor_array_unstack_tensor2_helper_int8(%707, %up44, %t83) /* ty=List[tensor_int8_t[]] */;
+    Cons(%706, %708) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor2_int8(%tensor51: Tensor[(?, ?), int8]) -> List[tensor_int8_t[]] {
+  %709 = shape_of(%tensor51, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %710 = take(%709, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_int8(0 /* ty=int32 */, %710, %tensor51) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_scatter_helper_int8(%ta6: List[tensor_int8_t[]], %current7: int32, %limit7: int32, %indices_6: Tensor[(?), int32], %values_6: List[tensor_int8_t[]]) -> List[tensor_int8_t[]] {
+  %711 = equal(%current7, %limit7) /* ty=bool */;
+  if (%711) {
+    %ta6
+  } else {
+    %712 = take(%indices_6, %current7) /* ty=int32 */;
+    %713 = @tensor_array_read_int8(%values_6, %current7) /* ty=tensor_int8_t[] */;
+    %714 = @tensor_array_write_int8(%ta6, %712, %713) /* ty=List[tensor_int8_t[]] */;
+    %715 = add(%current7, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_int8(%714, %715, %limit7, %indices_6, %values_6) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_concatenate_uint16(%x48: tensor_uint16_t[], %y8: tensor_uint16_t[]) -> tensor_uint16_t[] {
+  match? (%x48) {
+    tensor1_uint16(%t1112: Tensor[(?), uint16]) => match? (%y8) {
+      tensor1_uint16(%t1211: Tensor[(?), uint16]) => %716 = (%t1112, %t1211);
+      %717 = concatenate(%716) /* ty=Tensor[(?), uint16] */;
+      tensor1_uint16(%717) /* ty=tensor_uint16_t[] */,
+    },
+    tensor2_uint16(%t2112: Tensor[(?, ?), uint16]) => match? (%y8) {
+      tensor2_uint16(%t2210: Tensor[(?, ?), uint16]) => %718 = (%t2112, %t2210);
+      %719 = concatenate(%718) /* ty=Tensor[(?, ?), uint16] */;
+      tensor2_uint16(%719) /* ty=tensor_uint16_t[] */,
+    },
+    tensor3_uint16(%t3111: Tensor[(?, ?, ?), uint16]) => match? (%y8) {
+      tensor3_uint16(%t3210: Tensor[(?, ?, ?), uint16]) => %720 = (%t3111, %t3210);
+      %721 = concatenate(%720) /* ty=Tensor[(?, ?, ?), uint16] */;
+      tensor3_uint16(%721) /* ty=tensor_uint16_t[] */,
+    },
+    tensor4_uint16(%t4111: Tensor[(?, ?, ?, ?), uint16]) => match? (%y8) {
+      tensor4_uint16(%t427: Tensor[(?, ?, ?, ?), uint16]) => %722 = (%t4111, %t427);
+      %723 = concatenate(%722) /* ty=Tensor[(?, ?, ?, ?), uint16] */;
+      tensor4_uint16(%723) /* ty=tensor_uint16_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor1_helper_int32(%i45: int32, %up45: int32, %t84: Tensor[(?), int32]) -> List[tensor_int32_t[]] {
+  %724 = equal(%i45, %up45) /* ty=bool */;
+  if (%724) {
+    Nil /* ty=List[tensor_int32_t[]] */
+  } else {
+    %725 = take(%t84, %i45) /* ty=int32 */;
+    %726 = tensor0_int32(%725) /* ty=tensor_int32_t[] */;
+    %727 = add(%i45, 1 /* ty=int32 */) /* ty=int32 */;
+    %728 = @tensor_array_unstack_tensor1_helper_int32(%727, %up45, %t84) /* ty=List[tensor_int32_t[]] */;
+    Cons(%726, %728) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor3_int8(%tensor52: Tensor[(?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %729 = shape_of(%tensor52, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %730 = take(%729, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_int8(0 /* ty=int32 */, %730, %tensor52) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor4_float64(%tensor53: Tensor[(?, ?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %731 = shape_of(%tensor53, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %732 = take(%731, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_float64(0 /* ty=int32 */, %732, %tensor53) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_split_int8(%tensor_array50: List[tensor_int8_t[]], %value8: tensor_int8_t[], %lengths13: Tensor[(?), int32]) -> List[tensor_int8_t[]] {
+  %733 = shape_of(%lengths13, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %734 = take(%733, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_int8(%tensor_array50, %value8, 0 /* ty=int32 */, 0 /* ty=int32 */, %734, %lengths13) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_helper_float32(%i46: int32, %up46: int32, %t85: Tensor[(?, ?, ?, ?, ?, ?), float32]) -> List[tensor_float32_t[]] {
+  %735 = equal(%i46, %up46) /* ty=bool */;
+  if (%735) {
+    Nil /* ty=List[tensor_float32_t[]] */
+  } else {
+    %736 = take(%t85, %i46, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), float32] */;
+    %737 = tensor5_float32(%736) /* ty=tensor_float32_t[] */;
+    %738 = add(%i46, 1 /* ty=int32 */) /* ty=int32 */;
+    %739 = @tensor_array_unstack_tensor6_helper_float32(%738, %up46, %t85) /* ty=List[tensor_float32_t[]] */;
+    Cons(%737, %739) /* ty=List[tensor_float32_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_helper_int8(%i47: int32, %up47: int32, %t86: Tensor[(?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %740 = equal(%i47, %up47) /* ty=bool */;
+  if (%740) {
+    Nil /* ty=List[tensor_int8_t[]] */
+  } else {
+    %741 = take(%t86, %i47, axis=0) /* ty=Tensor[(?, ?, ?), int8] */;
+    %742 = tensor3_int8(%741) /* ty=tensor_int8_t[] */;
+    %743 = add(%i47, 1 /* ty=int32 */) /* ty=int32 */;
+    %744 = @tensor_array_unstack_tensor4_helper_int8(%743, %up47, %t86) /* ty=List[tensor_int8_t[]] */;
+    Cons(%742, %744) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_take_int8(%tensor54: tensor_int8_t[], %lower6: int32, %upper6: int32) -> tensor_int8_t[] {
+  match? (%tensor54) {
+    tensor1_int8(%t132: Tensor[(?), int8]) => %745 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][37], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %746 = take(%t132, %745) /* ty=Tensor[(?), int8] */;
+    tensor1_int8(%746) /* ty=tensor_int8_t[] */,
+    tensor2_int8(%t230: Tensor[(?, ?), int8]) => %747 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][38], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %748 = take(%t230, %747, axis=0) /* ty=Tensor[(?, ?), int8] */;
+    tensor2_int8(%748) /* ty=tensor_int8_t[] */,
+    tensor3_int8(%t330: Tensor[(?, ?, ?), int8]) => %749 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][39], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %750 = take(%t330, %749, axis=0) /* ty=Tensor[(?, ?, ?), int8] */;
+    tensor3_int8(%750) /* ty=tensor_int8_t[] */,
+    tensor4_int8(%t428: Tensor[(?, ?, ?, ?), int8]) => %751 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][40], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %752 = take(%t428, %751, axis=0) /* ty=Tensor[(?, ?, ?, ?), int8] */;
+    tensor4_int8(%752) /* ty=tensor_int8_t[] */,
+    tensor5_int8(%t514: Tensor[(?, ?, ?, ?, ?), int8]) => %753 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][41], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %754 = take(%t514, %753, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int8] */;
+    tensor5_int8(%754) /* ty=tensor_int8_t[] */,
+    tensor6_int8(%t610: Tensor[(?, ?, ?, ?, ?, ?), int8]) => %755 = arange(%lower6, %upper6, 1 /* ty=int32 */, start=meta[relay.Var][12], stop=meta[relay.Var][13], step=meta[relay.Constant][42], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %756 = take(%t610, %755, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int8] */;
+    tensor6_int8(%756) /* ty=tensor_int8_t[] */,
+  }
+}
+
+def @tensor_array_unstack_tensor5_int8(%tensor55: Tensor[(?, ?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %757 = shape_of(%tensor55, dtype="int32") /* ty=Tensor[(5), int32] */;
+  %758 = take(%757, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor5_helper_int8(0 /* ty=int32 */, %758, %tensor55) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_float64(%tensor56: Tensor[(?, ?, ?), float64]) -> List[tensor_float64_t[]] {
+  %759 = shape_of(%tensor56, dtype="int32") /* ty=Tensor[(3), int32] */;
+  %760 = take(%759, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor3_helper_float64(0 /* ty=int32 */, %760, %tensor56) /* ty=List[tensor_float64_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_int8(%tensor57: Tensor[(?, ?, ?, ?, ?, ?), int8]) -> List[tensor_int8_t[]] {
+  %761 = shape_of(%tensor57, dtype="int32") /* ty=Tensor[(6), int32] */;
+  %762 = take(%761, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor6_helper_int8(0 /* ty=int32 */, %762, %tensor57) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_scatter_int8(%tensor_array51: List[tensor_int8_t[]], %indices7: Tensor[(?), int32], %values8: List[tensor_int8_t[]]) -> List[tensor_int8_t[]] {
+  %763 = shape_of(%indices7, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %764 = take(%763, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_int8(%tensor_array51, 0 /* ty=int32 */, %764, %indices7, %values8) /* ty=List[tensor_int8_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_helper_float16(%i48: int32, %up48: int32, %t87: Tensor[(?, ?, ?), float16]) -> List[tensor_float16_t[]] {
+  %765 = equal(%i48, %up48) /* ty=bool */;
+  if (%765) {
+    Nil /* ty=List[tensor_float16_t[]] */
+  } else {
+    %766 = take(%t87, %i48, axis=0) /* ty=Tensor[(?, ?), float16] */;
+    %767 = tensor2_float16(%766) /* ty=tensor_float16_t[] */;
+    %768 = add(%i48, 1 /* ty=int32 */) /* ty=int32 */;
+    %769 = @tensor_array_unstack_tensor3_helper_float16(%768, %up48, %t87) /* ty=List[tensor_float16_t[]] */;
+    Cons(%767, %769) /* ty=List[tensor_float16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor1_helper_uint8(%i49: int32, %up49: int32, %t88: Tensor[(?), uint8]) -> List[tensor_uint8_t[]] {
+  %770 = equal(%i49, %up49) /* ty=bool */;
+  if (%770) {
+    Nil /* ty=List[tensor_uint8_t[]] */
+  } else {
+    %771 = take(%t88, %i49) /* ty=uint8 */;
+    %772 = tensor0_uint8(%771) /* ty=tensor_uint8_t[] */;
+    %773 = add(%i49, 1 /* ty=int32 */) /* ty=int32 */;
+    %774 = @tensor_array_unstack_tensor1_helper_uint8(%773, %up49, %t88) /* ty=List[tensor_uint8_t[]] */;
+    Cons(%772, %774) /* ty=List[tensor_uint8_t[]] */
+  }
+}
+
+def @ta_split_helper_int8(%tensor_array52: List[tensor_int8_t[]], %value16: tensor_int8_t[], %offset16: int32, %current16: int32, %limit16: int32, %lengths14: Tensor[(?), int32]) -> List[tensor_int8_t[]] {
+  %775 = equal(%current16, %limit16) /* ty=bool */;
+  if (%775) {
+    %tensor_array52
+  } else {
+    %776 = take(%lengths14, %current16) /* ty=int32 */;
+    %777 = add(%offset16, %776) /* ty=int32 */;
+    %778 = add(%current16, 1 /* ty=int32 */) /* ty=int32 */;
+    %779 = @ta_split_helper_int8(%tensor_array52, %value16, %777, %778, %limit16, %lengths14) /* ty=List[tensor_int8_t[]] */;
+    %780 = take(%lengths14, %current16) /* ty=int32 */;
+    %781 = add(%780, %offset16) /* ty=int32 */;
+    %782 = @tensor_take_int8(%value16, %offset16, %781) /* ty=tensor_int8_t[] */;
+    @tensor_array_write_int8(%779, %current16, %782) /* ty=List[tensor_int8_t[]] */
+  }
+}
+
+def @tensor_concatenate_uint8(%x49: tensor_uint8_t[], %y9: tensor_uint8_t[]) -> tensor_uint8_t[] {
+  match? (%x49) {
+    tensor1_uint8(%t1113: Tensor[(?), uint8]) => match? (%y9) {
+      tensor1_uint8(%t1212: Tensor[(?), uint8]) => %783 = (%t1113, %t1212);
+      %784 = concatenate(%783) /* ty=Tensor[(?), uint8] */;
+      tensor1_uint8(%784) /* ty=tensor_uint8_t[] */,
+    },
+    tensor2_uint8(%t2113: Tensor[(?, ?), uint8]) => match? (%y9) {
+      tensor2_uint8(%t2211: Tensor[(?, ?), uint8]) => %785 = (%t2113, %t2211);
+      %786 = concatenate(%785) /* ty=Tensor[(?, ?), uint8] */;
+      tensor2_uint8(%786) /* ty=tensor_uint8_t[] */,
+    },
+    tensor3_uint8(%t3112: Tensor[(?, ?, ?), uint8]) => match? (%y9) {
+      tensor3_uint8(%t3211: Tensor[(?, ?, ?), uint8]) => %787 = (%t3112, %t3211);
+      %788 = concatenate(%787) /* ty=Tensor[(?, ?, ?), uint8] */;
+      tensor3_uint8(%788) /* ty=tensor_uint8_t[] */,
+    },
+    tensor4_uint8(%t4112: Tensor[(?, ?, ?, ?), uint8]) => match? (%y9) {
+      tensor4_uint8(%t429: Tensor[(?, ?, ?, ?), uint8]) => %789 = (%t4112, %t429);
+      %790 = concatenate(%789) /* ty=Tensor[(?, ?, ?, ?), uint8] */;
+      tensor4_uint8(%790) /* ty=tensor_uint8_t[] */,
+    },
+  }
+}
+
+def @tensor_array_concat_int8(%tensor_array53: List[tensor_int8_t[]]) -> tensor_int8_t[] {
+  match? (%tensor_array53) {
+    Nil => tensor_nil_int8 /* ty=tensor_int8_t[] */,
+    Cons(%hd7: tensor_int8_t[], %tl7: List[tensor_int8_t[]]) => match? (%tl7) {
+      Nil => %hd7,
+      _ => %791 = @tensor_array_concat_int8(%tl7) /* ty=tensor_int8_t[] */;
+      @tensor_concatenate_int8(%hd7, %791) /* ty=tensor_int8_t[] */,
+    },
+  }
+}
+
+def @tensor_array_unstack_tensor1_int16(%tensor58: Tensor[(?), int16]) -> List[tensor_int16_t[]] {
+  %792 = shape_of(%tensor58, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %793 = take(%792, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor1_helper_int16(0 /* ty=int32 */, %793, %tensor58) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_split_int32(%tensor_array54: List[tensor_int32_t[]], %value9: tensor_int32_t[], %lengths15: Tensor[(?), int32]) -> List[tensor_int32_t[]] {
+  %794 = shape_of(%lengths15, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %795 = take(%794, 0 /* ty=int32 */) /* ty=int32 */;
+  @ta_split_helper_int32(%tensor_array54, %value9, 0 /* ty=int32 */, 0 /* ty=int32 */, %795, %lengths15) /* ty=List[tensor_int32_t[]] */
+}
+
+def @tensor_array_stack_int8(%tensor_array55: List[tensor_int8_t[]]) -> tensor_int8_t[] {
+  %796 = @map(@tensor_expand_dims_int8, %tensor_array55) /* ty=List[tensor_int8_t[]] */;
+  %797 = @hd(%796) /* ty=tensor_int8_t[] */;
+  %798 = @tl(%796) /* ty=List[tensor_int8_t[]] */;
+  @foldl(@tensor_concatenate_int8, %797, %798) /* ty=tensor_int8_t[] */
+}
+
+def @tensor_take_int16(%tensor59: tensor_int16_t[], %lower7: int32, %upper7: int32) -> tensor_int16_t[] {
+  match? (%tensor59) {
+    tensor1_int16(%t133: Tensor[(?), int16]) => %799 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][43], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %800 = take(%t133, %799) /* ty=Tensor[(?), int16] */;
+    tensor1_int16(%800) /* ty=tensor_int16_t[] */,
+    tensor2_int16(%t231: Tensor[(?, ?), int16]) => %801 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][44], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %802 = take(%t231, %801, axis=0) /* ty=Tensor[(?, ?), int16] */;
+    tensor2_int16(%802) /* ty=tensor_int16_t[] */,
+    tensor3_int16(%t331: Tensor[(?, ?, ?), int16]) => %803 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][45], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %804 = take(%t331, %803, axis=0) /* ty=Tensor[(?, ?, ?), int16] */;
+    tensor3_int16(%804) /* ty=tensor_int16_t[] */,
+    tensor4_int16(%t430: Tensor[(?, ?, ?, ?), int16]) => %805 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][46], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %806 = take(%t430, %805, axis=0) /* ty=Tensor[(?, ?, ?, ?), int16] */;
+    tensor4_int16(%806) /* ty=tensor_int16_t[] */,
+    tensor5_int16(%t515: Tensor[(?, ?, ?, ?, ?), int16]) => %807 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][47], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %808 = take(%t515, %807, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int16] */;
+    tensor5_int16(%808) /* ty=tensor_int16_t[] */,
+    tensor6_int16(%t611: Tensor[(?, ?, ?, ?, ?, ?), int16]) => %809 = arange(%lower7, %upper7, 1 /* ty=int32 */, start=meta[relay.Var][14], stop=meta[relay.Var][15], step=meta[relay.Constant][48], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %810 = take(%t611, %809, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int16] */;
+    tensor6_int16(%810) /* ty=tensor_int16_t[] */,
+  }
+}
+
+def @tensor_expand_dims_int16(%x50: tensor_int16_t[]) -> tensor_int16_t[] {
+  match? (%x50) {
+    tensor0_int16(%t07: int16) => %811 = expand_dims(%t07, axis=0) /* ty=Tensor[(?), int16] */;
+    tensor1_int16(%811) /* ty=tensor_int16_t[] */,
+    tensor1_int16(%t134: Tensor[(?), int16]) => %812 = expand_dims(%t134, axis=0) /* ty=Tensor[(?, ?), int16] */;
+    tensor2_int16(%812) /* ty=tensor_int16_t[] */,
+    tensor2_int16(%t232: Tensor[(?, ?), int16]) => %813 = expand_dims(%t232, axis=0) /* ty=Tensor[(?, ?, ?), int16] */;
+    tensor3_int16(%813) /* ty=tensor_int16_t[] */,
+    tensor3_int16(%t332: Tensor[(?, ?, ?), int16]) => %814 = expand_dims(%t332, axis=0) /* ty=Tensor[(?, ?, ?, ?), int16] */;
+    tensor4_int16(%814) /* ty=tensor_int16_t[] */,
+    tensor4_int16(%t431: Tensor[(?, ?, ?, ?), int16]) => %815 = expand_dims(%t431, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int16] */;
+    tensor5_int16(%815) /* ty=tensor_int16_t[] */,
+    tensor5_int16(%t516: Tensor[(?, ?, ?, ?, ?), int16]) => %816 = expand_dims(%t516, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), int16] */;
+    tensor6_int16(%816) /* ty=tensor_int16_t[] */,
+  }
+}
+
+def @sum(%xs14: List[int32]) -> int32 {
+  let %add_f: fn (int32, int32) -> int32 = fn (%x51: int32, %y10: int32) -> int32 {
+    add(%x51, %y10) /* ty=int32 */
+  };
+  @foldl(%add_f, 0 /* ty=int32 */, %xs14) /* ty=int32 */
+}
+
+def @tensor_array_read_int16(%tensor_array56: List[tensor_int16_t[]], %x52: int32) -> tensor_int16_t[] {
+  @nth(%tensor_array56, %x52) /* ty=tensor_int16_t[] */
+}
+
+def @tensor_array_write_int16(%tensor_array57: List[tensor_int16_t[]], %x53: int32, %v9: tensor_int16_t[]) -> List[tensor_int16_t[]] {
+  @update(%tensor_array57, %x53, %v9) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_unstack_tensor2_int16(%tensor60: Tensor[(?, ?), int16]) -> List[tensor_int16_t[]] {
+  %817 = shape_of(%tensor60, dtype="int32") /* ty=Tensor[(2), int32] */;
+  %818 = take(%817, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor2_helper_int16(0 /* ty=int32 */, %818, %tensor60) /* ty=List[tensor_int16_t[]] */
+}
+
+def @foldr1[A](%f12: fn (A, A) -> A, %xs15: List[A]) -> A {
+  match? (%xs15) {
+    Cons(%x54: A, Nil) => %x54,
+    Cons(%x55: A, %rest6: List[A]) => %819 = @foldr1(%f12, %rest6) /* ty=A */;
+    %f12(%x55, %819) /* ty=A */,
+  }
+}
+
+def @tensor_array_unstack_tensor4_helper_int16(%i50: int32, %up50: int32, %t89: Tensor[(?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %820 = equal(%i50, %up50) /* ty=bool */;
+  if (%820) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %821 = take(%t89, %i50, axis=0) /* ty=Tensor[(?, ?, ?), int16] */;
+    %822 = tensor3_int16(%821) /* ty=tensor_int16_t[] */;
+    %823 = add(%i50, 1 /* ty=int32 */) /* ty=int32 */;
+    %824 = @tensor_array_unstack_tensor4_helper_int16(%823, %up50, %t89) /* ty=List[tensor_int16_t[]] */;
+    Cons(%822, %824) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_unstack_tensor4_int16(%tensor61: Tensor[(?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %825 = shape_of(%tensor61, dtype="int32") /* ty=Tensor[(4), int32] */;
+  %826 = take(%825, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_unstack_tensor4_helper_int16(0 /* ty=int32 */, %826, %tensor61) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_unstack_tensor6_helper_int16(%i51: int32, %up51: int32, %t90: Tensor[(?, ?, ?, ?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %827 = equal(%i51, %up51) /* ty=bool */;
+  if (%827) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %828 = take(%t90, %i51, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), int16] */;
+    %829 = tensor5_int16(%828) /* ty=tensor_int16_t[] */;
+    %830 = add(%i51, 1 /* ty=int32 */) /* ty=int32 */;
+    %831 = @tensor_array_unstack_tensor6_helper_int16(%830, %up51, %t90) /* ty=List[tensor_int16_t[]] */;
+    Cons(%829, %831) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @ta_split_helper_uint16(%tensor_array58: List[tensor_uint16_t[]], %value17: tensor_uint16_t[], %offset17: int32, %current17: int32, %limit17: int32, %lengths16: Tensor[(?), int32]) -> List[tensor_uint16_t[]] {
+  %832 = equal(%current17, %limit17) /* ty=bool */;
+  if (%832) {
+    %tensor_array58
+  } else {
+    %833 = take(%lengths16, %current17) /* ty=int32 */;
+    %834 = add(%offset17, %833) /* ty=int32 */;
+    %835 = add(%current17, 1 /* ty=int32 */) /* ty=int32 */;
+    %836 = @ta_split_helper_uint16(%tensor_array58, %value17, %834, %835, %limit17, %lengths16) /* ty=List[tensor_uint16_t[]] */;
+    %837 = take(%lengths16, %current17) /* ty=int32 */;
+    %838 = add(%837, %offset17) /* ty=int32 */;
+    %839 = @tensor_take_uint16(%value17, %offset17, %838) /* ty=tensor_uint16_t[] */;
+    @tensor_array_write_uint16(%836, %current17, %839) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+def @tensor_array_scatter_helper_int32(%ta7: List[tensor_int32_t[]], %current8: int32, %limit8: int32, %indices_7: Tensor[(?), int32], %values_7: List[tensor_int32_t[]]) -> List[tensor_int32_t[]] {
+  %840 = equal(%current8, %limit8) /* ty=bool */;
+  if (%840) {
+    %ta7
+  } else {
+    %841 = take(%indices_7, %current8) /* ty=int32 */;
+    %842 = @tensor_array_read_int32(%values_7, %current8) /* ty=tensor_int32_t[] */;
+    %843 = @tensor_array_write_int32(%ta7, %841, %842) /* ty=List[tensor_int32_t[]] */;
+    %844 = add(%current8, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_int32(%843, %844, %limit8, %indices_7, %values_7) /* ty=List[tensor_int32_t[]] */
+  }
+}
+
+def @tensor_array_scatter_helper_int16(%ta8: List[tensor_int16_t[]], %current9: int32, %limit9: int32, %indices_8: Tensor[(?), int32], %values_8: List[tensor_int16_t[]]) -> List[tensor_int16_t[]] {
+  %845 = equal(%current9, %limit9) /* ty=bool */;
+  if (%845) {
+    %ta8
+  } else {
+    %846 = take(%indices_8, %current9) /* ty=int32 */;
+    %847 = @tensor_array_read_int16(%values_8, %current9) /* ty=tensor_int16_t[] */;
+    %848 = @tensor_array_write_int16(%ta8, %846, %847) /* ty=List[tensor_int16_t[]] */;
+    %849 = add(%current9, 1 /* ty=int32 */) /* ty=int32 */;
+    @tensor_array_scatter_helper_int16(%848, %849, %limit9, %indices_8, %values_8) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_scatter_int16(%tensor_array59: List[tensor_int16_t[]], %indices8: Tensor[(?), int32], %values9: List[tensor_int16_t[]]) -> List[tensor_int16_t[]] {
+  %850 = shape_of(%indices8, dtype="int32") /* ty=Tensor[(1), int32] */;
+  %851 = take(%850, 0 /* ty=int32 */) /* ty=int32 */;
+  @tensor_array_scatter_helper_int16(%tensor_array59, 0 /* ty=int32 */, %851, %indices8, %values9) /* ty=List[tensor_int16_t[]] */
+}
+
+def @tensor_array_unstack_tensor3_helper_int16(%i52: int32, %up52: int32, %t91: Tensor[(?, ?, ?), int16]) -> List[tensor_int16_t[]] {
+  %852 = equal(%i52, %up52) /* ty=bool */;
+  if (%852) {
+    Nil /* ty=List[tensor_int16_t[]] */
+  } else {
+    %853 = take(%t91, %i52, axis=0) /* ty=Tensor[(?, ?), int16] */;
+    %854 = tensor2_int16(%853) /* ty=tensor_int16_t[] */;
+    %855 = add(%i52, 1 /* ty=int32 */) /* ty=int32 */;
+    %856 = @tensor_array_unstack_tensor3_helper_int16(%855, %up52, %t91) /* ty=List[tensor_int16_t[]] */;
+    Cons(%854, %856) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @ta_split_helper_int16(%tensor_array60: List[tensor_int16_t[]], %value18: tensor_int16_t[], %offset18: int32, %current18: int32, %limit18: int32, %lengths17: Tensor[(?), int32]) -> List[tensor_int16_t[]] {
+  %857 = equal(%current18, %limit18) /* ty=bool */;
+  if (%857) {
+    %tensor_array60
+  } else {
+    %858 = take(%lengths17, %current18) /* ty=int32 */;
+    %859 = add(%offset18, %858) /* ty=int32 */;
+    %860 = add(%current18, 1 /* ty=int32 */) /* ty=int32 */;
+    %861 = @ta_split_helper_int16(%tensor_array60, %value18, %859, %860, %limit18, %lengths17) /* ty=List[tensor_int16_t[]] */;
+    %862 = take(%lengths17, %current18) /* ty=int32 */;
+    %863 = add(%862, %offset18) /* ty=int32 */;
+    %864 = @tensor_take_int16(%value18, %offset18, %863) /* ty=tensor_int16_t[] */;
+    @tensor_array_write_int16(%861, %current18, %864) /* ty=List[tensor_int16_t[]] */
+  }
+}
+
+def @tensor_array_concat_int16(%tensor_array61: List[tensor_int16_t[]]) -> tensor_int16_t[] {
+  match? (%tensor_array61) {
+    Nil => tensor_nil_int16 /* ty=tensor_int16_t[] */,
+    Cons(%hd8: tensor_int16_t[], %tl8: List[tensor_int16_t[]]) => match? (%tl8) {
+      Nil => %hd8,
+      _ => %865 = @tensor_array_concat_int16(%tl8) /* ty=tensor_int16_t[] */;
+      @tensor_concatenate_int16(%hd8, %865) /* ty=tensor_int16_t[] */,
+    },
+  }
+}
+
+def @tensor_take_uint16(%tensor62: tensor_uint16_t[], %lower8: int32, %upper8: int32) -> tensor_uint16_t[] {
+  match? (%tensor62) {
+    tensor1_uint16(%t135: Tensor[(?), uint16]) => %866 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][49], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %867 = take(%t135, %866) /* ty=Tensor[(?), uint16] */;
+    tensor1_uint16(%867) /* ty=tensor_uint16_t[] */,
+    tensor2_uint16(%t233: Tensor[(?, ?), uint16]) => %868 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][50], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %869 = take(%t233, %868, axis=0) /* ty=Tensor[(?, ?), uint16] */;
+    tensor2_uint16(%869) /* ty=tensor_uint16_t[] */,
+    tensor3_uint16(%t333: Tensor[(?, ?, ?), uint16]) => %870 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][51], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %871 = take(%t333, %870, axis=0) /* ty=Tensor[(?, ?, ?), uint16] */;
+    tensor3_uint16(%871) /* ty=tensor_uint16_t[] */,
+    tensor4_uint16(%t432: Tensor[(?, ?, ?, ?), uint16]) => %872 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][52], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %873 = take(%t432, %872, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint16] */;
+    tensor4_uint16(%873) /* ty=tensor_uint16_t[] */,
+    tensor5_uint16(%t517: Tensor[(?, ?, ?, ?, ?), uint16]) => %874 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][53], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %875 = take(%t517, %874, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint16] */;
+    tensor5_uint16(%875) /* ty=tensor_uint16_t[] */,
+    tensor6_uint16(%t612: Tensor[(?, ?, ?, ?, ?, ?), uint16]) => %876 = arange(%lower8, %upper8, 1 /* ty=int32 */, start=meta[relay.Var][16], stop=meta[relay.Var][17], step=meta[relay.Constant][54], dtype="int32") /* ty=Tensor[(?), int32] */;
+    %877 = take(%t612, %876, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), uint16] */;
+    tensor6_uint16(%877) /* ty=tensor_uint16_t[] */,
+  }
+}
+
+def @tensor_expand_dims_uint16(%x56: tensor_uint16_t[]) -> tensor_uint16_t[] {
+  match? (%x56) {
+    tensor0_uint16(%t08: uint16) => %878 = expand_dims(%t08, axis=0) /* ty=Tensor[(?), uint16] */;
+    tensor1_uint16(%878) /* ty=tensor_uint16_t[] */,
+    tensor1_uint16(%t136: Tensor[(?), uint16]) => %879 = expand_dims(%t136, axis=0) /* ty=Tensor[(?, ?), uint16] */;
+    tensor2_uint16(%879) /* ty=tensor_uint16_t[] */,
+    tensor2_uint16(%t234: Tensor[(?, ?), uint16]) => %880 = expand_dims(%t234, axis=0) /* ty=Tensor[(?, ?, ?), uint16] */;
+    tensor3_uint16(%880) /* ty=tensor_uint16_t[] */,
+    tensor3_uint16(%t334: Tensor[(?, ?, ?), uint16]) => %881 = expand_dims(%t334, axis=0) /* ty=Tensor[(?, ?, ?, ?), uint16] */;
+    tensor4_uint16(%881) /* ty=tensor_uint16_t[] */,
+    tensor4_uint16(%t433: Tensor[(?, ?, ?, ?), uint16]) => %882 = expand_dims(%t433, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?), uint16] */;
+    tensor5_uint16(%882) /* ty=tensor_uint16_t[] */,
+    tensor5_uint16(%t518: Tensor[(?, ?, ?, ?, ?), uint16]) => %883 = expand_dims(%t518, axis=0) /* ty=Tensor[(?, ?, ?, ?, ?, ?), uint16] */;
+    tensor6_uint16(%883) /* ty=tensor_uint16_t[] */,
+  }
+}
+
+def @tensor_array_write_uint16(%tensor_array62: List[tensor_uint16_t[]], %x57: int32, %v10: tensor_uint16_t[]) -> List[tensor_uint16_t[]] {
+  @update(%tensor_array62, %x57, %v10) /* ty=List[tensor_uint16_t[]] */
+}
+
+def @tensor_array_unstack_tensor1_helper_uint16(%i53: int32, %up53: int32, %t92: Tensor[(?), uint16]) -> List[tensor_uint16_t[]] {
+  %884 = equal(%i53, %up53) /* ty=bool */;
+  if (%884) {
+    Nil /* ty=List[tensor_uint16_t[]] */
+  } else {
+    %885 = take(%t92, %i53) /* ty=uint16 */;
+    %886 = tensor0_uint16(%885) /* ty=tensor_uint16_t[] */;
+    %887 = add(%i53, 1 /* ty=int32 */) /* ty=int32 */;
+    %888 = @tensor_array_unstack_tensor1_helper_uint16(%887, %up53, %t92) /* ty=List[tensor_uint16_t[]] */;
+    Cons(%886, %888) /* ty=List[tensor_uint16_t[]] */
+  }
+}
+
+// meta data omitted. you can use show_meta_data=True to include meta data
