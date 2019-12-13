@@ -169,6 +169,9 @@ def _make_tvm_args(args, temp_args):
             values[i].v_handle = arg.handle
             type_codes[i] = TypeCode.PACKED_FUNC_HANDLE
             temp_args.append(arg)
+        elif isinstance(arg, object):
+            values[i].v_str = c_str(str(arg))
+            type_codes[i] = TypeCode.STR
         else:
             raise TypeError("Don't know how to handle type %s" % type(arg))
     return values, type_codes, num_args

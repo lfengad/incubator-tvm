@@ -72,3 +72,20 @@ def schedule_lookup_table_import(outs):
       The computation schedule for the op.
     """
     return schedule_extern(outs)
+
+@tvm.target.generic_func
+def schedule_initialize_table_from_text_file(outs):
+    """Schedule for non-maximum suppression
+
+    Parameters
+    ----------
+    outs: Array of Tensor
+      The computation graph description of nms
+      in the format of an array of tensors.
+
+    Returns
+    -------
+    s: Schedule
+      The computation schedule for the op.
+    """
+    return schedule_extern(outs)

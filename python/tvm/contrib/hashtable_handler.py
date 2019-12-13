@@ -121,3 +121,41 @@ def init(table_reference, keys, values, **kwargs):
         dtype="int32",
         **kwargs
     )
+
+
+
+def initfromtxt(table_reference, files, vocab_size, key_index, value_index, delim, **kwargs):
+    """Create an extern op that compute batched matrix mult of A and rhs with CBLAS
+     This function serves as an example on how to call external libraries.
+     Parameters
+    ----------
+    lhs : Tensor
+        The left matrix operand
+    rhs : Tensor
+        The right matrix operand
+    transa : bool
+        Whether transpose lhs
+    transb : bool
+        Whether transpose rhs
+     Returns
+    -------
+    C : Tensor
+        The result tensor.
+    """
+    return _api.extern(
+        (1,),
+        [table_reference, files],
+        lambda ins, outs: _intrin.call_packed(
+            "tvm.contrib.hashtable_handler.initfromtxt",
+            ins[0],
+            ins[1],
+            vocab_size,
+            key_index,
+            value_index,
+            delim,
+            outs[0]
+        ),
+        name="C",
+        dtype="int32",
+        **kwargs
+    )

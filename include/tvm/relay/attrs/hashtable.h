@@ -1,4 +1,3 @@
-
 #ifndef TVM_RELAY_ATTRS_HASHTABLE_H_
 #define TVM_RELAY_ATTRS_HASHTABLE_H_
 
@@ -55,6 +54,27 @@ struct LookupTableImportAttrs : public tvm::AttrsNode<LookupTableImportAttrs> {
       .describe("Value data type.");
   }
 };
+
+
+/*! \brief Attributes used in lookup-table-import operator */
+struct InitializeTableFromTextFileAttrs : public tvm::AttrsNode<InitializeTableFromTextFileAttrs> {
+  int64_t vocab_size;
+  int64_t key_index;
+  int64_t value_index;
+  std::string delim;
+
+  TVM_DECLARE_ATTRS(InitializeTableFromTextFileAttrs, "relay.attrs.InitializeTableFromTextFileAttrs") {
+    TVM_ATTR_FIELD(vocab_size).set_default(-1)
+      .describe("Vocabulary size.");
+    TVM_ATTR_FIELD(key_index).set_default(-2)
+      .describe("Key index for parsing");
+    TVM_ATTR_FIELD(value_index).set_default(-1)
+      .describe("Value index for parsing");
+    TVM_ATTR_FIELD(delim).set_default(" ")
+      .describe("Delim for parsing");
+  }
+};
+
 
 
 

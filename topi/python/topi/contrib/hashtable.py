@@ -119,3 +119,33 @@ def lookup_table_import(table_reference, keys, values, key_dtype, value_dtype):
     fake_out = hashtable_handler.init(table_reference, keys, values)
     return fake_out
 
+@tvm.target.generic_func
+def initialize_table_from_text_file(table_reference, files, vocab_size, key_index, value_index, delim):
+    """Get valid count of bounding boxes given a score threshold.
+    Also moves valid boxes to the top of input data.
+
+    Parameters
+    ----------
+    data : tvm.Tensor
+        Input data. 3-D tensor with shape [batch_size, num_anchors, 6]
+        or [batch_size, num_anchors, 5].
+
+    score_threshold : optional, float
+        Lower limit of score for valid bounding boxes.
+
+    id_index : optional, int
+        index of the class categories, -1 to disable.
+
+    score_index: optional, int
+        Index of the scores/confidence of boxes.
+
+    Returns
+    -------
+    out_tensor : tvm.Tensor
+        Rearranged data tensor.
+
+    valid_count : tvm.Tensor
+        1-D tensor for valid number of boxes.
+    """
+    fake_out = hashtable_handler.initfromtxt(table_reference, files, vocab_size, key_index, value_index, delim)
+    return fake_out

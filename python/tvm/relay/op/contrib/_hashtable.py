@@ -84,3 +84,24 @@ def compute_lookup_table_import(attrs, inputs, _, target):
 reg.register_pattern("contrib.lookup_table_import", OpPattern.OPAQUE)
 
 
+# Get counts of valid boxes
+@reg.register_schedule("contrib.initialize_table_from_text_file")
+def schedule_initialize_table_from_text_file(_, outs, target):
+    """Schedule definition of lookup_table_import"""
+    with target:
+        return topi.generic.schedule_initialize_table_from_text_file(outs)
+
+
+@reg.register_compute("contrib.initialize_table_from_text_file")
+def compute_initialize_table_from_text_file(attrs, inputs, _, target):
+    """Compute definition of lookup_table_import"""
+    vocab_size = attrs.vocab_size
+    key_index = attrs.key_index
+    value_index = attrs.value_index
+    delim = attrs.delim
+    return [topi.contrib.initialize_table_from_text_file(
+        inputs[0], inputs[1], vocab_size, key_index, value_index, delim)]
+
+reg.register_pattern("contrib.initialize_table_from_text_file", OpPattern.OPAQUE)
+
+

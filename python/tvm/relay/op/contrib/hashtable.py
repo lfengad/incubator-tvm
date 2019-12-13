@@ -166,3 +166,62 @@ def lookup_table_import(table_reference,
                       value_dtype)
 
 
+def initialize_table_from_text_file(table_reference,
+                      files,
+                      vocab_size,
+                      key_index,
+                      value_index,
+                      delim):
+    """Non-maximum suppression operator for object detection.
+
+    Parameters
+    ----------
+    data : relay.Expr
+        3-D tensor with shape [batch_size, num_anchors, 6].
+        The last dimension should be in format of
+        [class_id, score, box_left, box_top, box_right, box_bottom].
+
+    valid_count : relay.Expr
+        1-D tensor for valid number of boxes.
+
+    max_output_size : int, optional
+        Max number of output valid boxes for each instance.
+        By default all valid boxes are returned.
+
+    iou_threshold : float, optional
+        Non-maximum suppression threshold.
+
+    force_suppress : bool, optional
+        Suppress all detections regardless of class_id.
+
+    top_k : int, optional
+        Keep maximum top k detections before nms, -1 for no limit.
+
+    coord_start : int, optional
+        The starting index of the consecutive 4 coordinates.
+
+    score_index : int, optional
+        Index of the scores/confidence of boxes.
+
+    id_index : int, optional
+        index of the class categories, -1 to disable.
+
+    return_indices : bool, optional
+        Whether to return box indices in input data.
+
+    invalid_to_bottom : bool, optional
+        Whether to move all valid bounding boxes to the top.
+
+    Returns
+    -------
+    out : relay.Expr
+        3-D tensor with shape [batch_size, num_anchors, 6].
+    """
+    return _make.initialize_table_from_text_file(table_reference,
+                      files,
+                      vocab_size,
+                      key_index,
+                      value_index,
+                      delim)
+
+

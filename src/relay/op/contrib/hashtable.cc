@@ -191,6 +191,60 @@ value data types in the hash table.)doc" TVM_ADD_FILELINE
 .add_type_rel("LookupTableImport", LookupTableImportRel);
 
 
+TVM_REGISTER_NODE_TYPE(InitializeTableFromTextFileAttrs);
+
+bool InitializeTableFromTextFileRel(const Array<Type>& types,
+            int num_inputs,
+            const Attrs& attrs,
+            const TypeReporter& reporter) {
+  CHECK_EQ(types.size(), 3);
+  const auto* table_reference = types[0].as<TensorTypeNode>();
+  CHECK(table_reference);
+  const auto* files = types[1].as<TensorTypeNode>();
+  CHECK(files);
+  const InitializeTableFromTextFileAttrs* param =
+    attrs.as<InitializeTableFromTextFileAttrs>();
+  //CHECK_EQ(keys->shape, values->shape);
+  std::vector<IndexExpr> oshape({1});
+  DataType fake_type = TVMType2Type(String2TVMType("int32"));
+  reporter->Assign(types[2], TensorTypeNode::make(oshape, fake_type));
+  return true;
+
+}
+
+Expr MakeInitializeTableFromTextFile(Expr table_reference,
+                        Expr files,
+                        int64_t vocab_size,
+                        int64_t key_index,
+                        int64_t value_index,
+                        std::string delim) {
+  auto attrs = make_node<InitializeTableFromTextFileAttrs>();
+  attrs->vocab_size = vocab_size;
+  attrs->key_index = key_index;
+  attrs->value_index = value_index;
+  attrs->delim = delim;
+  static const Op& op = Op::Get("contrib.initialize_table_from_text_file");
+  return CallNode::make(op, {table_reference, files}, Attrs(attrs), {});
+}
+
+
+TVM_REGISTER_API("relay.op.contrib._make.initialize_table_from_text_file")
+.set_body_typed(MakeInitializeTableFromTextFile);
+
+
+RELAY_REGISTER_OP("contrib.initialize_table_from_text_file")
+.describe(R"doc(Import the given value and key pairs to initialize the given Hash Table. 
+Inputs are [Hash Table, Keys, Values]. No Returns. The two attributes define the key and 
+value data types in the hash table.)doc" TVM_ADD_FILELINE
+)
+.set_attrs_type<InitializeTableFromTextFileAttrs>()
+.set_num_inputs(2)
+.add_argument("table_reference", "Tensor", "Referred hashtable.")
+.add_argument("files", "Tensor", "file for initilize.")
+.set_support_level(5)
+.add_type_rel("InitializeTableFromTextFile", InitializeTableFromTextFileRel);
+
+
 
 }  // namespace relay
 }  // namespace tvm

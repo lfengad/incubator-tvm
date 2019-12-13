@@ -384,7 +384,10 @@ void GraphRuntime::SetupOpExecs() {
 
     std::shared_ptr<OpArgs> op_args = nullptr;
     //printf("name is %s\n", inode.param.func_name.c_str());
-    if(inode.param.func_name =="fused_contrib_hash_table" || inode.param.func_name =="fused_contrib_lookup_table_import") {
+    if(inode.param.func_name =="fused_contrib_hash_table" || 
+       inode.param.func_name =="fused_contrib_lookup_table_import" ||
+       inode.param.func_name =="fused_contrib_initialize_table_from_text_file"
+       ) {
     init_ops_[nid] = true;
     }
     std::tie(op_execs_[nid], op_args) =

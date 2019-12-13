@@ -25,8 +25,6 @@
 #include <tvm/runtime/util.h>
 #include <dlpack/dlpack.h>
 #include <algorithm>
-#include <iostream>
-#include <fstream>
 #include <vector>
 #include "hashtable.h"
 
@@ -40,7 +38,7 @@ std::vector<std::string> split (std::string& s, std::string& delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
-    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+    while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
         token = s.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
         res.push_back (token);
@@ -52,38 +50,37 @@ std::vector<std::string> split (std::string& s, std::string& delimiter) {
 bool SetValue(std::string& line, std::vector<std::string>& tokens, int64_t index, void* data, int64_t cnt, DLDataType dtype)
 {
    if (index == -1) {
-      *(static_cast<int64_t*>(data)) = cnt;
+      *(static_cast<int64_t*>data) = next_id_;
       return true;
     }
     const std::string& token = (index == -2) ? line : tokens[index];
     switch (dtype.code) {
       case kDLInt: {
         if (dtype.bits == 32) {
-          *(static_cast<int32_t*>(data)) = std::stoi(token.c_str(), NULL, 10); 
+          *(static_cast<int32_t*>data) = std::stoi(token.c_str(), NULL, 10); 
           return true;
          }
         if (dtype.bits == 64) {
-          *(static_cast<int64_t*>(data)) = std::stoll(token.c_str(), NULL, 10); 
+          *(static_cast<int64_t*>data) = std::stoll(token.c_str(), NULL, 10); 
           return true;
          }
       }
       case kDLFloat: {
         if (dtype.bits == 32) {
-          *(static_cast<float*>(data)) = std::stof(token.c_str(), NULL); 
+          *(static_cast<float*>data) = std::stof(token.c_str(), NULL); 
           return true;
          }
         if (dtype.bits == 64) {
-          *(static_cast<double*>(data)) = std::stod(token.c_str(), NULL); 
+          *(static_cast<double*>data) = std::stod(token.c_str(), NULL); 
           return true;
          }
       }
       case 130U:
-        *(static_cast<std::string**>(data)) = new std::string(token);
+        *(static_cast<std::string**>data) = new std::string(token);
         return true;
       default:
         LOG(FATAL) << "type not supported";
     }
-    return true;
 }
 
 // Argsort implemented C library sort for nms.
@@ -258,10 +255,7 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.initfromtxt")
   int64_t value_index = args[4];
   std::string delim = args[5];
   DLTensor *fakesymbol = args[6];
-  
-  //printf("here value is %d %d %d %s\n", vocab_size, key_index, value_index, delim.c_str());   
-
-  
+   
   //printf("here execute init\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data); 
 
@@ -283,7 +277,7 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.initfromtxt")
  
   auto file_ptr = *(static_cast<std::string **>(files->data)); 
   std::string line;
-  std::ifstream fin(*file_ptr);
+  ifstream fin(*file_ptr);
 
   CHECK(fin) << "TXT File can not be open" << (*file_ptr);
 

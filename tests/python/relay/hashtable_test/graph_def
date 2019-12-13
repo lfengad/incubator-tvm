@@ -1,0 +1,153 @@
+node {
+  name: "input-0"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_STRING
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: 5
+        }
+      }
+    }
+  }
+}
+node {
+  name: "hash_table"
+  op: "HashTableV2"
+  attr {
+    key: "container"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "key_dtype"
+    value {
+      type: DT_STRING
+    }
+  }
+  attr {
+    key: "shared_name"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "use_node_name_sharing"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "value_dtype"
+    value {
+      type: DT_INT64
+    }
+  }
+}
+node {
+  name: "hash_table/Const"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT64
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT64
+        tensor_shape {
+        }
+        int64_val: 2
+      }
+    }
+  }
+}
+node {
+  name: "hash_table/text_file_id_table_init/asset_filepath"
+  op: "Const"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_STRING
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_STRING
+        tensor_shape {
+        }
+        string_val: "init.txt"
+      }
+    }
+  }
+}
+node {
+  name: "hash_table/text_file_id_table_init"
+  op: "InitializeTableFromTextFileV2"
+  input: "hash_table"
+  input: "hash_table/text_file_id_table_init/asset_filepath"
+  attr {
+    key: "delimiter"
+    value {
+      s: "\t"
+    }
+  }
+  attr {
+    key: "key_index"
+    value {
+      i: -2
+    }
+  }
+  attr {
+    key: "value_index"
+    value {
+      i: -1
+    }
+  }
+  attr {
+    key: "vocab_size"
+    value {
+      i: -1
+    }
+  }
+}
+node {
+  name: "sum"
+  op: "LookupTableFindV2"
+  input: "hash_table"
+  input: "input-0"
+  input: "hash_table/Const"
+  attr {
+    key: "Tin"
+    value {
+      type: DT_STRING
+    }
+  }
+  attr {
+    key: "Tout"
+    value {
+      type: DT_INT64
+    }
+  }
+}
+node {
+  name: "init_all_tables"
+  op: "NoOp"
+  input: "^hash_table/text_file_id_table_init"
+}
+library {
+}
+

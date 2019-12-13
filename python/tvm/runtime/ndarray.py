@@ -181,6 +181,8 @@ class NDArray(NDArrayBase):
             args_buffer = np_args.ctypes.data_as(ctypes.c_void_p)
             check_call(_LIB.TVMArrayStrArgsCalc(self.handle, args_buffer))    
             strtype = "<U{}".format(np_args[1])
+            if np_args[1] == 0:
+                strtype="<U8"
             np_arr = np.empty(shape, dtype = strtype)
             assert np_arr.flags['C_CONTIGUOUS']
             data = np_arr.ctypes.data_as(ctypes.c_void_p)
