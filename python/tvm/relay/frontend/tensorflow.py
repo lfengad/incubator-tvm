@@ -1315,10 +1315,13 @@ def _unpack():
                              indices_or_sections=axis_length,
                              axis=axis)
         #name=attr.get('_node_name', 'unstack'))
+        """
         if axis == 0:
             axis = None
         else:
             axis = [axis]
+        """
+        axis = [axis]
         return _expr.TupleWrapper(
             _expr.Tuple([_op.squeeze(split_item, axis=axis) \
             for split_item in splitted]), len(splitted))
