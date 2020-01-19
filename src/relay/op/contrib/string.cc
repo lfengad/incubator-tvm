@@ -58,14 +58,14 @@ Expr MakeReduceJoin(Expr inputs,
              Expr reduction_indices,
              bool keep_dims,
              std::string separator) {
-  auto attrs = make_node<ReduceJoinAttrs>();
+  auto attrs = make_object<ReduceJoinAttrs>();
   attrs->keep_dims = keep_dims;
   attrs->separator = separator;
   static const Op& op = Op::Get("contrib.reduce_join");
   return CallNode::make(op, {inputs, reduction_indices}, Attrs(attrs), {});
 }
 
-TVM_REGISTER_API("relay.op.contrib._make.reduce_join")
+TVM_REGISTER_GLOBAL("relay.op.contrib._make.reduce_join")
 .set_body_typed(MakeReduceJoin);
 
 

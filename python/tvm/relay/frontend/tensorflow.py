@@ -802,7 +802,6 @@ def _slice():
 def _reshape():
     def _impl(inputs, attr, params, used_params):
         pop_node = inputs.pop(1)
-
         try:
             shape_arg = _get_tuple_param(used_params, params, pop_node)
         except AttributeError:
@@ -2332,7 +2331,8 @@ class GraphProto(object):
 
                 # Pass the target layout
                 attr["_target_layout"] = layout
-
+    
+                print("node is {}".format(node.name)) 
                 # Fill shapes for all inputs in a list
                 inputs = []
                 for i in node.input:
@@ -2345,6 +2345,7 @@ class GraphProto(object):
                     # and the lack of the number implies 0.
                     tensor_name = i.split(':')
                     node_name = tensor_name[0]
+                    print("input is {}".format(node.name)) 
                     if node_name in self._nodes:
                         in_sym = self._nodes[node_name]
                         if isinstance(in_sym, _expr.TupleWrapper):

@@ -52,7 +52,7 @@ Expr MakeHashTable(
              DataType key_dtype,
              DataType value_dtype,
              DataType dtype) {
-  auto attrs = make_node<HashTableAttrs>();
+  auto attrs = make_object<HashTableAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
   attrs->dtype = dtype; 
@@ -60,7 +60,7 @@ Expr MakeHashTable(
   return CallNode::make(op, {}, Attrs(attrs), {});
 }
 
-TVM_REGISTER_API("relay.op.contrib._make.hash_table")
+TVM_REGISTER_GLOBAL("relay.op.contrib._make.hash_table")
 .set_body_typed(MakeHashTable);
 
 
@@ -106,7 +106,7 @@ Expr MakeLookupTableFind(Expr table_reference,
                         DataType value_dtype,
                         DataType dtype) 
 {
-  auto attrs = make_node<LookupTableFindAttrs>();
+  auto attrs = make_object<LookupTableFindAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
   attrs->dtype = dtype;
@@ -115,7 +115,7 @@ Expr MakeLookupTableFind(Expr table_reference,
 }
 
 
-TVM_REGISTER_API("relay.op.contrib._make.lookup_table_find")
+TVM_REGISTER_GLOBAL("relay.op.contrib._make.lookup_table_find")
 .set_body_typed(MakeLookupTableFind);
 
 
@@ -165,7 +165,7 @@ Expr MakeLookupTableImport(Expr table_reference,
                         Expr values,
                         DataType key_dtype,
                         DataType value_dtype) {
-  auto attrs = make_node<LookupTableImportAttrs>();
+  auto attrs = make_object<LookupTableImportAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
   static const Op& op = Op::Get("contrib.lookup_table_import");
@@ -173,7 +173,7 @@ Expr MakeLookupTableImport(Expr table_reference,
 }
 
 
-TVM_REGISTER_API("relay.op.contrib._make.lookup_table_import")
+TVM_REGISTER_GLOBAL("relay.op.contrib._make.lookup_table_import")
 .set_body_typed(MakeLookupTableImport);
 
 
@@ -218,7 +218,7 @@ Expr MakeInitializeTableFromTextFile(Expr table_reference,
                         int64_t key_index,
                         int64_t value_index,
                         std::string delim) {
-  auto attrs = make_node<InitializeTableFromTextFileAttrs>();
+  auto attrs = make_object<InitializeTableFromTextFileAttrs>();
   attrs->vocab_size = vocab_size;
   attrs->key_index = key_index;
   attrs->value_index = value_index;
@@ -228,7 +228,7 @@ Expr MakeInitializeTableFromTextFile(Expr table_reference,
 }
 
 
-TVM_REGISTER_API("relay.op.contrib._make.initialize_table_from_text_file")
+TVM_REGISTER_GLOBAL("relay.op.contrib._make.initialize_table_from_text_file")
 .set_body_typed(MakeInitializeTableFromTextFile);
 
 
