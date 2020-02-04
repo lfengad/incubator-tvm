@@ -50,7 +50,7 @@ bool ReduceJoinRel(const Array<Type>& types,
     attrs.as<ReduceJoinAttrs>();
   const auto& string_shape = inputs->shape;
   const auto& string_type = inputs->dtype;
-  reporter->Assign(types[2], TensorTypeNode::make(string_shape, string_type));
+  reporter->Assign(types[2], TensorType(string_shape, string_type));
   return true;
 }
 

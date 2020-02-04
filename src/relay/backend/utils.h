@@ -27,20 +27,12 @@
 #include <dmlc/json.h>
 #include <tvm/relay/expr.h>
 #include <tvm/relay/type.h>
-//<<<<<<< HEAD
 #include <tvm/relay/transform.h>
 #include <tvm/driver/driver_api.h>
 #include <tvm/target/codegen.h>
 #include <tvm/tir/ir_pass.h>
 #include <tvm/te/operation.h>
-//=======
-#include <tvm/build_module.h>
-#include <tvm/codegen.h>
-#include <tvm/ir_pass.h>
-#include <tvm/top/operation.h>
-#include <tvm/operation.h>
 #include <tvm/runtime/packed_func.h>
-//>>>>>>> ad3cd98... finish simple test
 
 #include <typeinfo>
 #include <string>

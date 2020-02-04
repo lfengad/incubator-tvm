@@ -282,7 +282,6 @@ class StrVHashTable : public BaseTable{
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
       table_ptr->insert(std::make_pair(keys_ptr[i], *values_ptr[i]));
     }
     return true;
@@ -305,13 +304,13 @@ class StrVHashTable : public BaseTable{
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<KType, std::string>::const_iterator it;
       it  = table_ptr->find(keys_ptr[i]);
+  
       if (it == table_ptr->end())
         values_ptr[i] = default_value_;
       else {
         std::string* find_res = new std::string(it->second);  
         values_ptr[i] = find_res;
         } 
-     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
     }
     return true;
   }

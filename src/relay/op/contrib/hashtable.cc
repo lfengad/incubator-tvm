@@ -43,8 +43,8 @@ bool HashTableRel(const Array<Type>& types,
 
   // assign output type
   std::vector<IndexExpr> oshape({1});
-  DataType table_type = DataType(String2TVMType("custom[hashtable]64"));
-  reporter->Assign(types[0], TensorTypeNode::make(oshape, table_type));
+  DataType table_type = DataType(String2DLDataType("custom[hashtable]64"));
+  reporter->Assign(types[0], TensorType(oshape, table_type));
   return true;
 }
 
@@ -94,7 +94,7 @@ bool LookupTableFindRel(const Array<Type>& types,
   CHECK_EQ(param->key_dtype, key_to_check->dtype);
   //CHECK_EQ(param->value_dtype, default_value->dtype);
 
-  reporter->Assign(types[3], TensorTypeNode::make(dshape, param->value_dtype));
+  reporter->Assign(types[3], TensorType(dshape, param->value_dtype));
   return true;
 
 }
@@ -154,8 +154,8 @@ bool LookupTableImportRel(const Array<Type>& types,
   CHECK_EQ(param->value_dtype, values->dtype);
 
   std::vector<IndexExpr> oshape({1});
-  DataType fake_type = DataType(String2TVMType("int32"));
-  reporter->Assign(types[3], TensorTypeNode::make(oshape, fake_type));
+  DataType fake_type = DataType(String2DLDataType("int32"));
+  reporter->Assign(types[3], TensorType(oshape, fake_type));
   return true;
 
 }
@@ -206,8 +206,8 @@ bool InitializeTableFromTextFileRel(const Array<Type>& types,
     attrs.as<InitializeTableFromTextFileAttrs>();
   //CHECK_EQ(keys->shape, values->shape);
   std::vector<IndexExpr> oshape({1});
-  DataType fake_type = DataType(String2TVMType("int32"));
-  reporter->Assign(types[2], TensorTypeNode::make(oshape, fake_type));
+  DataType fake_type = DataType(String2DLDataType("int32"));
+  reporter->Assign(types[2], TensorType(oshape, fake_type));
   return true;
 
 }
