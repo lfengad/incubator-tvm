@@ -22,7 +22,7 @@
  */
 
 #include <tvm/runtime/registry.h>
-#include <tvm/runtime/util.h>
+//#include <tvm/runtime/util.h>
 #include <dlpack/dlpack.h>
 #include <algorithm>
 #include <iostream>
@@ -106,8 +106,8 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.create")
    //auto value_dtype_str = TVMType2String(value_dtype);
    std::string key_dtype_str = args[1];  
    std::string value_dtype_str = args[2]; 
-   auto key_dtype = String2TVMType(key_dtype_str);
-   auto value_dtype = String2TVMType(value_dtype_str);
+   auto key_dtype = String2DLDataType(key_dtype_str);
+   auto value_dtype = String2DLDataType(value_dtype_str);
    
    if (key_dtype_str == "float32") {
     if (value_dtype_str == "int32") {
@@ -202,7 +202,6 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.find")
   DLTensor *default_value = args[2];
   DLTensor *values = args[3];
    
-  //printf("here execute find\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data);
 
   CHECK(table_ptr[0] != NULL) << "Hashtable pointer is NULL and  not prepared.";
@@ -231,7 +230,6 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.init")
   DLTensor *values = args[2];
   DLTensor *fakesymbol = args[3];
    
-  //printf("here execute init\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data); 
 
   CHECK(table_ptr[0] != NULL) << "Hashtable pointer is NULL and  not prepared.";
@@ -259,10 +257,6 @@ TVM_REGISTER_GLOBAL("tvm.contrib.hashtable_handler.initfromtxt")
   std::string delim = args[5];
   DLTensor *fakesymbol = args[6];
   
-  //printf("here value is %d %d %d %s\n", vocab_size, key_index, value_index, delim.c_str());   
-
-  
-  //printf("here execute init\n");
   auto table_ptr = static_cast<BaseTable **>(table_tensor->data); 
 
   CHECK(table_ptr[0] != NULL) << "Hashtable pointer is NULL and  not prepared.";

@@ -54,7 +54,6 @@ void GraphRuntime::Run() {
   // setup the array and requirements.
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && !init_ops_[i]) {op_execs_[i]();
-    //printf("execute inside is %d\n", i);
    }
   }
 }
@@ -85,10 +84,6 @@ void GraphRuntime::Init(const std::string& graph_json,
     std::string& name = nodes_[nid].name;
     input_map_[name] = i;
   }
-  /*for (size_t i = 0; i < op_execs_.size(); ++i) {
-    if (op_execs_[i] && init_ops_[i]) op_execs_[i]();
-    printf("init exectuion is %d\n", i);
-  }*/
 }
 /*!
  * \brief Get the input index given the name of input.
@@ -112,35 +107,12 @@ void GraphRuntime::SetInput(int index, DLTensor* data_in) {
   CHECK_LT(static_cast<size_t>(index), input_nodes_.size());
   uint32_t eid = this->entry_id(input_nodes_[index], 0);
   data_entry_[eid].CopyFrom(data_in);
-  /*input_set_[eid] = true; 
-  
-  printf("here set input at %d\n", eid);in_
-  for (uint32_t nid = 0; nid < this->GetNumOfNodes(); ++nid) {
-    if (!init_ops_[nid])
-      continue;
-
-    printf("here init op is %d\n", nid);
-    const auto& inode = nodes_[nid];
-    bool all_set = true;
-    for (const auto& e : inode.inputs) {
-      uint32_t in_id = this->entry_id(e);
-      printf("here set input at %d\n", in_id);
-      if (input_map_.count(nodes_[in_id].name)>0)
-        {all_set &= input_set_[in_id];
-        printf("here set input with map at %d\n", in_id);
-        }
-    }
-    if (all_set) {
-      op_execs_[nid]();
-    }
-  }*/
 }
 
 void GraphRuntime::InitExecs()
 {
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && init_ops_[i]) {op_execs_[i]();
-    //printf("execute init is %d\n", i);
     }
   }
 }
@@ -383,7 +355,6 @@ void GraphRuntime::SetupOpExecs() {
     CHECK(inode.op_type == "tvm_op") << "Can only take tvm_op as op";
 
     std::shared_ptr<OpArgs> op_args = nullptr;
-    //printf("name is %s\n", inode.param.func_name.c_str());
     if(inode.param.func_name.find("contrib_hash_table")!=std::string::npos || 
        inode.param.func_name.find("contrib_lookup_table_import")!=std::string::npos ||
        inode.param.func_name.find("contrib_initialize_table_from_text_file")!=std::string::npos

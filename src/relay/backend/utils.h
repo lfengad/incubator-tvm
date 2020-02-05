@@ -78,7 +78,7 @@ inline std::string DType2String(const tvm::DataType dtype) {
     os << "int";
   } else if (dtype.is_uint()) {
     os << "uint";
-  } else if (dtype.code() >= kCustomBegin) {
+  } else if (dtype.code() >= kTVMCustomBegin) {
     os << "custom[" << tvm::runtime::GetCustomTypeName(dtype.code()) << "]";
   } else {
     LOG(FATAL) << "Unknown type";

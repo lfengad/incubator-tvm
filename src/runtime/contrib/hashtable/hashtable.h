@@ -23,7 +23,7 @@
 #pragma once
 
 #include <tvm/runtime/registry.h>
-#include <tvm/runtime/util.h>
+//#include <tvm/runtime/util.h>
 #include <dlpack/dlpack.h>
 #include <algorithm>
 #include <vector>
@@ -100,7 +100,6 @@ class HashTable : public BaseTable{
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
       table_ptr->insert(std::make_pair(keys_ptr[i], values_ptr[i]));
     }
     return true;
@@ -127,7 +126,6 @@ class HashTable : public BaseTable{
         values_ptr[i] = default_value_;
       else
         values_ptr[i] = it->second; 
-     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
     }
     return true;
   }
@@ -148,7 +146,7 @@ class StrKHashTable : public BaseTable{
   StrKHashTable(DLDataType value_type ) {
     is_prepared_ = false;
     DoPrepare();
-    key_type_ = runtime::String2TVMType("custom[string]64");
+    key_type_ = runtime::String2DLDataType("custom[string]64");
     value_type_ = value_type;
   }
   inline size_t Size() override {return table_.get()->size();}
@@ -191,7 +189,6 @@ class StrKHashTable : public BaseTable{
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
       table_ptr->insert(std::make_pair(*keys_ptr[i], values_ptr[i]));
     }
     return true;
@@ -218,7 +215,6 @@ class StrKHashTable : public BaseTable{
         values_ptr[i] = default_value_;
       else
         values_ptr[i] = it->second; 
-     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
     }
     return true;
   }
@@ -239,7 +235,7 @@ class StrVHashTable : public BaseTable{
   StrVHashTable(DLDataType key_type ) {
     is_prepared_ = false;
     DoPrepare();
-    value_type_ = runtime::String2TVMType("custom[string]64");
+    value_type_ = runtime::String2DLDataType("custom[string]64");
     key_type_ = key_type;
   }
   inline size_t Size() override {return table_.get()->size();}
@@ -330,7 +326,7 @@ class StrHashTable : public BaseTable{
   StrHashTable() {
     is_prepared_ = false;
     DoPrepare();
-    key_type_ = runtime::String2TVMType("custom[string]64");
+    key_type_ = runtime::String2DLDataType("custom[string]64");
     value_type_ = key_type_;
   }
   inline size_t Size() override {return table_.get()->size();}
@@ -373,7 +369,6 @@ class StrHashTable : public BaseTable{
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-     // printf("%d init to %d\n", keys_ptr[i], values_ptr[i]);
       table_ptr->insert(std::make_pair(*keys_ptr[i], *values_ptr[i]));
     }
     return true;
@@ -402,7 +397,6 @@ class StrHashTable : public BaseTable{
         std::string* find_res = new std::string(it->second);  
         values_ptr[i] = find_res;
         } 
-     // printf("%d : %d\n", keys_ptr[i], values_ptr[i]); 
     }
     return true;
   }

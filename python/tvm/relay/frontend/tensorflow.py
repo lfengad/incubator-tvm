@@ -83,7 +83,6 @@ def _dimension_constraint():
 def _get_param(used_params, params, input_node):
     if isinstance(input_node, _expr.Constant):
         return np.atleast_1d(input_node.data.asnumpy())
-    #return params.pop(input_node.name_hint).asnumpy()
     used_params[input_node.name_hint] = 1;
     return params[input_node.name_hint].asnumpy()
 
@@ -890,12 +889,19 @@ def _fused_batch_norm():
             need_cast = True
             inputs[0] = _op.cast(inputs[0], dtype=attr['U'].name)
 
-        out = AttrCvt(op_name='batch_norm',
-                      transforms={'scale_after_normalization':'scale',
-                                  'variance_epsilon':'epsilon'},
-                      extras={'axis': axis},
-                      ignores=['data_format', 'U'],
-                      disables=['momentum'])(inputs, attr)
+        moving_mean_shape = [int(n) for n in inputs[3].type_annotation.shape]
+        moving_varience_shape = [int(n) for n in inputs[4].type_annotation.shape]
+
+        if (0 in moving_mean_shape and 0 in moving_varience_shape):
+            out = get_relay_op("multiply")(*[inputs[0], inputs[1]])
+            out = get_relay_op("add")(*[out, inputs[2]])
+        else:
+            out = AttrCvt(op_name='batch_norm',
+                        transforms={'scale_after_normalization':'scale',
+                                    'variance_epsilon':'epsilon'},
+                        extras={'axis': axis},
+                        ignores=['data_format', 'U'],
+                        disables=['momentum'])(inputs, attr)
 
         if need_cast:
             out = _op.cast(out, dtype=attr['T'].name)
@@ -1030,13 +1036,9 @@ def _stridedSlice():
         Tensorflow mask validation: https://github.com/tensorflow/tensorflow/blob/master/
         tensorflow/core/util/strided_slice_op.cc#L147-L368
         """
-        #print(inputs[1])
         begin = _get_list_param(used_params, params, inputs[1])
         end = _get_list_param(used_params, params, inputs[2])
         stride = _get_list_param(used_params, params, inputs[3])
-        #print(begin)
-        #print(end)
-        #print(stride)
         begin_mask = int(attr.get('begin_mask', 0))
         end_mask = int(attr.get('end_mask', 0))
         ellipsis_mask = int(attr.get('ellipsis_mask', 0))
@@ -1096,12 +1098,8 @@ def _stridedSlice():
                     m_stride[final_index] = stride[index]
                     if mask & shrink_axis_mask:
                         #Tensorflow make axis with shrink_axis_mask as dimension 1
-                        #print(data_shape[final_index])
-                        #print(begin[index])
                         m_begin[final_index] = data_shape[final_index] + begin[index] \
                                                  if begin[index] < 0 else begin[index]
-                        #print(m_begin[final_index])
-                        #m_end[final_index] = begin[index] + 1
                         m_end[final_index] = m_begin[final_index] + 1
                         m_stride[final_index] = 1
                         fshape_indices.append(-2)
@@ -1109,9 +1107,6 @@ def _stridedSlice():
                         fshape_indices.append(final_index)
 
                     final_index += 1
-            #print(m_begin)
-            #print(m_end)
-            #print(m_stride)
             return m_begin, m_end, m_stride, fshape_indices
 
         fshape_indices = None
@@ -1224,8 +1219,6 @@ def _range():
                 limit = _infer_value_simulated(inputs[1], params).asnumpy()[0]
         delta = _get_param(used_params, params, inputs[2])[0]
         dtype = attr['Tidx'].name if 'Tidx' in attr else str(start.dtype)
-        #print(limit) 
-        #print(start) 
         return AttrCvt(
             op_name="arange",
             ignores=['Tidx'],
@@ -2260,9 +2253,7 @@ class GraphProto(object):
             if node.op == 'Placeholder' or node.op == 'PlaceholderWithDefault':
                 # Give priority to user argument.
                 if shape and node.name in shape:
-                    #print("here set {}".format(node.name))
                     self._input_shapes[node.name] = list(shape[node.name])
-                    #print("here set {}".format(self._input_shapes[node.name]))
                 else:
                     self._input_shapes[node.name] = \
                         tensor_util.TensorShapeProtoToList(node.attr['shape'].shape)
@@ -2332,7 +2323,6 @@ class GraphProto(object):
                 # Pass the target layout
                 attr["_target_layout"] = layout
     
-                #print("node is {}".format(node.name)) 
                 # Fill shapes for all inputs in a list
                 inputs = []
                 for i in node.input:
@@ -2345,7 +2335,6 @@ class GraphProto(object):
                     # and the lack of the number implies 0.
                     tensor_name = i.split(':')
                     node_name = tensor_name[0]
-                    #print("input is {}".format(node.name)) 
                     if node_name in self._nodes:
                         in_sym = self._nodes[node_name]
                         if isinstance(in_sym, _expr.TupleWrapper):
@@ -2415,7 +2404,6 @@ class GraphProto(object):
                     out_num = int(out_num)
                     out.append(self._nodes[out_name][out_num])
                 else:
-                    print("{}".format(out_name))
                     out.append(self._nodes[out_name][0])
 
         #Add the RNN outputs also with 'head' nodes of the relay graph

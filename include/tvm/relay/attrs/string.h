@@ -1,7 +1,7 @@
 #ifndef TVM_RELAY_ATTRS_STRING_H_
 #define TVM_RELAY_ATTRS_STRING_H_
 
-#include <tvm/attrs.h>
+#include <tvm/ir/attrs.h>
 #include <tvm/relay/base.h>
 #include <string>
 

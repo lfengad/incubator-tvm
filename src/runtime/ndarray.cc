@@ -150,7 +150,7 @@ NDArray NDArray::CreateView(std::vector<int64_t> shape, DLDataType dtype) {
   get_mutable()->IncRef();
   ret.get_mutable()->manager_ctx = get_mutable();
   ret.get_mutable()->dl_tensor.data = get_mutable()->dl_tensor.data;
-  if(dtype.code == kCustomBegin) {
+  if(dtype.code == kTVMCustomBegin) {
     void **ptr = static_cast<void**>(ret.get_mutable()->dl_tensor.data);
     ptr[0] = nullptr;   
   }  
@@ -331,9 +331,6 @@ int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
    str_ptr[i] = str_tmp;
   }
   
-  //for(uint32_t i = 0; i<ele_num; ++i) {
-   // printf("[%s]\n",str_ptr[i]->c_str());
-  //}  
 
   API_END();
 }
