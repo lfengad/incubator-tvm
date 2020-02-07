@@ -889,14 +889,13 @@ def _fused_batch_norm():
             need_cast = True
             inputs[0] = _op.cast(inputs[0], dtype=attr['U'].name)
 
+        
         moving_mean_shape = [int(n) for n in inputs[3].type_annotation.shape]
         moving_varience_shape = [int(n) for n in inputs[4].type_annotation.shape]
-
         if (0 in moving_mean_shape and 0 in moving_varience_shape):
-            out = get_relay_op("multiply")(*[inputs[0], inputs[1]])
-            out = get_relay_op("add")(*[out, inputs[2]])
-        else:
-            out = AttrCvt(op_name='batch_norm',
+            inputs[3] = tvm.relay.var(inputs[3].name_hint+"_dummy_for_training_mode_inference", inputs[1].type_annotation)
+            inputs[4] = tvm.relay.var(inputs[4].name_hint+"_dummy_for_training_mode_inference", inputs[2].type_annotation)
+        out = AttrCvt(op_name='batch_norm',
                         transforms={'scale_after_normalization':'scale',
                                     'variance_epsilon':'epsilon'},
                         extras={'axis': axis},
