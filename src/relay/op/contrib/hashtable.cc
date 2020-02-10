@@ -18,8 +18,8 @@
  */
 
 /*!
- * \file nms.cc
- * \brief Non-maximum suppression operators
+ * \file hashtable.cc
+ * \brief hashtable operators
  */
 #include <tvm/relay/op.h>
 #include <tvm/relay/attrs/hashtable.h>
@@ -49,12 +49,10 @@ bool HashTableRel(const Array<Type>& types,
 
 Expr MakeHashTable(
              DataType key_dtype,
-             DataType value_dtype,
-             DataType dtype) {
+             DataType value_dtype) {
   auto attrs = make_object<HashTableAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
-  attrs->dtype = dtype;
   static const Op& op = Op::Get("contrib.hash_table");
   return CallNode::make(op, {}, Attrs(attrs), {});
 }

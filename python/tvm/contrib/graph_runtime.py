@@ -131,6 +131,7 @@ class GraphModule(object):
         self._get_num_outputs = module["get_num_outputs"]
         self._load_params = module["load_params"]
         self._share_params = module["share_params"]
+        # interface for running initialization ops
         self._init_execs = module["init_execs"]
 
     def set_input(self, key=None, value=None, **params):
@@ -156,6 +157,7 @@ class GraphModule(object):
             keys.sort(key=lambda x: -np.prod(params[x].shape))
             for k in keys:
                 self._get_input(k).copyfrom(params[k])
+            # run initialization ops only once
             self._init_execs()
 
     def run(self, **input_dict):

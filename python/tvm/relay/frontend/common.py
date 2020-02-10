@@ -412,8 +412,9 @@ class AttrCvt(object):
                 new_attrs[k] = attrs[k]
         # add extras
         new_attrs.update(self._extras)
-        for k in new_attrs.keys():
-            if new_attrs[k] == "string":
+        for k, v in new_attrs.items():
+            # string type corresponds to custom[string]64
+            if v == "string":
                 new_attrs[k] = "custom[string]64"
         return get_relay_op(op_name)(*inputs, **new_attrs)
 

@@ -40,6 +40,7 @@ from .transform import *
 from .broadcast import *
 from .sort import *
 from .argwhere import *
+from .hashtable import *
 from . import nn
 from . import x86
 from . import cuda
@@ -54,7 +55,6 @@ from . import vision
 from . import image
 from . import sparse
 from . import hls
-from . import contrib
 # error reporting
 from .util import InvalidShapeError
 # not import testing by default

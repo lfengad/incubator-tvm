@@ -16,20 +16,18 @@
 # specific language governing permissions and limitations
 # under the License.
 # pylint: disable=invalid-name, no-member
-"""Generic contrib hashtable operators"""
-from __future__ import absolute_import as _abs
+"""Generic hashtable operators"""
 import tvm
-from .. import cpp
-from .extern import *
+from .extern import schedule_extern
 
 @tvm.target.generic_func
 def schedule_hash_table(outs):
-    """Schedule for reorg
+    """Schedule for hash_table
 
     Parameters
     ----------
     outs: Array of Tensor
-      The computation graph description of reorg
+      The computation graph description of hash_table
       in the format of an array of tensors.
 
     Returns
@@ -41,12 +39,12 @@ def schedule_hash_table(outs):
 
 @tvm.target.generic_func
 def schedule_lookup_table_find(outs):
-    """Schedule for get_valid_counts
+    """Schedule for look_up_table_find
 
     Parameters
     ----------
     outs: Array of Tensor
-      The computation graph description of nms
+      The computation graph description of look_up_table_find
       in the format of an array of tensors.
 
     Returns
@@ -58,12 +56,12 @@ def schedule_lookup_table_find(outs):
 
 @tvm.target.generic_func
 def schedule_lookup_table_import(outs):
-    """Schedule for non-maximum suppression
+    """Schedule for look_up_table_import
 
     Parameters
     ----------
     outs: Array of Tensor
-      The computation graph description of nms
+      The computation graph description of look_up_table_import
       in the format of an array of tensors.
 
     Returns
@@ -75,12 +73,12 @@ def schedule_lookup_table_import(outs):
 
 @tvm.target.generic_func
 def schedule_initialize_table_from_text_file(outs):
-    """Schedule for non-maximum suppression
+    """Schedule for initialize_table_from_text_file
 
     Parameters
     ----------
     outs: Array of Tensor
-      The computation graph description of nms
+      The computation graph description of initialize_table_from_text_file
       in the format of an array of tensors.
 
     Returns

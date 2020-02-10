@@ -169,6 +169,7 @@ def _make_tvm_args(args, temp_args):
             values[i].v_handle = arg.handle
             type_codes[i] = TypeCode.PACKED_FUNC_HANDLE
             temp_args.append(arg)
+        # object data type is usually string data
         elif isinstance(arg, object):
             values[i].v_str = c_str(str(arg))
             type_codes[i] = TypeCode.STR

@@ -35,15 +35,12 @@ namespace relay {
 struct HashTableAttrs : public tvm::AttrsNode<HashTableAttrs> {
   DataType key_dtype;
   DataType value_dtype;
-  DataType dtype;
 
   TVM_DECLARE_ATTRS(HashTableAttrs, "relay.attrs.HashTableAttrs") {
     TVM_ATTR_FIELD(key_dtype).set_default(NullValue<DataType>())
       .describe("Key data type.");
     TVM_ATTR_FIELD(value_dtype).set_default(NullValue<DataType>())
       .describe("Value data type.");
-    TVM_ATTR_FIELD(dtype).set_default(NullValue<DataType>())
-      .describe("Hashtable data type.");
   }
 };
 
@@ -98,9 +95,6 @@ struct InitializeTableFromTextFileAttrs : public tvm::AttrsNode<InitializeTableF
       .describe("Delim for parsing");
   }
 };
-
-
-
 
 }  // namespace relay
 }  // namespace tvm

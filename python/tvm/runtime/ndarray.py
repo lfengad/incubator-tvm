@@ -117,7 +117,6 @@ class NDArray(NDArrayBase):
         arr : NDArray
             Reference to self.
         """
-
         if isinstance(source_array, NDArrayBase):
             source_array.copyto(self)
             return self
@@ -139,11 +138,13 @@ class NDArray(NDArrayBase):
         if source_array.shape != shape:
             raise ValueError("array shape do not match the shape of NDArray {0} vs {1}".format(
                 source_array.shape, shape))
-        source_array = np.ascontiguousarray(source_array, dtype=str if dtype == "custom[string]64" else dtype)
+        source_array = np.ascontiguousarray(source_array, dtype=str
+                                            if dtype == "custom[string]64" else dtype)
         assert source_array.flags['C_CONTIGUOUS']
         data = source_array.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(source_array.size * source_array.dtype.itemsize)
-
+        # handle differently if tensor element is string
+        # since string array in numpy is stored in a special way
         if self.dtype == "custom[string]64":
             nlenth = ctypes.c_size_t(source_array.dtype.itemsize)
             check_call(_LIB.TVMArrayCopyFromStrBytes(self.handle, data, nbytes, nlenth))
@@ -173,13 +174,15 @@ class NDArray(NDArrayBase):
         if t.lanes > 1:
             shape = shape + (t.lanes,)
             t.lanes = 1
-            dtype = str(t) 
-       
+            dtype = str(t)
+
+        # handle differently if tensor element is string
+        # since string array in numpy is stored in a special way
         if self.dtype == "custom[string]64":
             np_args = np.empty((2,), dtype="int32")
             assert np_args.flags['C_CONTIGUOUS']
             args_buffer = np_args.ctypes.data_as(ctypes.c_void_p)
-            check_call(_LIB.TVMArrayStrArgsCalc(self.handle, args_buffer))    
+            check_call(_LIB.TVMArrayStrArgsCalc(self.handle, args_buffer))
             strtype = "<U{}".format(np_args[1])
             if np_args[1] == 0:
                 strtype = "<U8"
@@ -508,7 +511,11 @@ def array(arr, ctx=cpu(0)):
     """
     if not isinstance(arr, (np.ndarray, NDArray)):
         arr = np.array(arr)
-    return empty(arr.shape, arr.dtype, ctx).copyfrom(arr)
+    dtype_name = arr.dtype
+    # object data type is usually string data
+    if dtype_name == "object":
+        dtype_name = "custom[string]64"
+    return empty(arr.shape, dtype_name, ctx).copyfrom(arr)
 
 # Register back to FFI
 _set_class_ndarray(NDArray)

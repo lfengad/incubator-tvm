@@ -63,7 +63,7 @@ class HashTable : public BaseTable{
     key_type_ = key_type;
     value_type_ = value_type;
   }
-  inline size_t Size() override {return table_.get()->size();}
+  inline size_t Size() override {return table_->size();}
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
@@ -75,7 +75,8 @@ class HashTable : public BaseTable{
  protected:
   bool DoPrepare() override{
     if (is_prepared_) {
-      LOG(FATAL) << "HashTable already prepared.";
+      LOG(INFO) << "HashTable already prepared.";
+      return true;
     }
     if (!table_) {
       table_ = std::unique_ptr<std::unordered_map<KType, VType>>(
@@ -101,9 +102,8 @@ class HashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<KType, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-      table_ptr->insert(std::make_pair(keys_ptr[i], values_ptr[i]));
+      table_->insert(std::make_pair(keys_ptr[i], values_ptr[i]));
     }
     return true;
   }
@@ -121,11 +121,10 @@ class HashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<KType, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<KType, VType>::const_iterator it;
-      it  = table_ptr->find(keys_ptr[i]);
-      if (it == table_ptr->end())
+      it  = table_->find(keys_ptr[i]);
+      if (it == table_->end())
         values_ptr[i] = default_value_;
       else
         values_ptr[i] = it->second;
@@ -152,7 +151,7 @@ class StrKHashTable : public BaseTable{
     key_type_ = runtime::String2DLDataType("custom[string]64");
     value_type_ = value_type;
   }
-  inline size_t Size() override {return table_.get()->size();}
+  inline size_t Size() override {return table_->size();}
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
@@ -164,7 +163,8 @@ class StrKHashTable : public BaseTable{
  protected:
   bool DoPrepare() override{
     if (is_prepared_) {
-      LOG(FATAL) << "HashTable already prepared.";
+      LOG(INFO) << "HashTable already prepared.";
+      return true;
     }
     if (!table_) {
       table_ = std::unique_ptr<std::unordered_map<std::string, VType>>(
@@ -190,9 +190,8 @@ class StrKHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<std::string, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-      table_ptr->insert(std::make_pair(*keys_ptr[i], values_ptr[i]));
+      table_->insert(std::make_pair(*keys_ptr[i], values_ptr[i]));
     }
     return true;
   }
@@ -210,11 +209,10 @@ class StrKHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<std::string, VType>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<std::string, VType>::const_iterator it;
-      it  = table_ptr->find(*keys_ptr[i]);
-      if (it == table_ptr->end())
+      it  = table_->find(*keys_ptr[i]);
+      if (it == table_->end())
         values_ptr[i] = default_value_;
       else
         values_ptr[i] = it->second;
@@ -241,7 +239,7 @@ class StrVHashTable : public BaseTable{
     value_type_ = runtime::String2DLDataType("custom[string]64");
     key_type_ = key_type;
   }
-  inline size_t Size() override {return table_.get()->size();}
+  inline size_t Size() override {return table_->size();}
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
@@ -253,7 +251,8 @@ class StrVHashTable : public BaseTable{
  protected:
   bool DoPrepare() override{
     if (is_prepared_) {
-      LOG(FATAL) << "HashTable already prepared.";
+      LOG(INFO) << "HashTable already prepared.";
+      return true;
     }
     if (!table_) {
       table_ = std::unique_ptr<std::unordered_map<KType, std::string>>(
@@ -279,9 +278,8 @@ class StrVHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<KType, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-      table_ptr->insert(std::make_pair(keys_ptr[i], *values_ptr[i]));
+      table_->insert(std::make_pair(keys_ptr[i], *values_ptr[i]));
     }
     return true;
   }
@@ -299,11 +297,10 @@ class StrVHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<KType, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<KType, std::string>::const_iterator it;
-      it  = table_ptr->find(keys_ptr[i]);
-      if (it == table_ptr->end()) {
+      it  = table_->find(keys_ptr[i]);
+      if (it == table_->end()) {
         values_ptr[i] = default_value_;
       } else {
         std::string* find_res = new std::string(it->second);
@@ -331,7 +328,7 @@ class StrHashTable : public BaseTable{
     key_type_ = runtime::String2DLDataType("custom[string]64");
     value_type_ = key_type_;
   }
-  inline size_t Size() override {return table_.get()->size();}
+  inline size_t Size() override {return table_->size();}
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
@@ -343,7 +340,8 @@ class StrHashTable : public BaseTable{
  protected:
   bool DoPrepare() override{
     if (is_prepared_) {
-      LOG(FATAL) << "HashTable already prepared.";
+      LOG(INFO) << "HashTable already prepared.";
+      return true;
     }
     if (!table_) {
       table_ = std::unique_ptr<std::unordered_map<std::string, std::string>>(
@@ -369,9 +367,8 @@ class StrHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<std::string, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
-      table_ptr->insert(std::make_pair(*keys_ptr[i], *values_ptr[i]));
+      table_->insert(std::make_pair(*keys_ptr[i], *values_ptr[i]));
     }
     return true;
   }
@@ -389,11 +386,10 @@ class StrHashTable : public BaseTable{
       values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
-    std::unordered_map<std::string, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<std::string, std::string>::const_iterator it;
-      it  = table_ptr->find(*keys_ptr[i]);
-      if (it == table_ptr->end()) {
+      it  = table_->find(*keys_ptr[i]);
+      if (it == table_->end()) {
         values_ptr[i] = default_value_;
       } else {
         std::string* find_res = new std::string(it->second);
@@ -416,4 +412,3 @@ class StrHashTable : public BaseTable{
 
 }  // namespace contrib
 }  // namespace tvm
-

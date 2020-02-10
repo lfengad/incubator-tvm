@@ -150,6 +150,7 @@ NDArray NDArray::CreateView(std::vector<int64_t> shape, DLDataType dtype) {
   get_mutable()->IncRef();
   ret.get_mutable()->manager_ctx = get_mutable();
   ret.get_mutable()->dl_tensor.data = get_mutable()->dl_tensor.data;
+  // initialize for string type tensor
   if (dtype.code == kTVMCustomBegin) {
     void **ptr = static_cast<void**>(ret.get_mutable()->dl_tensor.data);
     ptr[0] = nullptr;
@@ -289,9 +290,6 @@ int TVMArrayCopyFromBytes(TVMArrayHandle handle,
   cpu_ctx.device_type = kDLCPU;
   cpu_ctx.device_id = 0;
   size_t arr_size = GetDataSize(*handle);
-
-
-
   CHECK_EQ(arr_size, nbytes)
       << "TVMArrayCopyFromBytes: size mismatch";
   DeviceAPI::Get(handle->ctx)->CopyDataFromTo(
@@ -302,6 +300,11 @@ int TVMArrayCopyFromBytes(TVMArrayHandle handle,
 }
 
 
+/*!
+ * \Copy string data on numpy array pointer to TVM array.
+ * \Copy string type data from numpy array.to TVM array.
+ * \Used by python interface to set TVM paramter/input.
+ */
 int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
                           void* data,
                           size_t nbytes,
@@ -311,7 +314,7 @@ int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
   std::string **str_ptr = static_cast<std::string**>(handle->data);
   char *char_ptr = static_cast<char*>(data);
   size_t ele_num = nbytes/nlenth;
-  CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size dismatch.";
+  CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size mismatch.";
   char * char_tmp = static_cast<char*> (malloc(sizeof(char)*(nlenth/4+1)));
   char * char_tmp_ref = char_tmp;
   for (uint32_t i = 0 ; i < ele_num; ++i) {
@@ -327,7 +330,6 @@ int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
   }
   API_END();
 }
-
 
 
 int TVMArrayCopyToBytes(TVMArrayHandle handle,
@@ -348,7 +350,18 @@ int TVMArrayCopyToBytes(TVMArrayHandle handle,
 }
 
 
-
+/*!
+ * \Copy TVM array to numpy array pointer for string type data.
+ * \Copy string type data from TVM array to numpy array.
+ * \Used by python interface to handle the parameter display.
+ * \Nlenth indicates the length of the longest string in the array.
+ * \Nbytes indicates the total size of the string array.
+ * \In numpy, a string array is arranged as one large char array:
+ * \each string is resized to the max string length and
+ * \all strings occupy the char array continuously.
+ * \Hence, nbytes and nlenth are needed for arranging the char data
+ * \in the numpy string array.
+ */
 int TVMArrayCopyToStrBytes(TVMArrayHandle handle,
                         void* data,
                         size_t nbytes,
@@ -356,35 +369,41 @@ int TVMArrayCopyToStrBytes(TVMArrayHandle handle,
   API_BEGIN();
   size_t arr_size = GetDataSize(*handle);
   size_t ele_num = nbytes/nlenth;
-  CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size dismatch.";
+  CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size mismatch.";
   std::string **str_ptr = static_cast<std::string**>(handle->data);
   char* char_tmp = static_cast<char*>(malloc(sizeof(char)*(nlenth/4+1)));
   char *char_ptr = static_cast<char*>(data);
   for (uint32_t i = 0; i < ele_num; ++i) {
-      // strcpy(char_tmp, str_ptr[i]->c_str());
-      snprintf(char_tmp, sizeof(char)*(nlenth/4+1), "%s", str_ptr[i]->c_str());
-      char* char_tmp_ref = char_tmp;
-      bool endofstr = false;
-      for (uint32_t j = 0; j < nlenth; ++j) {
-          if (endofstr) {
-             *char_ptr = '\0';
-             } else {
-             if (j%4 == 0) {
-                if (*char_tmp_ref == '\0')
-                    endofstr = true;
-                *char_ptr = *char_tmp_ref;
-                char_tmp_ref++;
-             } else {
-             *char_ptr = '\0';
-             }
-             }
-          char_ptr++;
+    snprintf(char_tmp, sizeof(char)*(nlenth/4+1), "%s", str_ptr[i]->c_str());
+    char* char_tmp_ref = char_tmp;
+    bool endofstr = false;
+    for (uint32_t j = 0; j < nlenth; ++j) {
+      if (endofstr) {
+        *char_ptr = '\0';
+      } else {
+        if (j%4 == 0) {
+          if (*char_tmp_ref == '\0')
+            endofstr = true;
+          *char_ptr = *char_tmp_ref;
+          char_tmp_ref++;
+        } else {
+          *char_ptr = '\0';
+        }
       }
+      char_ptr++;
+    }
   }
   API_END();
 }
 
-
+/*!
+ * \Get the total size and max string length of strings in the TVM array.
+ * \Used by python interface to get the size and length.
+ * \Used by python NDArray method to help in copying TVM Array to numpy array.
+ * \Since nlenth and nbytes are needed for copy string array using
+ * \TVMArrayCopyToStrBytes, this function is used to get nlenth and nbytes
+ * \for invoking TVMArrayCopyToStrBytes.
+ */
 int TVMArrayStrArgsCalc(TVMArrayHandle handle,
                           void* data) {
   API_BEGIN();

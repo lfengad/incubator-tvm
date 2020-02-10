@@ -14,6 +14,11 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+"""
+Hashtable testcases
+====================
+This article is a test script to test hashtable related operators with TensorFlow frontend.
+"""
 import tvm
 import numpy as np
 import tensorflow as tf
@@ -52,8 +57,6 @@ def test_stringtovalue():
     m.set_input('input', data)
     m.run()
     tvm_out=m.get_output(0)
-    print(tvm_out)
-    print(tf_out)
     tvm.testing.assert_allclose(tvm_out.asnumpy(), tf_out.astype(tvm_out.dtype), rtol=1e-5)
 
 def test_valuetostring():
@@ -88,8 +91,6 @@ def test_valuetostring():
     m.set_input('input', data)
     m.run()
     tvm_out=m.get_output(0)
-    print(tvm_out)
-    print(tf_out.astype('str'))
     np.testing.assert_array_equal(tvm_out.asnumpy(), tf_out.astype('str'))
 
 def test_valuetovalue():
@@ -124,8 +125,6 @@ def test_valuetovalue():
     m.set_input('input', data)
     m.run()
     tvm_out=m.get_output(0)
-    print(tvm_out)
-    print(tf_out)
     tvm.testing.assert_allclose(tvm_out.asnumpy(), tf_out.astype(tvm_out.dtype), rtol=1e-5)
 
 def test_stringtostring():
@@ -160,15 +159,17 @@ def test_stringtostring():
     m.set_input('input', data)
     m.run()
     tvm_out=m.get_output(0)
-    print(tvm_out)
-    print(tf_out.astype('str'))
     np.testing.assert_array_equal(tvm_out.asnumpy(), tf_out.astype('str'))
 
 def test_fromtext():
     g=tf.Graph()
+    txtfile = open("init.txt", "w+")
+    txtfile.write("5\n9\n6\n7\n8\n1\n2\n3\n4\n10")
+    txtfile.close()
     with g.as_default(): 
         input_tensor = tf.placeholder(tf.string,shape=(5,), name='input')
-        table_init =tf.contrib.lookup.TextFileIdTableInitializer('init.txt')
+        
+        table_init =tf.contrib.lookup.TextFileIdTableInitializer("init.txt")
         table = tf.contrib.lookup.HashTable(table_init, 0)
         res = table.lookup(input_tensor)
         out = tf.identity(res, name='sum')
@@ -200,8 +201,8 @@ def test_fromtext():
     m.set_input('input', data)
     m.run()
     tvm_out=m.get_output(0)
-    print(tvm_out)
-    print(tf_out)
+    import os
+    os.remove("init.txt")
     tvm.testing.assert_allclose(tvm_out.asnumpy(), tf_out.astype(tvm_out.dtype), rtol=1e-5)
 
 if __name__ == "__main__":

@@ -14,14 +14,12 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""External function interface to HashTable libraries."""
-from __future__ import absolute_import as _abs
-
-from .. import api as _api, intrin as _intrin
-
+# pylint: disable=import-error, invalid-name, no-member, too-many-locals, too-many-arguments, undefined-variable, too-many-nested-blocks, too-many-branches, too-many-statements, too-many-function-args
+"""Hashtable operator"""
 import tvm
 
-def create(key_dtype, value_dtype, dtype, **kwargs):
+@tvm.target.generic_func
+def hash_table(key_dtype, value_dtype):
     """Create a Hash Table object.
 
     Parameters
@@ -32,149 +30,136 @@ def create(key_dtype, value_dtype, dtype, **kwargs):
     value_dtype : string
         Data type of the values in the table.
 
-    dtype: string
-        Data type of the output tensor for the hashtable, usually as custom[hashtable]64.
-
     Returns
     -------
-    C : Tensor
+    out_tensor : tvm.Tensor
         A tensor with the hashtable pointer as its element.
     """
-    return _api.extern(
+    return tvm.extern(
         (1,),
         [],
-        lambda ins, outs: _intrin.call_packed(
-            "tvm.contrib.hashtable_handler.create", outs[0], key_dtype, value_dtype
+        lambda ins, outs: tvm.call_packed(
+            "tvm.contrib.hashtable.create", outs[0], key_dtype, value_dtype
         ),
         dtype="custom[hashtable]64",
-        name="C",
-        **kwargs
+        name="hashtable_instance"
     )
 
 
-def find(table_reference, key_to_check, default_value, dtype, **kwargs):
+@tvm.target.generic_func
+def lookup_table_find(table_reference, key_to_check, default_value, dtype):
     """Find the corresponding values to given keys from a given hashtable.
 
     Parameters
     ----------
-    table_reference : Tensor
+    table_reference : tvm.Tensor
         A tensor with hashtable pointer as its element.
         To specify the given hashtable for lookup.
 
-    key_to_check : Tensor
+    key_to_check : tvm.Tensor
         A tensor of a set of keys for checking.
 
-    default_value : Tensor
+    default_value : tvm.Tensor
         A tensor to specify the default value when no corresponding key in the hashtable.
-
-    key_dtype : string
-        Data type of the keys in the table.
-
-    value_dtype : string
-        Data type of the values in the table.
 
     dtype : string
         Data type of the output from the op, usually same as value_dtype.
 
     Returns
     -------
-    C : Tensor
+    out_tensor : tvm.Tensor
         A tensor with the same shape as key_to_check.
         The corresponding values returned for the checked keys.
     """
-    return _api.extern(
+    return tvm.extern(
         key_to_check.shape,
         [table_reference, key_to_check, default_value],
-        lambda ins, outs: _intrin.call_packed(
-            "tvm.contrib.hashtable_handler.find",
+        lambda ins, outs: tvm.call_packed(
+            "tvm.contrib.hashtable.find",
             ins[0],
             ins[1],
             ins[2],
             outs[0]
         ),
-        name="C",
-        dtype=dtype,
-        **kwargs
+        name="checked_values",
+        dtype=dtype
     )
 
-def init(table_reference, keys, values, **kwargs):
+
+@tvm.target.generic_func
+def lookup_table_import(table_reference, keys, values):
     """Initialize the hash table using given keys and values tensors
 
     Parameters
     ----------
-    table_refernece : Tensor
+    table_refernece : tvm.Tensor
         A tensor with hashtable pointer as its element.
         To specify the given hashtable for to initialize.
-               
-    keys : Tensor
+
+    keys : tvm.Tensor
         A tensor to specify the keys in the key-value pairs for initialization.
 
-    values : Tensor
+    values : tvm.Tensor
         A tensor to specify the values in the key-value pairs for initialization.
-
-    key_dtype : string
-        Data type of the keys in the table.
-
-    value_dtype : string
-        Data type of the values in the table.
 
     Returns
     -------
-    C : Tensor
+    out_tensor : tvm.Tensor
         A dummy node as return.
     """
-    return _api.extern(
+    return tvm.extern(
         (1,),
         [table_reference, keys, values],
-        lambda ins, outs: _intrin.call_packed(
-            "tvm.contrib.hashtable_handler.init",
+        lambda ins, outs: tvm.call_packed(
+            "tvm.contrib.hashtable.init",
             ins[0],
             ins[1],
             ins[2],
             outs[0]
         ),
-        name="C",
-        dtype="int32",
-        **kwargs
+        name="dummy_init_table",
+        dtype="int32"
     )
 
 
-
-def initfromtxt(table_reference, files, vocab_size, key_index, value_index, delim, **kwargs):
+@tvm.target.generic_func
+def initialize_table_from_text_file(table_reference, files, vocab_size,
+                                    key_index, value_index, delim):
     """Initialize the hash table using a given text file
 
     Parameters
     ----------
-    table_refernece : Tensor
+    table_refernece : tvm.Tensor
         A tensor with hashtable pointer as its element.
         To specify the given hashtable for to initialize.
-               
-    files : Tensor
+
+    files : tvm.Tensor
         A tensor of a string to specify the path fo the text file for initialization.
 
     vocab_size : int
-        The number of valid elements in the text file, if known. 
-vocab_size: The number of elements in the file, if known.
+        The number of valid elements in the text file, if known.
 
-    key_index: int 
-        The column index from the text file to get the key values from. The default is to use the whole line content.
+    key_index: int
+        The column index from the text file to get the key values from.
+        The default is to use the whole line content.
 
-    value_index: int 
-        The column index from the text file to get the value values from. The default is to use the line number, starting from zero.
+    value_index: int
+        The column index from the text file to get the value values from.
+        The default is to use the line number, starting from zero.
 
-    delimiter: string 
+    delim: string
         The delimiter to separate fields in a line.
 
     Returns
     -------
-    C : Tensor
+    out_tensor : tvm.Tensor
         A dummy node as return.
     """
-    return _api.extern(
+    return tvm.extern(
         (1,),
         [table_reference, files],
-        lambda ins, outs: _intrin.call_packed(
-            "tvm.contrib.hashtable_handler.initfromtxt",
+        lambda ins, outs: tvm.call_packed(
+            "tvm.contrib.hashtable.init_from_txt",
             ins[0],
             ins[1],
             vocab_size,
@@ -183,7 +168,6 @@ vocab_size: The number of elements in the file, if known.
             delim,
             outs[0]
         ),
-        name="C",
-        dtype="int32",
-        **kwargs
+        name="dummy_init_table_txt",
+        dtype="int32"
     )

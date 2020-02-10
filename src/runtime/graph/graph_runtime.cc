@@ -53,8 +53,7 @@ inline size_t GetDataAlignment(const DLTensor& arr) {
 void GraphRuntime::Run() {
   // setup the array and requirements.
   for (size_t i = 0; i < op_execs_.size(); ++i) {
-    if (op_execs_[i] && !init_ops_[i]) {op_execs_[i]();
-  }
+    if (op_execs_[i] && !init_ops_[i]) op_execs_[i]();
   }
 }
 /*!
@@ -109,10 +108,12 @@ void GraphRuntime::SetInput(int index, DLTensor* data_in) {
   data_entry_[eid].CopyFrom(data_in);
 }
 
+/*!
+ * \brief Run all the initialization operations one by one.
+ */
 void GraphRuntime::InitExecs() {
   for (size_t i = 0; i < op_execs_.size(); ++i) {
-    if (op_execs_[i] && init_ops_[i]) {op_execs_[i]();
-    }
+    if (op_execs_[i] && init_ops_[i]) op_execs_[i]();
   }
 }
 
@@ -353,11 +354,12 @@ void GraphRuntime::SetupOpExecs() {
     CHECK(inode.op_type == "tvm_op") << "Can only take tvm_op as op";
 
     std::shared_ptr<OpArgs> op_args = nullptr;
+    // find initialization ops to be separated for execution
     if (inode.param.func_name.find("contrib_hash_table") != std::string::npos ||
-       inode.param.func_name.find("contrib_lookup_table_import") != std::string::npos ||
-       inode.param.func_name.find("contrib_initialize_table_from_text_file") != std::string::npos
-       ) {
-    init_ops_[nid] = true;
+      inode.param.func_name.find("contrib_lookup_table_import") != std::string::npos ||
+      inode.param.func_name.find("contrib_initialize_table_from_text_file") != std::string::npos
+      ) {
+      init_ops_[nid] = true;
     }
     std::tie(op_execs_[nid], op_args) =
         CreateTVMOp(inode.param, args, inode.inputs.size());

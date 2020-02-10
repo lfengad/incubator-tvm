@@ -80,19 +80,10 @@ def _dimension_constraint():
         return False
     return _dim_check, "Only 2d or 3d kernel supported."
 
-used_params = {}
-def count_used(func):
-    def wrapper(*args):
-        if not isinstance(args[-1], _expr.Constant):
-            used_params[args[-1].name_hint] = 1
-        return func(*args)
-    return wrapper
-
-@count_used
 def _get_param(params, input_node):
     if isinstance(input_node, _expr.Constant):
         return np.atleast_1d(input_node.data.asnumpy())
-    return params[input_node.name_hint].asnumpy()
+    return params.pop(input_node.name_hint).asnumpy()
 
 def _get_num_param(params, input_node):
     return _get_param(params, input_node).item()
@@ -809,6 +800,7 @@ def _slice():
 def _reshape():
     def _impl(inputs, attr, params):
         pop_node = inputs.pop(1)
+
         try:
             shape_arg = _get_tuple_param(params, pop_node)
         except AttributeError:
@@ -897,12 +889,6 @@ def _fused_batch_norm():
             need_cast = True
             inputs[0] = _op.cast(inputs[0], dtype=attr['U'].name)
 
-        
-        moving_mean_shape = [int(n) for n in inputs[3].type_annotation.shape]
-        moving_varience_shape = [int(n) for n in inputs[4].type_annotation.shape]
-        if (0 in moving_mean_shape and 0 in moving_varience_shape):
-            inputs[3] = tvm.relay.var(inputs[3].name_hint+"_dummy_for_training_mode_inference", inputs[1].type_annotation)
-            inputs[4] = tvm.relay.var(inputs[4].name_hint+"_dummy_for_training_mode_inference", inputs[2].type_annotation)
         out = AttrCvt(op_name='batch_norm',
                       transforms={'scale_after_normalization':'scale',
                                   'variance_epsilon':'epsilon'},
@@ -1107,7 +1093,7 @@ def _stridedSlice():
                         #Tensorflow make axis with shrink_axis_mask as dimension 1
                         m_begin[final_index] = data_shape[final_index] + begin[index] \
                                                  if begin[index] < 0 else begin[index]
-                        m_end[final_index] = m_begin[final_index] + 1
+                        m_end[final_index] = begin[index] + 1
                         m_stride[final_index] = 1
                         fshape_indices.append(-2)
                     else:
@@ -1314,13 +1300,10 @@ def _unpack():
                              indices_or_sections=axis_length,
                              axis=axis)
         #name=attr.get('_node_name', 'unstack'))
-        """
         if axis == 0:
             axis = None
         else:
             axis = [axis]
-        """
-        axis = [axis]
         return _expr.TupleWrapper(
             _expr.Tuple([_op.squeeze(split_item, axis=axis) \
             for split_item in splitted]), len(splitted))
@@ -1513,12 +1496,15 @@ def _add_n():
         return  _res
     return _impl
 
+# hash table related ops corresponding to TensorFlow.
 def _hashtable():
     def _impl(inputs, attr, params):
         new_attr = attr
         new_attr['key_dtype'] = attr['key_dtype'].name
         new_attr['value_dtype'] = attr['value_dtype'].name
-        return AttrCvt('hash_table', ignores=['container', 'shared_name', 'use_node_name_sharing'], extras={'dtype': 'custom[hashtable]64'})(inputs, new_attr)
+        return AttrCvt('hash_table',
+                       ignores=['container', 'shared_name',
+                                'use_node_name_sharing'])(inputs, new_attr)
     return _impl
 
 def _lookup_table_find():
@@ -1526,7 +1512,9 @@ def _lookup_table_find():
         new_attr = attr
         new_attr['Tin'] = attr['Tin'].name
         new_attr['Tout'] = attr['Tout'].name
-        return AttrCvt('lookup_table_find', transforms={'Tin': 'key_dtype', 'Tout':'value_dtype'}, extras={'dtype': new_attr['Tout']})(inputs, new_attr)
+        return AttrCvt('lookup_table_find',
+                       transforms={'Tin': 'key_dtype', 'Tout':'value_dtype'},
+                       extras={'dtype': new_attr['Tout']})(inputs, new_attr)
     return _impl
 
 def _lookup_table_import():
@@ -1534,8 +1522,9 @@ def _lookup_table_import():
         new_attr = attr
         new_attr['Tin'] = attr['Tin'].name
         new_attr['Tout'] = attr['Tout'].name
-        return AttrCvt('lookup_table_import', transforms={'Tin': 'key_dtype', 'Tout': 'value_dtype'})(inputs, new_attr)
-    return _impl 
+        return AttrCvt('lookup_table_import',
+                       transforms={'Tin': 'key_dtype', 'Tout': 'value_dtype'})(inputs, new_attr)
+    return _impl
 
 
 def _initialize_table_from_text_file():
@@ -1544,8 +1533,9 @@ def _initialize_table_from_text_file():
         new_attr['vocab_size'] = int(attr['vocab_size'])
         new_attr['key_index'] = int(attr['key_index'])
         new_attr['value_index'] = int(attr['value_index'])
-        return AttrCvt('initialize_table_from_text_file', transforms={'delimiter' : 'delim'})(inputs, new_attr)
-    return _impl 
+        return AttrCvt('initialize_table_from_text_file',
+                       transforms={'delimiter' : 'delim'})(inputs, new_attr)
+    return _impl
 
 
 
@@ -1553,7 +1543,8 @@ def _initialize_table_from_text_file():
 # compatible operators that do NOT require any conversion.
 _identity_list = []
 
-_init_op_list = ['LookupTableImportV2', 
+# ops for initialization like table initialization.
+_init_op_list = ['LookupTableImportV2',
                  'InitializeTableFromTextFileV2']
 # _convert_map defines maps of name to converter functor(callable)
 # for 1 to 1 mapping, use Renamer if nothing but name is different
@@ -2236,8 +2227,9 @@ class GraphProto(object):
         params : dict
             A dict of name: tvm.nd.array pairs, used as pretrained weights
         """
-        tvm.datatype.register("hashtable", 129)
-        tvm.datatype.register("string", 130)
+        # add hashtable type and string data type as tensor elements
+        tvm.target.datatype.register("hashtable", 129)
+        tvm.target.datatype.register("string", 130)
         init_ops = []
 
         try:
@@ -2273,7 +2265,7 @@ class GraphProto(object):
                 attr = self._parse_attr(node.attr)
                 dtype_name = attr['dtype'].name
                 if dtype_name == "string":
-                    dtype_name = "custom[string]64"               
+                    dtype_name = "custom[string]64"
                 self._nodes[node.name] = [_expr.var(node.name,
                                                     shape=self._input_shapes[node.name],
                                                     dtype=dtype_name)]
@@ -2328,7 +2320,7 @@ class GraphProto(object):
 
                 # Pass the target layout
                 attr["_target_layout"] = layout
-    
+
                 # Fill shapes for all inputs in a list
                 inputs = []
                 for i in node.input:
@@ -2361,7 +2353,7 @@ class GraphProto(object):
                                                              control_flow_node_map)
                 else:
                     op = self._convert_operator(node.op, inputs, attr, graph)
-            
+
                 # Check if op is converted to param
                 if isinstance(op, np.ndarray):
                     self._params[node.name] = tvm.nd.array(op)
@@ -2377,7 +2369,7 @@ class GraphProto(object):
                     raise RuntimeError("unexpected type %s" % type(op))
 
                 self._nodes[node.name] = op
-                
+
                 if node.op in _init_op_list:
                     init_ops.append(op[0])
 
@@ -2425,12 +2417,6 @@ class GraphProto(object):
         out = out[0] if len(out) == 1 else _expr.Tuple(out)
         func = _expr.Function(analysis.free_vars(out), out)
         self._mod["main"] = func
-
-        for param in used_params:
-            print(param)
-            del self._params[param]
-
-
         return self._mod, self._params
 
     def _parse_import_prerequisites(self, graph):
@@ -2464,18 +2450,7 @@ class GraphProto(object):
 
         if key == 'value':
             np_array = tensor_util.MakeNdarray(value.tensor)
-            
-            if np_array.dtype == np.dtype(object):
-                """
-                # Object types are generally tensorflow DT_STRING (DecodeJpeg op).
-                # Just leave it as placeholder.
-                if shape and name in shape:
-                    var_shape = shape[name]
-                else:
-                    var_shape = tensor_util.TensorShapeProtoToList(value.tensor.tensor_shape)
-                self._nodes[name] = [_expr.var(name, shape=var_shape, dtype='uint8')]
-                return
-                """
+
             array_ndim = len(np_array.shape)
             if array_ndim == 0:
                 new_array = np.empty([1], dtype=np_array.dtype)

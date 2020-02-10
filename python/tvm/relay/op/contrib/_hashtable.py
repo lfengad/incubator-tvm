@@ -16,10 +16,7 @@
 # under the License.
 # pylint: disable=invalid-name, unused-argument
 """Definition of hashtable ops"""
-from __future__ import absolute_import
-
 import topi
-from topi.util import get_const_int, get_const_float, get_float_tuple
 from .. import op as reg
 from ..op import OpPattern
 
@@ -36,9 +33,7 @@ def compute_hash_table(attrs, inputs, _, target):
     """Compute definition of hash_table"""
     key_dtype = attrs.key_dtype
     value_dtype = attrs.value_dtype
-    dtype = attrs.dtype
-    return [topi.contrib.hash_table(key_dtype, value_dtype, dtype)]
-    
+    return [topi.hash_table(key_dtype, value_dtype)]
 
 
 reg.register_pattern("contrib.hash_table", OpPattern.OPAQUE)
@@ -54,11 +49,9 @@ def schedule_lookup_table_find(_, outs, target):
 @reg.register_compute("contrib.lookup_table_find")
 def compute_lookup_table_find(attrs, inputs, _, target):
     """Compute definition of lookup_table_find"""
-    key_dtype = attrs.key_dtype
-    value_dtype = attrs.value_dtype
     dtype = attrs.dtype
-    return [topi.contrib.lookup_table_find(
-        inputs[0], inputs[1], inputs[2], key_dtype, value_dtype, dtype)]
+    return [topi.lookup_table_find(
+        inputs[0], inputs[1], inputs[2], dtype)]
 
 
 reg.register_pattern("contrib.lookup_table_find", OpPattern.OPAQUE)
@@ -74,29 +67,27 @@ def schedule_lookup_table_import(_, outs, target):
 @reg.register_compute("contrib.lookup_table_import")
 def compute_lookup_table_import(attrs, inputs, _, target):
     """Compute definition of lookup_table_import"""
-    key_dtype = attrs.key_dtype
-    value_dtype = attrs.value_dtype
-    return [topi.contrib.lookup_table_import(
-        inputs[0], inputs[1], inputs[2], key_dtype, value_dtype)]
+    return [topi.lookup_table_import(
+        inputs[0], inputs[1], inputs[2])]
 
 reg.register_pattern("contrib.lookup_table_import", OpPattern.OPAQUE)
 
 
 @reg.register_schedule("contrib.initialize_table_from_text_file")
 def schedule_initialize_table_from_text_file(_, outs, target):
-    """Schedule definition of lookup_table_import"""
+    """Schedule definition of initialize_table_from_text_file"""
     with target:
         return topi.generic.schedule_initialize_table_from_text_file(outs)
 
 
 @reg.register_compute("contrib.initialize_table_from_text_file")
 def compute_initialize_table_from_text_file(attrs, inputs, _, target):
-    """Compute definition of lookup_table_import"""
+    """Compute definition of initialize_table_from_text_file"""
     vocab_size = attrs.vocab_size
     key_index = attrs.key_index
     value_index = attrs.value_index
     delim = attrs.delim
-    return [topi.contrib.initialize_table_from_text_file(
+    return [topi.initialize_table_from_text_file(
         inputs[0], inputs[1], vocab_size, key_index, value_index, delim)]
 
 reg.register_pattern("contrib.initialize_table_from_text_file", OpPattern.OPAQUE)

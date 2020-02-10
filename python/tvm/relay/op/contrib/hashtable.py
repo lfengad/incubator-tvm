@@ -14,14 +14,11 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""Hash-table related operations."""
-from __future__ import absolute_import as _abs
+"""Hashtable related operations."""
 from . import _make
-from ...expr import TupleWrapper
 
 def hash_table(key_dtype="int32",
-               value_dtype="int32",
-               dtype="int32"):
+               value_dtype="int32"):
     """Create a Hash Table object.
 
     Parameters
@@ -32,15 +29,12 @@ def hash_table(key_dtype="int32",
     value_dtype : string
         Data type of the values in the table.
 
-    dtype: string
-        Data type of the output tensor for the hashtable, usually as custom[hashtable]64.
-
     Returns
     -------
-    out_tensor : relay.Expr
+    out : relay.Expr
         A tensor with the hashtable pointer as its element.
     """
-    return _make.hash_table(key_dtype, value_dtype, dtype)
+    return _make.hash_table(key_dtype, value_dtype)
 
 
 def lookup_table_find(table_reference,
@@ -98,7 +92,7 @@ def lookup_table_import(table_reference,
     table_refernece : relay.Expr
         A tensor with hashtable pointer as its element.
         To specify the given hashtable for to initialize.
-               
+
     keys : relay.Expr
         A tensor to specify the keys in the key-value pairs for initialization.
 
@@ -136,21 +130,22 @@ def initialize_table_from_text_file(table_reference,
     table_refernece : relay.Expr
         A tensor with hashtable pointer as its element.
         To specify the given hashtable for to initialize.
-               
+
     files : relay.Expr
         A tensor of a string to specify the path fo the text file for initialization.
 
     vocab_size : int
-        The number of valid elements in the text file, if known. 
-vocab_size: The number of elements in the file, if known.
+        The number of valid elements in the text file, if known.
 
-    key_index: int 
-        The column index from the text file to get the key values from. The default is to use the whole line content.
+    key_index: int
+        The column index from the text file to get the key values from.
+         The default is to use the whole line content.
 
-    value_index: int 
-        The column index from the text file to get the value values from. The default is to use the line number, starting from zero.
+    value_index: int
+        The column index from the text file to get the value values from.
+        The default is to use the line number, starting from zero.
 
-    delimiter: string 
+    delim: string
         The delimiter to separate fields in a line.
 
     Returns
@@ -164,5 +159,3 @@ vocab_size: The number of elements in the file, if known.
                                                  key_index,
                                                  value_index,
                                                  delim)
-
-
