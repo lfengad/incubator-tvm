@@ -176,14 +176,14 @@ class NDArray(NDArrayBase):
             dtype = str(t) 
        
         if self.dtype == "custom[string]64":
-            np_args = np.empty((2,), dtype = "int32")
+            np_args = np.empty((2,), dtype="int32")
             assert np_args.flags['C_CONTIGUOUS']
             args_buffer = np_args.ctypes.data_as(ctypes.c_void_p)
             check_call(_LIB.TVMArrayStrArgsCalc(self.handle, args_buffer))    
             strtype = "<U{}".format(np_args[1])
             if np_args[1] == 0:
-                strtype="<U8"
-            np_arr = np.empty(shape, dtype = strtype)
+                strtype = "<U8"
+            np_arr = np.empty(shape, dtype=strtype)
             assert np_arr.flags['C_CONTIGUOUS']
             data = np_arr.ctypes.data_as(ctypes.c_void_p)
             nbytes = ctypes.c_size_t(np_args[0])
@@ -191,7 +191,7 @@ class NDArray(NDArrayBase):
             check_call(_LIB.TVMArrayCopyToStrBytes(self.handle, data, nbytes, nlenth))
             return np_arr
 
-        np_arr = np.empty(shape, dtype = dtype)
+        np_arr = np.empty(shape, dtype=dtype)
         assert np_arr.flags['C_CONTIGUOUS']
         data = np_arr.ctypes.data_as(ctypes.c_void_p)
         nbytes = ctypes.c_size_t(np_arr.size * np_arr.dtype.itemsize)

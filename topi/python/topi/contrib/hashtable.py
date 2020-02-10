@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 # pylint: disable=import-error, invalid-name, no-member, too-many-locals, too-many-arguments, undefined-variable, too-many-nested-blocks, too-many-branches, too-many-statements, too-many-function-args
-"""Non-maximum suppression operator"""
+"""HashTable operator"""
 import tvm
 
 from tvm import hybrid
@@ -25,31 +25,23 @@ from .. import *
 
 @tvm.target.generic_func
 def hash_table(key_dtype, value_dtype, dtype):
-    """Get valid count of bounding boxes given a score threshold.
-    Also moves valid boxes to the top of input data.
+    """Create a Hash Table object.
 
     Parameters
     ----------
-    data : tvm.Tensor
-        Input data. 3-D tensor with shape [batch_size, num_anchors, 6]
-        or [batch_size, num_anchors, 5].
+    key_dtype : string
+        Data type of the keys in the table.
 
-    score_threshold : optional, float
-        Lower limit of score for valid bounding boxes.
+    value_dtype : string
+        Data type of the values in the table.
 
-    id_index : optional, int
-        index of the class categories, -1 to disable.
-
-    score_index: optional, int
-        Index of the scores/confidence of boxes.
+    dtype: string
+        Data type of the output tensor for the hashtable, usually as custom[hashtable]64.
 
     Returns
     -------
     out_tensor : tvm.Tensor
-        Rearranged data tensor.
-
-    valid_count : tvm.Tensor
-        1-D tensor for valid number of boxes.
+        A tensor with the hashtable pointer as its element.
     """
     table_instance = hashtable_handler.create(key_dtype, value_dtype, dtype)
     return table_instance
@@ -58,94 +50,98 @@ def hash_table(key_dtype, value_dtype, dtype):
 
 @tvm.target.generic_func
 def lookup_table_find(table_reference, key_to_check, default_value, key_dtype, value_dtype, dtype):
-    """Get valid count of bounding boxes given a score threshold.
-    Also moves valid boxes to the top of input data.
+    """Find the corresponding values to given keys from a given hashtable.
 
     Parameters
     ----------
-    data : tvm.Tensor
-        Input data. 3-D tensor with shape [batch_size, num_anchors, 6]
-        or [batch_size, num_anchors, 5].
+    table_reference : tvm.Tensor
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for lookup.
 
-    score_threshold : optional, float
-        Lower limit of score for valid bounding boxes.
+    key_to_check : tvm.Tensor
+        A tensor of a set of keys for checking.
 
-    id_index : optional, int
-        index of the class categories, -1 to disable.
+    default_value : tvm.Tensor
+        A tensor to specify the default value when no corresponding key in the hashtable.
 
-    score_index: optional, int
-        Index of the scores/confidence of boxes.
+    key_dtype : string
+        Data type of the keys in the table.
+
+    value_dtype : string
+        Data type of the values in the table.
+
+    dtype : string
+        Data type of the output from the op, usually same as value_dtype.
 
     Returns
     -------
     out_tensor : tvm.Tensor
-        Rearranged data tensor.
-
-    valid_count : tvm.Tensor
-        1-D tensor for valid number of boxes.
+        A tensor with the same shape as key_to_check.
+        The corresponding values returned for the checked keys.
     """
-    #default_value_ = topi.cast(default_value, dtype=dtype)
     found_values = hashtable_handler.find(table_reference, key_to_check, default_value, dtype)
     return found_values
 
 @tvm.target.generic_func
 def lookup_table_import(table_reference, keys, values, key_dtype, value_dtype):
-    """Get valid count of bounding boxes given a score threshold.
-    Also moves valid boxes to the top of input data.
+    """Initialize the hash table using given keys and values tensors
 
     Parameters
     ----------
-    data : tvm.Tensor
-        Input data. 3-D tensor with shape [batch_size, num_anchors, 6]
-        or [batch_size, num_anchors, 5].
+    table_refernece : tvm.Tensor
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for to initialize.
+               
+    keys : tvm.Tensor
+        A tensor to specify the keys in the key-value pairs for initialization.
 
-    score_threshold : optional, float
-        Lower limit of score for valid bounding boxes.
+    values : tvm.Tensor
+        A tensor to specify the values in the key-value pairs for initialization.
 
-    id_index : optional, int
-        index of the class categories, -1 to disable.
+    key_dtype : string
+        Data type of the keys in the table.
 
-    score_index: optional, int
-        Index of the scores/confidence of boxes.
+    value_dtype : string
+        Data type of the values in the table.
 
     Returns
     -------
     out_tensor : tvm.Tensor
-        Rearranged data tensor.
-
-    valid_count : tvm.Tensor
-        1-D tensor for valid number of boxes.
+        A dummy node as return.
     """
     fake_out = hashtable_handler.init(table_reference, keys, values)
     return fake_out
 
 @tvm.target.generic_func
 def initialize_table_from_text_file(table_reference, files, vocab_size, key_index, value_index, delim):
-    """Get valid count of bounding boxes given a score threshold.
-    Also moves valid boxes to the top of input data.
+    """Initialize the hash table using a given text file
 
     Parameters
     ----------
-    data : tvm.Tensor
-        Input data. 3-D tensor with shape [batch_size, num_anchors, 6]
-        or [batch_size, num_anchors, 5].
+    table_refernece : tvm.Tensor
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for to initialize.
+               
+    files : tvm.Tensor
+        A tensor of a string to specify the path fo the text file for initialization.
 
-    score_threshold : optional, float
-        Lower limit of score for valid bounding boxes.
+    vocab_size : int
+        The number of valid elements in the text file, if known. 
+vocab_size: The number of elements in the file, if known.
 
-    id_index : optional, int
-        index of the class categories, -1 to disable.
+    key_index: int 
+        The column index from the text file to get the key values from. The default is to use the whole line content.
 
-    score_index: optional, int
-        Index of the scores/confidence of boxes.
+    value_index: int 
+        The column index from the text file to get the value values from. The default is to use the line number, starting from zero.
+
+    delimiter: string 
+        The delimiter to separate fields in a line.
 
     Returns
     -------
     out_tensor : tvm.Tensor
-        Rearranged data tensor.
-
-    valid_count : tvm.Tensor
-        1-D tensor for valid number of boxes.
+        A dummy node as return.
     """
     fake_out = hashtable_handler.initfromtxt(table_reference, files, vocab_size, key_index, value_index, delim)
     return fake_out

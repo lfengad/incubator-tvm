@@ -44,7 +44,6 @@ def compute_hash_table(attrs, inputs, _, target):
 reg.register_pattern("contrib.hash_table", OpPattern.OPAQUE)
 
 
-# multibox_transform_loc
 @reg.register_schedule("contrib.lookup_table_find")
 def schedule_lookup_table_find(_, outs, target):
     """Schedule definition of lookup_table_find"""
@@ -65,7 +64,6 @@ def compute_lookup_table_find(attrs, inputs, _, target):
 reg.register_pattern("contrib.lookup_table_find", OpPattern.OPAQUE)
 
 
-# Get counts of valid boxes
 @reg.register_schedule("contrib.lookup_table_import")
 def schedule_lookup_table_import(_, outs, target):
     """Schedule definition of lookup_table_import"""
@@ -84,7 +82,6 @@ def compute_lookup_table_import(attrs, inputs, _, target):
 reg.register_pattern("contrib.lookup_table_import", OpPattern.OPAQUE)
 
 
-# Get counts of valid boxes
 @reg.register_schedule("contrib.initialize_table_from_text_file")
 def schedule_initialize_table_from_text_file(_, outs, target):
     """Schedule definition of lookup_table_import"""
@@ -103,5 +100,3 @@ def compute_initialize_table_from_text_file(attrs, inputs, _, target):
         inputs[0], inputs[1], vocab_size, key_index, value_index, delim)]
 
 reg.register_pattern("contrib.initialize_table_from_text_file", OpPattern.OPAQUE)
-
-

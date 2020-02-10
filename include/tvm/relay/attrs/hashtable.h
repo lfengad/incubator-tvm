@@ -1,3 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/*!
+ * \file tvm/relay/attrs/hashtable.h
+ * \brief The set of Relay analysis passes written in C++.
+ */
 #ifndef TVM_RELAY_ATTRS_HASHTABLE_H_
 #define TVM_RELAY_ATTRS_HASHTABLE_H_
 
@@ -5,14 +28,14 @@
 #include <tvm/relay/base.h>
 #include <string>
 
-namespace tvm{
-namespace relay{
+namespace tvm {
+namespace relay {
 
 /*! \brief Attributes used in hash-table operator */
 struct HashTableAttrs : public tvm::AttrsNode<HashTableAttrs> {
   DataType key_dtype;
   DataType value_dtype;
-  DataType dtype; 
+  DataType dtype;
 
   TVM_DECLARE_ATTRS(HashTableAttrs, "relay.attrs.HashTableAttrs") {
     TVM_ATTR_FIELD(key_dtype).set_default(NullValue<DataType>())
@@ -56,14 +79,15 @@ struct LookupTableImportAttrs : public tvm::AttrsNode<LookupTableImportAttrs> {
 };
 
 
-/*! \brief Attributes used in lookup-table-import operator */
+/*! \brief Attributes used in initialize-table-from-text-file operator */
 struct InitializeTableFromTextFileAttrs : public tvm::AttrsNode<InitializeTableFromTextFileAttrs> {
   int64_t vocab_size;
   int64_t key_index;
   int64_t value_index;
   std::string delim;
 
-  TVM_DECLARE_ATTRS(InitializeTableFromTextFileAttrs, "relay.attrs.InitializeTableFromTextFileAttrs") {
+  TVM_DECLARE_ATTRS(InitializeTableFromTextFileAttrs,
+     "relay.attrs.InitializeTableFromTextFileAttrs") {
     TVM_ATTR_FIELD(vocab_size).set_default(-1)
       .describe("Vocabulary size.");
     TVM_ATTR_FIELD(key_index).set_default(-2)
@@ -78,6 +102,6 @@ struct InitializeTableFromTextFileAttrs : public tvm::AttrsNode<InitializeTableF
 
 
 
-} // namespace relay
-} // namespace tvm
-#endif //TVM_RELAY_ATTRS_HASHTABLE_H_
+}  // namespace relay
+}  // namespace tvm
+#endif  // TVM_RELAY_ATTRS_HASHTABLE_H_

@@ -14,7 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""Non-maximum suppression operations."""
+"""Hash-table related operations."""
 from __future__ import absolute_import as _abs
 from . import _make
 from ...expr import TupleWrapper
@@ -22,30 +22,23 @@ from ...expr import TupleWrapper
 def hash_table(key_dtype="int32",
                value_dtype="int32",
                dtype="int32"):
-    """Get valid count of bounding boxes given a score threshold.
-    Also moves valid boxes to the top of input data.
+    """Create a Hash Table object.
 
     Parameters
     ----------
-    data : relay.Expr
-        Input data. 3-D tensor with shape [batch_size, num_anchors, 6].
+    key_dtype : string
+        Data type of the keys in the table.
 
-    score_threshold : optional, float
-        Lower limit of score for valid bounding boxes.
+    value_dtype : string
+        Data type of the values in the table.
 
-    id_index : optional, int
-        index of the class categories, -1 to disable.
-
-    score_index: optional, int
-        Index of the scores/confidence of boxes.
+    dtype: string
+        Data type of the output tensor for the hashtable, usually as custom[hashtable]64.
 
     Returns
     -------
-    valid_count : relay.Expr
-        1-D tensor for valid number of boxes.
-
     out_tensor : relay.Expr
-        Rearranged data tensor.
+        A tensor with the hashtable pointer as its element.
     """
     return _make.hash_table(key_dtype, value_dtype, dtype)
 
@@ -56,172 +49,120 @@ def lookup_table_find(table_reference,
                       key_dtype="int32",
                       value_dtype="int32",
                       dtype="int32"):
-    """Non-maximum suppression operator for object detection.
+    """Find the corresponding values to given keys from a given hashtable.
 
     Parameters
     ----------
-    data : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
-        The last dimension should be in format of
-        [class_id, score, box_left, box_top, box_right, box_bottom].
+    table_reference : relay.Expr
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for lookup.
 
-    valid_count : relay.Expr
-        1-D tensor for valid number of boxes.
+    key_to_check : relay.Expr
+        A tensor of a set of keys for checking.
 
-    max_output_size : int, optional
-        Max number of output valid boxes for each instance.
-        By default all valid boxes are returned.
+    default_value : relay.Expr
+        A tensor to specify the default value when no corresponding key in the hashtable.
 
-    iou_threshold : float, optional
-        Non-maximum suppression threshold.
+    key_dtype : string
+        Data type of the keys in the table.
 
-    force_suppress : bool, optional
-        Suppress all detections regardless of class_id.
+    value_dtype : string
+        Data type of the values in the table.
 
-    top_k : int, optional
-        Keep maximum top k detections before nms, -1 for no limit.
-
-    coord_start : int, optional
-        The starting index of the consecutive 4 coordinates.
-
-    score_index : int, optional
-        Index of the scores/confidence of boxes.
-
-    id_index : int, optional
-        index of the class categories, -1 to disable.
-
-    return_indices : bool, optional
-        Whether to return box indices in input data.
-
-    invalid_to_bottom : bool, optional
-        Whether to move all valid bounding boxes to the top.
+    dtype : string
+        Data type of the output from the op, usually same as value_dtype.
 
     Returns
     -------
     out : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
+        A tensor with the same shape as key_to_check.
+        The corresponding values returned for the checked keys.
     """
     return _make.lookup_table_find(table_reference,
-                      key_to_check,
-                      default_value,
-                      key_dtype,
-                      value_dtype,
-                      dtype)
+                                   key_to_check,
+                                   default_value,
+                                   key_dtype,
+                                   value_dtype,
+                                   dtype)
 
 
 def lookup_table_import(table_reference,
-                      keys,
-                      values,
-                      key_dtype="int32",
-                      value_dtype="int32"):
-    """Non-maximum suppression operator for object detection.
+                        keys,
+                        values,
+                        key_dtype="int32",
+                        value_dtype="int32"):
+    """Initialize the hash table using given keys and values tensors
 
     Parameters
     ----------
-    data : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
-        The last dimension should be in format of
-        [class_id, score, box_left, box_top, box_right, box_bottom].
+    table_refernece : relay.Expr
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for to initialize.
+               
+    keys : relay.Expr
+        A tensor to specify the keys in the key-value pairs for initialization.
 
-    valid_count : relay.Expr
-        1-D tensor for valid number of boxes.
+    values : relay.Expr
+        A tensor to specify the values in the key-value pairs for initialization.
 
-    max_output_size : int, optional
-        Max number of output valid boxes for each instance.
-        By default all valid boxes are returned.
+    key_dtype : string
+        Data type of the keys in the table.
 
-    iou_threshold : float, optional
-        Non-maximum suppression threshold.
-
-    force_suppress : bool, optional
-        Suppress all detections regardless of class_id.
-
-    top_k : int, optional
-        Keep maximum top k detections before nms, -1 for no limit.
-
-    coord_start : int, optional
-        The starting index of the consecutive 4 coordinates.
-
-    score_index : int, optional
-        Index of the scores/confidence of boxes.
-
-    id_index : int, optional
-        index of the class categories, -1 to disable.
-
-    return_indices : bool, optional
-        Whether to return box indices in input data.
-
-    invalid_to_bottom : bool, optional
-        Whether to move all valid bounding boxes to the top.
+    value_dtype : string
+        Data type of the values in the table.
 
     Returns
     -------
     out : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
+        A dummy node as return.
     """
     return _make.lookup_table_import(table_reference,
-                      keys,
-                      values,
-                      key_dtype,
-                      value_dtype)
+                                     keys,
+                                     values,
+                                     key_dtype,
+                                     value_dtype)
 
 
 def initialize_table_from_text_file(table_reference,
-                      files,
-                      vocab_size,
-                      key_index,
-                      value_index,
-                      delim):
-    """Non-maximum suppression operator for object detection.
+                                    files,
+                                    vocab_size,
+                                    key_index,
+                                    value_index,
+                                    delim):
+    """Initialize the hash table using a given text file
 
     Parameters
     ----------
-    data : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
-        The last dimension should be in format of
-        [class_id, score, box_left, box_top, box_right, box_bottom].
+    table_refernece : relay.Expr
+        A tensor with hashtable pointer as its element.
+        To specify the given hashtable for to initialize.
+               
+    files : relay.Expr
+        A tensor of a string to specify the path fo the text file for initialization.
 
-    valid_count : relay.Expr
-        1-D tensor for valid number of boxes.
+    vocab_size : int
+        The number of valid elements in the text file, if known. 
+vocab_size: The number of elements in the file, if known.
 
-    max_output_size : int, optional
-        Max number of output valid boxes for each instance.
-        By default all valid boxes are returned.
+    key_index: int 
+        The column index from the text file to get the key values from. The default is to use the whole line content.
 
-    iou_threshold : float, optional
-        Non-maximum suppression threshold.
+    value_index: int 
+        The column index from the text file to get the value values from. The default is to use the line number, starting from zero.
 
-    force_suppress : bool, optional
-        Suppress all detections regardless of class_id.
-
-    top_k : int, optional
-        Keep maximum top k detections before nms, -1 for no limit.
-
-    coord_start : int, optional
-        The starting index of the consecutive 4 coordinates.
-
-    score_index : int, optional
-        Index of the scores/confidence of boxes.
-
-    id_index : int, optional
-        index of the class categories, -1 to disable.
-
-    return_indices : bool, optional
-        Whether to return box indices in input data.
-
-    invalid_to_bottom : bool, optional
-        Whether to move all valid bounding boxes to the top.
+    delimiter: string 
+        The delimiter to separate fields in a line.
 
     Returns
     -------
     out : relay.Expr
-        3-D tensor with shape [batch_size, num_anchors, 6].
+        A dummy node as return.
     """
     return _make.initialize_table_from_text_file(table_reference,
-                      files,
-                      vocab_size,
-                      key_index,
-                      value_index,
-                      delim)
+                                                 files,
+                                                 vocab_size,
+                                                 key_index,
+                                                 value_index,
+                                                 delim)
 
 

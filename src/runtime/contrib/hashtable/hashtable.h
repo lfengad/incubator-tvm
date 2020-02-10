@@ -23,25 +23,28 @@
 #pragma once
 
 #include <tvm/runtime/registry.h>
-//#include <tvm/runtime/util.h>
 #include <dlpack/dlpack.h>
 #include <algorithm>
 #include <vector>
+#include <utility>
+#include <string>
+#include <memory>
+#include <unordered_map>
 
-namespace tvm{
-namespace contrib{
+namespace tvm {
+namespace contrib {
 
 
 class BaseTable{
  public:
-  BaseTable(){}
+  BaseTable() {}
   virtual size_t Size() = 0;
   virtual DLDataType KeyDtype() = 0;
   virtual DLDataType ValueDtype() = 0;
   virtual bool is_initialized() = 0;
-  protected:
+ protected:
   virtual bool DoPrepare() = 0;
-  public:
+ public:
   virtual bool DoInsert(DLTensor* keys, DLTensor* values) = 0;
 
   virtual bool DoFind(DLTensor* keys, DLTensor* values,
@@ -53,7 +56,7 @@ class BaseTable{
 template <typename KType, typename VType>
 class HashTable : public BaseTable{
  public:
-  HashTable(){}
+  HashTable() {}
   HashTable(DLDataType key_type, DLDataType value_type ) {
     is_prepared_ = false;
     DoPrepare();
@@ -64,12 +67,12 @@ class HashTable : public BaseTable{
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
-    if(!is_prepared_)
+    if (!is_prepared_)
       DoPrepare();
-    return Size()>0; 
+    return Size() > 0;
   }
 
-  protected:
+ protected:
   bool DoPrepare() override{
     if (is_prepared_) {
       LOG(FATAL) << "HashTable already prepared.";
@@ -82,8 +85,8 @@ class HashTable : public BaseTable{
     return true;
   };
 
-  public:
-  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+ public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override {
     if (!table_) {
       LOG(FATAL) << "HashTable is not prepared.";
     }
@@ -93,9 +96,9 @@ class HashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i = 0; i<keys->ndim; ++i) {
+    for (int i = 0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, VType>* table_ptr = table_.get();
@@ -113,9 +116,9 @@ class HashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i=0; i<keys->ndim; ++i) {
+    for (int i=0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, VType>* table_ptr = table_.get();
@@ -125,7 +128,7 @@ class HashTable : public BaseTable{
       if (it == table_ptr->end())
         values_ptr[i] = default_value_;
       else
-        values_ptr[i] = it->second; 
+        values_ptr[i] = it->second;
     }
     return true;
   }
@@ -142,8 +145,8 @@ class HashTable : public BaseTable{
 template <typename VType>
 class StrKHashTable : public BaseTable{
  public:
-  StrKHashTable(){}
-  StrKHashTable(DLDataType value_type ) {
+  StrKHashTable() {}
+  explicit StrKHashTable(DLDataType value_type) {
     is_prepared_ = false;
     DoPrepare();
     key_type_ = runtime::String2DLDataType("custom[string]64");
@@ -153,12 +156,12 @@ class StrKHashTable : public BaseTable{
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
-    if(!is_prepared_)
+    if (!is_prepared_)
       DoPrepare();
-    return Size()>0; 
+    return Size() > 0;
   }
 
-  protected:
+ protected:
   bool DoPrepare() override{
     if (is_prepared_) {
       LOG(FATAL) << "HashTable already prepared.";
@@ -171,8 +174,8 @@ class StrKHashTable : public BaseTable{
     return true;
   };
 
-  public:
-  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+ public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override {
     if (!table_) {
       LOG(FATAL) << "HashTable is not prepared.";
     }
@@ -182,9 +185,9 @@ class StrKHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i = 0; i<keys->ndim; ++i) {
+    for (int i = 0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, VType>* table_ptr = table_.get();
@@ -202,9 +205,9 @@ class StrKHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i=0; i<keys->ndim; ++i) {
+    for (int i=0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, VType>* table_ptr = table_.get();
@@ -214,7 +217,7 @@ class StrKHashTable : public BaseTable{
       if (it == table_ptr->end())
         values_ptr[i] = default_value_;
       else
-        values_ptr[i] = it->second; 
+        values_ptr[i] = it->second;
     }
     return true;
   }
@@ -231,8 +234,8 @@ class StrKHashTable : public BaseTable{
 template <typename KType>
 class StrVHashTable : public BaseTable{
  public:
-  StrVHashTable(){}
-  StrVHashTable(DLDataType key_type ) {
+  StrVHashTable() {}
+  explicit StrVHashTable(DLDataType key_type) {
     is_prepared_ = false;
     DoPrepare();
     value_type_ = runtime::String2DLDataType("custom[string]64");
@@ -242,12 +245,12 @@ class StrVHashTable : public BaseTable{
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
-    if(!is_prepared_)
+    if (!is_prepared_)
       DoPrepare();
-    return Size()>0; 
+    return Size() > 0;
   }
 
-  protected:
+ protected:
   bool DoPrepare() override{
     if (is_prepared_) {
       LOG(FATAL) << "HashTable already prepared.";
@@ -260,8 +263,8 @@ class StrVHashTable : public BaseTable{
     return true;
   };
 
-  public:
-  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+ public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override {
     if (!table_) {
       LOG(FATAL) << "HashTable is not prepared.";
     }
@@ -271,9 +274,9 @@ class StrVHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i = 0; i<keys->ndim; ++i) {
+    for (int i = 0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, std::string>* table_ptr = table_.get();
@@ -291,22 +294,21 @@ class StrVHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i=0; i<keys->ndim; ++i) {
+    for (int i=0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<KType, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<KType, std::string>::const_iterator it;
       it  = table_ptr->find(keys_ptr[i]);
-  
-      if (it == table_ptr->end())
+      if (it == table_ptr->end()) {
         values_ptr[i] = default_value_;
-      else {
-        std::string* find_res = new std::string(it->second);  
+      } else {
+        std::string* find_res = new std::string(it->second);
         values_ptr[i] = find_res;
-        } 
+      }
     }
     return true;
   }
@@ -333,12 +335,12 @@ class StrHashTable : public BaseTable{
   inline DLDataType KeyDtype() override { return key_type_; }
   inline DLDataType ValueDtype() override { return value_type_; }
   inline bool is_initialized() override {
-    if(!is_prepared_)
+    if (!is_prepared_)
       DoPrepare();
-    return Size()>0; 
+    return Size() > 0;
   }
 
-  protected:
+ protected:
   bool DoPrepare() override{
     if (is_prepared_) {
       LOG(FATAL) << "HashTable already prepared.";
@@ -351,8 +353,8 @@ class StrHashTable : public BaseTable{
     return true;
   };
 
-  public:
-  bool DoInsert(DLTensor* keys, DLTensor* values) override{
+ public:
+  bool DoInsert(DLTensor* keys, DLTensor* values) override {
     if (!table_) {
       LOG(FATAL) << "HashTable is not prepared.";
     }
@@ -362,9 +364,9 @@ class StrHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i = 0; i<keys->ndim; ++i) {
+    for (int i = 0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, std::string>* table_ptr = table_.get();
@@ -382,21 +384,21 @@ class StrHashTable : public BaseTable{
     int keys_size = 1;
     int values_size = 1;
     CHECK_EQ(keys->ndim, values->ndim) << "dimisions of keys and values not match";
-    for (int i=0; i<keys->ndim; ++i) {
+    for (int i=0; i < keys->ndim; ++i) {
       keys_size *= keys->shape[i];
-      values_size *= values->shape[i];    
+      values_size *= values->shape[i];
       }
     CHECK_EQ(keys_size, values_size) << "total size of keys and values not match";
     std::unordered_map<std::string, std::string>* table_ptr = table_.get();
     for (int i = 0; i < keys_size; ++i) {
       typename std::unordered_map<std::string, std::string>::const_iterator it;
       it  = table_ptr->find(*keys_ptr[i]);
-      if (it == table_ptr->end())
+      if (it == table_ptr->end()) {
         values_ptr[i] = default_value_;
-      else {
-        std::string* find_res = new std::string(it->second);  
+      } else {
+        std::string* find_res = new std::string(it->second);
         values_ptr[i] = find_res;
-        } 
+      }
     }
     return true;
   }

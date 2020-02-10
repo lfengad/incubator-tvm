@@ -54,7 +54,7 @@ void GraphRuntime::Run() {
   // setup the array and requirements.
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && !init_ops_[i]) {op_execs_[i]();
-   }
+  }
   }
 }
 /*!
@@ -109,8 +109,7 @@ void GraphRuntime::SetInput(int index, DLTensor* data_in) {
   data_entry_[eid].CopyFrom(data_in);
 }
 
-void GraphRuntime::InitExecs()
-{
+void GraphRuntime::InitExecs() {
   for (size_t i = 0; i < op_execs_.size(); ++i) {
     if (op_execs_[i] && init_ops_[i]) {op_execs_[i]();
     }
@@ -330,8 +329,7 @@ void GraphRuntime::SetupStorage() {
 
 void GraphRuntime::SetupOpExecs() {
   op_execs_.resize(this->GetNumOfNodes());
-  init_ops_.resize(this->GetNumOfNodes(),false);
-  //input_set_.resize(this->GetNumOfNodes(),false);
+  init_ops_.resize(this->GetNumOfNodes(), false);
   input_dltensors_.resize(num_node_entries());
   std::unordered_set<uint32_t> input_node_eids;
   for (size_t i = 0; i < input_nodes_.size(); i++) {
@@ -355,20 +353,14 @@ void GraphRuntime::SetupOpExecs() {
     CHECK(inode.op_type == "tvm_op") << "Can only take tvm_op as op";
 
     std::shared_ptr<OpArgs> op_args = nullptr;
-    if(inode.param.func_name.find("contrib_hash_table")!=std::string::npos || 
-       inode.param.func_name.find("contrib_lookup_table_import")!=std::string::npos ||
-       inode.param.func_name.find("contrib_initialize_table_from_text_file")!=std::string::npos
+    if (inode.param.func_name.find("contrib_hash_table") != std::string::npos ||
+       inode.param.func_name.find("contrib_lookup_table_import") != std::string::npos ||
+       inode.param.func_name.find("contrib_initialize_table_from_text_file") != std::string::npos
        ) {
     init_ops_[nid] = true;
     }
     std::tie(op_execs_[nid], op_args) =
-        CreateTVMOp(inode.param, args, inode.inputs.size()); //}
-    /*else {
-    std::function<void()> init_func;
-    std::tie(init_func, op_args) =
-        CreateTVMOp(inode.param, args, inode.inputs.size()); 
-    init_func();
-    }*/
+        CreateTVMOp(inode.param, args, inode.inputs.size());
 
     for (size_t i = 0; i < inode.inputs.size(); i++) {
       uint32_t eid = this->entry_id(inode.inputs[i]);

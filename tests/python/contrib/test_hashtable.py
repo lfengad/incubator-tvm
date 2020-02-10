@@ -172,6 +172,12 @@ def test_fromtext():
         table = tf.contrib.lookup.HashTable(table_init, 0)
         res = table.lookup(input_tensor)
         out = tf.identity(res, name='sum')
+    """
+    In init.txt there are different characters on different lines.
+    "character-linenumber" are the key-value pairs to initialize the hash table.
+    Given a set of string characters corresponding line numbers in the init.txt will be returned.
+    """
+
     data = np.array(['9', '7', '6', '5', '4'])
     with tf.Session(graph=out.graph) as sess:
         sess.run([tf.tables_initializer(),tf.global_variables_initializer()])

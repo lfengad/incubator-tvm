@@ -90,7 +90,7 @@ class GraphRuntime : public ModuleNode {
     return "GraphRuntime";
   }
   void Run();
-  void InitExecs(); 
+  void InitExecs();
 
   /*!
    * \brief Initialize the graph executor with graph and context.
@@ -419,10 +419,8 @@ class GraphRuntime : public ModuleNode {
   std::vector<size_t> data_alignment_;
   /*! \brief Operator on each node. */
   std::vector<std::function<void()> > op_execs_;
- 
+  /*! \brief Operator for each init node. */
   std::vector<bool> init_ops_;
-
-  //std::vector<bool> input_set_;
 };
 
 std::vector<TVMContext> GetAllContext(const TVMArgs& args);

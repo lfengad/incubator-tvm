@@ -150,10 +150,10 @@ NDArray NDArray::CreateView(std::vector<int64_t> shape, DLDataType dtype) {
   get_mutable()->IncRef();
   ret.get_mutable()->manager_ctx = get_mutable();
   ret.get_mutable()->dl_tensor.data = get_mutable()->dl_tensor.data;
-  if(dtype.code == kTVMCustomBegin) {
+  if (dtype.code == kTVMCustomBegin) {
     void **ptr = static_cast<void**>(ret.get_mutable()->dl_tensor.data);
-    ptr[0] = nullptr;   
-  }  
+    ptr[0] = nullptr;
+  }
   return ret;
 }
 
@@ -164,7 +164,6 @@ DLManagedTensor* NDArray::ToDLPack() const {
 NDArray NDArray::Empty(std::vector<int64_t> shape,
                        DLDataType dtype,
                        DLContext ctx) {
- 
   NDArray ret = Internal::Create(shape, dtype, ctx);
   // setup memory content
   size_t size = GetDataSize(ret.get_mutable()->dl_tensor);
@@ -309,29 +308,23 @@ int TVMArrayCopyFromStrBytes(TVMArrayHandle handle,
                           size_t nlenth) {
   API_BEGIN();
   size_t arr_size = GetDataSize(*handle);
-
-  std::string **str_ptr = static_cast<std::string**>(handle->data); 
-  char *char_ptr = static_cast<char*>(data); 
-  
+  std::string **str_ptr = static_cast<std::string**>(handle->data);
+  char *char_ptr = static_cast<char*>(data);
   size_t ele_num = nbytes/nlenth;
   CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size dismatch.";
-
-
   char * char_tmp = static_cast<char*> (malloc(sizeof(char)*(nlenth/4+1)));
   char * char_tmp_ref = char_tmp;
-  for(uint32_t i = 0 ; i<ele_num; ++i) {
-    for(uint32_t j = 0; j<nlenth/4; ++j) {  
+  for (uint32_t i = 0 ; i < ele_num; ++i) {
+    for (uint32_t j = 0; j < nlenth/4; ++j) {
      *char_tmp_ref = *char_ptr;
      char_tmp_ref++;
      char_ptr+=4;
     }
-    *char_tmp_ref = '\0';
-   std::string* str_tmp = new std::string(char_tmp); 
-   char_tmp_ref = char_tmp;  
-   str_ptr[i] = str_tmp;
+  *char_tmp_ref = '\0';
+  std::string* str_tmp = new std::string(char_tmp);
+  char_tmp_ref = char_tmp;
+  str_ptr[i] = str_tmp;
   }
-  
-
   API_END();
 }
 
@@ -362,30 +355,29 @@ int TVMArrayCopyToStrBytes(TVMArrayHandle handle,
                         size_t nlenth) {
   API_BEGIN();
   size_t arr_size = GetDataSize(*handle);
-    
   size_t ele_num = nbytes/nlenth;
-  
   CHECK(ele_num*(handle->dtype.bits)/8 <= arr_size) << "String array size dismatch.";
-
-  std::string **str_ptr = static_cast<std::string**>(handle->data); 
+  std::string **str_ptr = static_cast<std::string**>(handle->data);
   char* char_tmp = static_cast<char*>(malloc(sizeof(char)*(nlenth/4+1)));
-  char *char_ptr = static_cast<char*>(data); 
-
-  for(uint32_t i = 0; i < ele_num; ++i) {
-      strcpy(char_tmp, str_ptr[i]->c_str());
+  char *char_ptr = static_cast<char*>(data);
+  for (uint32_t i = 0; i < ele_num; ++i) {
+      // strcpy(char_tmp, str_ptr[i]->c_str());
+      snprintf(char_tmp, sizeof(char)*(nlenth/4+1), "%s", str_ptr[i]->c_str());
       char* char_tmp_ref = char_tmp;
       bool endofstr = false;
-      for(uint32_t j = 0; j<nlenth; ++j) {
-          if (endofstr) 
-              *char_ptr = '\0';
-          else if (j%4 == 0){
-              if (*char_tmp_ref == '\0')
-                  endofstr = true;  
-              *char_ptr = *char_tmp_ref;
-              char_tmp_ref++;   
+      for (uint32_t j = 0; j < nlenth; ++j) {
+          if (endofstr) {
+             *char_ptr = '\0';
+             } else {
+             if (j%4 == 0) {
+                if (*char_tmp_ref == '\0')
+                    endofstr = true;
+                *char_ptr = *char_tmp_ref;
+                char_tmp_ref++;
+             } else {
+             *char_ptr = '\0';
              }
-          else 
-              *char_ptr = '\0';
+             }
           char_ptr++;
       }
   }
@@ -396,21 +388,15 @@ int TVMArrayCopyToStrBytes(TVMArrayHandle handle,
 int TVMArrayStrArgsCalc(TVMArrayHandle handle,
                           void* data) {
   API_BEGIN();
-  
   size_t arr_size = GetDataSize(*handle);
-
-  
-  std::string **str_ptr = static_cast<std::string**>(handle->data); 
-  int32_t* data_ = static_cast<int32_t*>(data); 
-
+  std::string **str_ptr = static_cast<std::string**>(handle->data);
+  int32_t* data_ = static_cast<int32_t*>(data);
   uint32_t max_len = 0;
-
-  for(uint32_t i = 0; i< arr_size/8; i++) {
+  for (uint32_t i = 0; i < arr_size/8; i++) {
       if (str_ptr[i]->length() > max_len)
-         max_len = str_ptr[i]->length(); 
+         max_len = str_ptr[i]->length();
   }
-  data_[1] = max_len; 
+  data_[1] = max_len;
   data_[0] = data_[1]*4*sizeof(char)*arr_size/8;
-
   API_END();
 }

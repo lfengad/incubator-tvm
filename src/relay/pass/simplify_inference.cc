@@ -40,14 +40,13 @@ Expr BatchNormToInferUnpack(const Attrs attrs,
   auto ttype = tdata.as<TensorTypeNode>();
   CHECK(ttype);
   const auto param = attrs.as<BatchNormAttrs>();
-  auto mean_node = moving_mean.as<VarNode>(); 
-  auto var_node = moving_var.as<VarNode>(); 
+  auto mean_node = moving_mean.as<VarNode>();
+  auto var_node = moving_var.as<VarNode>();
   Expr mean = moving_mean;
-  Expr var = moving_var; 
-  if(mean_node && var_node){
-      if(mean_node->name_hint().find("_dummy_for_training_mode_inference")!=std::string::npos &&
-      var_node->name_hint().find("_dummy_for_training_mode_inference")!=std::string::npos){
-
+  Expr var = moving_var;
+  if (mean_node && var_node) {
+      if (mean_node->name_hint().find("_dummy_for_training_mode_inference") != std::string::npos &&
+      var_node->name_hint().find("_dummy_for_training_mode_inference") != std::string::npos) {
   mean = Mean(data, {param->axis}, true, true);
   var = Variance(data, mean, {param->axis}, true, true);
     }

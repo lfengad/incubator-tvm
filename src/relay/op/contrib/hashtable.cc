@@ -39,7 +39,6 @@ bool HashTableRel(const Array<Type>& types,
             const Attrs& attrs,
             const TypeReporter& reporter) {
   CHECK_EQ(types.size(), 1);
-  //const HashTableAttrs* param = attrs.as<HashTableAttrs>();
 
   // assign output type
   std::vector<IndexExpr> oshape({1});
@@ -55,7 +54,7 @@ Expr MakeHashTable(
   auto attrs = make_object<HashTableAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
-  attrs->dtype = dtype; 
+  attrs->dtype = dtype;
   static const Op& op = Op::Get("contrib.hash_table");
   return CallNode::make(op, {}, Attrs(attrs), {});
 }
@@ -92,11 +91,9 @@ bool LookupTableFindRel(const Array<Type>& types,
     attrs.as<LookupTableFindAttrs>();
   const auto& dshape = key_to_check->shape;
   CHECK_EQ(param->key_dtype, key_to_check->dtype);
-  //CHECK_EQ(param->value_dtype, default_value->dtype);
 
   reporter->Assign(types[3], TensorType(dshape, param->value_dtype));
   return true;
-
 }
 
 Expr MakeLookupTableFind(Expr table_reference,
@@ -104,8 +101,7 @@ Expr MakeLookupTableFind(Expr table_reference,
                         Expr default_value,
                         DataType key_dtype,
                         DataType value_dtype,
-                        DataType dtype) 
-{
+                        DataType dtype) {
   auto attrs = make_object<LookupTableFindAttrs>();
   attrs->key_dtype = key_dtype;
   attrs->value_dtype = value_dtype;
@@ -149,7 +145,6 @@ bool LookupTableImportRel(const Array<Type>& types,
   CHECK(values);
   const LookupTableImportAttrs* param =
     attrs.as<LookupTableImportAttrs>();
-  //CHECK_EQ(keys->shape, values->shape);
   CHECK_EQ(param->key_dtype, keys->dtype);
   CHECK_EQ(param->value_dtype, values->dtype);
 
@@ -157,7 +152,6 @@ bool LookupTableImportRel(const Array<Type>& types,
   DataType fake_type = DataType(String2DLDataType("int32"));
   reporter->Assign(types[3], TensorType(oshape, fake_type));
   return true;
-
 }
 
 Expr MakeLookupTableImport(Expr table_reference,
@@ -202,14 +196,10 @@ bool InitializeTableFromTextFileRel(const Array<Type>& types,
   CHECK(table_reference);
   const auto* files = types[1].as<TensorTypeNode>();
   CHECK(files);
-  const InitializeTableFromTextFileAttrs* param =
-    attrs.as<InitializeTableFromTextFileAttrs>();
-  //CHECK_EQ(keys->shape, values->shape);
   std::vector<IndexExpr> oshape({1});
   DataType fake_type = DataType(String2DLDataType("int32"));
   reporter->Assign(types[2], TensorType(oshape, fake_type));
   return true;
-
 }
 
 Expr MakeInitializeTableFromTextFile(Expr table_reference,
@@ -233,9 +223,9 @@ TVM_REGISTER_GLOBAL("relay.op.contrib._make.initialize_table_from_text_file")
 
 
 RELAY_REGISTER_OP("contrib.initialize_table_from_text_file")
-.describe(R"doc(Import the given value and key pairs to initialize the given Hash Table. 
-Inputs are [Hash Table, Keys, Values]. No Returns. The two attributes define the key and 
-value data types in the hash table.)doc" TVM_ADD_FILELINE
+.describe(R"doc(Import the text file to initialize the given Hash Table. No Returns. 
+The vocab_size, key_index, value_indx, delim hold the same meaning as in TensorFlow. 
+They define how to interpret the text file for initialization.)doc" TVM_ADD_FILELINE
 )
 .set_attrs_type<InitializeTableFromTextFileAttrs>()
 .set_num_inputs(2)
